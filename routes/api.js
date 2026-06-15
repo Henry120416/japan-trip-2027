@@ -121,4 +121,17 @@ router.put('/info/:id', requireToken, async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
+router.post('/info', requireToken, async (req, res) => {
+  try {
+    const { category, key, value } = req.body;
+    const maxRow = await get('SELECT MAX(sort_order) as m FROM trip_info');
+    const sort_order = (maxRow && maxRow.m ? maxRow.m : 0) + 1;
+    const result = await run(
+      'INSERT INTO trip_info (category, key, value, sort_order) VALUES (?,?,?,?)',
+      [category, key, value || '', sort_order]
+    );
+    res.json(await get('SELECT * FROM trip_info WHERE id = ?', [result.lastID]));
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
 module.exports = router;
