@@ -83,4 +83,42 @@ router.delete('/expenses/:id', requireToken, async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
+// Checklist
+router.patch('/checklist/:id', requireToken, async (req, res) => {
+  try {
+    const { checked } = req.body;
+    await run('UPDATE checklist SET checked=? WHERE id=?', [checked ? 1 : 0, req.params.id]);
+    res.json({ success: true });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+router.post('/checklist', requireToken, async (req, res) => {
+  try {
+    const { category, item } = req.body;
+    const maxRow = await get('SELECT MAX(sort_order) as m FROM checklist');
+    const sort_order = (maxRow && maxRow.m ? maxRow.m : 0) + 1;
+    const result = await run(
+      'INSERT INTO checklist (category, item, sort_order) VALUES (?,?,?)',
+      [category || '其他', item, sort_order]
+    );
+    res.json(await get('SELECT * FROM checklist WHERE id = ?', [result.lastID]));
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+router.delete('/checklist/:id', requireToken, async (req, res) => {
+  try {
+    await run('DELETE FROM checklist WHERE id = ?', [req.params.id]);
+    res.json({ success: true });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// Trip Info
+router.put('/info/:id', requireToken, async (req, res) => {
+  try {
+    const { value } = req.body;
+    await run('UPDATE trip_info SET value=? WHERE id=?', [value, req.params.id]);
+    res.json({ success: true });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
 module.exports = router;

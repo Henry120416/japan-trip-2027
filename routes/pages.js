@@ -44,4 +44,30 @@ router.get('/expenses', async (req, res) => {
   } catch (e) { res.status(500).send(e.message); }
 });
 
+router.get('/info', async (req, res) => {
+  try {
+    const infoRows = await all('SELECT * FROM trip_info ORDER BY sort_order');
+    const checklist = await all('SELECT * FROM checklist ORDER BY sort_order');
+
+    // Group info by category
+    const info = {};
+    infoRows.forEach(r => {
+      if (!info[r.category]) info[r.category] = [];
+      info[r.category].push(r);
+    });
+
+    // Group checklist by category
+    const checks = {};
+    checklist.forEach(r => {
+      if (!checks[r.category]) checks[r.category] = [];
+      checks[r.category].push(r);
+    });
+
+    const total = checklist.length;
+    const done = checklist.filter(c => c.checked).length;
+
+    res.render('info', { info, checks, total, done });
+  } catch (e) { res.status(500).send(e.message); }
+});
+
 module.exports = router;

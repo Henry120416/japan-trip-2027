@@ -249,7 +249,7 @@ body {
   -webkit-backdrop-filter: blur(20px);
   border-top: 1px solid var(--border-l);
   display: flex; align-items: flex-start;
-  padding: 10px 48px 0;
+  padding: 10px 24px 0;
   z-index: 100;
 }
 .tab {
@@ -352,6 +352,64 @@ body {
   pointer-events: none;
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ─── Info Rows ─────────────────────────────────────── */
+.info-row {
+  display: flex; align-items: center;
+  padding: 12px 16px; border-bottom: 1px solid var(--border-l);
+  gap: 10px;
+}
+.info-row:last-child { border-bottom: none; }
+.info-key {
+  font-size: 13px; font-weight: 500; color: var(--t3);
+  flex-shrink: 0; width: 108px;
+}
+.info-val {
+  flex: 1; font-size: 14px; color: var(--t1); line-height: 1.4;
+  white-space: pre-wrap; word-break: break-all;
+}
+.info-val:empty::before, .info-val:has(+ .info-edit-btn) { color: var(--t5); }
+.info-edit-btn {
+  background: none; border: none; padding: 4px 6px;
+  cursor: pointer; color: var(--t5); border-radius: 6px;
+  transition: all .15s; flex-shrink: 0;
+}
+.info-edit-btn:hover { background: var(--fill); color: var(--t1); }
+
+/* ─── Checklist ─────────────────────────────────────── */
+.check-group-label {
+  font-size: 12px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: .4px; color: var(--t4);
+  padding: 0 4px; margin: 14px 0 6px;
+}
+.check-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 14px; border-bottom: 1px solid var(--border-l);
+  cursor: pointer; transition: background .12s;
+}
+.check-row:last-child { border-bottom: none; }
+.check-row:active { background: var(--fill); }
+
+.check-box {
+  width: 20px; height: 20px; border-radius: 6px; flex-shrink: 0;
+  border: 1.5px solid var(--border); background: var(--white);
+  display: flex; align-items: center; justify-content: center;
+  transition: all .2s ease;
+}
+.check-box.checked { background: var(--t1); border-color: var(--t1); }
+
+.check-label {
+  flex: 1; font-size: 15px; color: var(--t1);
+  transition: all .2s ease;
+}
+.check-label.checked { color: var(--t5); text-decoration: line-through; }
+
+.check-del {
+  background: none; border: none; color: var(--t5);
+  padding: 4px; cursor: pointer; border-radius: 6px;
+  transition: all .15s; flex-shrink: 0;
+}
+.check-del:hover { background: var(--fill); color: var(--t2); }
 
 /* ─── Scrollbar ─────────────────────────────────────── */
 ::-webkit-scrollbar { width: 0; height: 0; }
