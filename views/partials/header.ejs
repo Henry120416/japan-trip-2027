@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#ffffff">
+  <title><%= typeof pageTitle !== 'undefined' ? pageTitle : '大阪京都之旅' %></title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+</head>
+<body>
+<div class="app">
+  <nav class="nav">
+    <% if (typeof navBack !== 'undefined' && navBack) { %>
+      <a href="<%= navBack %>" class="nav-back">
+        <svg width="9" height="16" viewBox="0 0 9 16" fill="none">
+          <path d="M8 1L1 8L8 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        返回
+      </a>
+    <% } else { %>
+      <div style="min-width:64px"></div>
+    <% } %>
+    <div class="nav-title"><%= typeof navTitle !== 'undefined' ? navTitle : '' %></div>
+    <div class="nav-slot"></div>
+  </nav>
+  <div class="page">

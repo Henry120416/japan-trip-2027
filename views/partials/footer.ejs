@@ -1,0 +1,133 @@
+  </div><!-- .page -->
+
+  <!-- Tab Bar -->
+  <nav class="tab-bar">
+    <a href="/" class="tab <%= typeof activePage !== 'undefined' && activePage === 'home' ? 'active' : '' %>">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4" width="18" height="18" rx="3"/>
+        <line x1="3" y1="9" x2="21" y2="9"/>
+        <line x1="8" y1="2" x2="8" y2="6"/>
+        <line x1="16" y1="2" x2="16" y2="6"/>
+      </svg>
+      <span class="tab-lbl">行程</span>
+    </a>
+    <a href="/expenses" class="tab <%= typeof activePage !== 'undefined' && activePage === 'expenses' ? 'active' : '' %>">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="6" width="20" height="14" rx="3"/>
+        <path d="M2 10h20"/>
+        <circle cx="16" cy="15" r="1.5" fill="currentColor" stroke="none"/>
+      </svg>
+      <span class="tab-lbl">費用</span>
+    </a>
+  </nav>
+</div><!-- .app -->
+
+<!-- ── PIN Modal ───────────────────────────────── -->
+<div id="pinOverlay" class="overlay" onclick="if(event.target===this)closePinModal()">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">輸入編輯密碼</div>
+    <div class="fg">
+      <input type="password" id="pinField" class="pin-field" placeholder="••••••••"
+             autocomplete="off" onkeydown="if(event.key==='Enter')submitPin()">
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-sec" onclick="closePinModal()">取消</button>
+      <button class="btn btn-pri" onclick="submitPin()">確認</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Activity Modal ────────────────────────────── -->
+<div id="actOverlay" class="overlay" onclick="if(event.target===this)closeActModal()">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="actModalTitle">新增行程</div>
+    <input type="hidden" id="actDayId">
+    <input type="hidden" id="actId">
+    <div class="fg">
+      <label>類別</label>
+      <div class="cat-grid" id="catGrid">
+        <button type="button" class="cat-opt sel" data-cat="transport" onclick="selectCat(this)">
+          <span class="ico">✈</span><span class="lbl">交通</span>
+        </button>
+        <button type="button" class="cat-opt" data-cat="food" onclick="selectCat(this)">
+          <span class="ico">🍜</span><span class="lbl">餐廳</span>
+        </button>
+        <button type="button" class="cat-opt" data-cat="attraction" onclick="selectCat(this)">
+          <span class="ico">🏛</span><span class="lbl">景點</span>
+        </button>
+        <button type="button" class="cat-opt" data-cat="hotel" onclick="selectCat(this)">
+          <span class="ico">🏨</span><span class="lbl">住宿</span>
+        </button>
+        <button type="button" class="cat-opt" data-cat="other" onclick="selectCat(this)">
+          <span class="ico">📌</span><span class="lbl">其他</span>
+        </button>
+      </div>
+    </div>
+    <div class="fg">
+      <label>時間</label>
+      <input type="time" id="actTime" placeholder="09:00">
+    </div>
+    <div class="fg">
+      <label>名稱 *</label>
+      <input type="text" id="actTitle" placeholder="行程名稱">
+    </div>
+    <div class="fg">
+      <label>地點</label>
+      <input type="text" id="actLocation" placeholder="地點名稱">
+    </div>
+    <div class="fg">
+      <label>Google Maps 連結</label>
+      <input type="url" id="actMapUrl" placeholder="https://maps.google.com/...">
+    </div>
+    <div class="fg">
+      <label>備注</label>
+      <textarea id="actDesc" placeholder="補充說明..."></textarea>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-sec" onclick="closeActModal()">取消</button>
+      <button class="btn btn-pri" onclick="saveActivity()">儲存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Expense Modal ─────────────────────────────── -->
+<div id="expOverlay" class="overlay" onclick="if(event.target===this)closeExpModal()">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">新增費用</div>
+    <input type="hidden" id="expDayId">
+    <div class="fg">
+      <label>名稱 *</label>
+      <input type="text" id="expTitle" placeholder="費用項目">
+    </div>
+    <div class="fg">
+      <label>日圓 (¥)</label>
+      <input type="number" id="expJpy" placeholder="0" min="0">
+    </div>
+    <div class="fg">
+      <label>台幣 (NT$)</label>
+      <input type="number" id="expTwd" placeholder="0" min="0">
+    </div>
+    <div class="fg">
+      <label>付款人</label>
+      <input type="text" id="expPayer" placeholder="誰付的？">
+    </div>
+    <div class="fg">
+      <label>備注</label>
+      <textarea id="expNotes" placeholder="補充說明..." style="height:60px"></textarea>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-sec" onclick="closeExpModal()">取消</button>
+      <button class="btn btn-pri" onclick="saveExpense()">儲存</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast"></div>
+
+<script src="/js/main.js"></script>
+</body>
+</html>

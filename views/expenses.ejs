@@ -1,0 +1,78 @@
+<%- include('partials/header', { pageTitle: '旅費紀錄', navTitle: '旅費紀錄', navBack: null }) %>
+
+<!-- Stats -->
+<div class="stats-strip">
+  <div class="stat-card">
+    <div class="stat-val">¥<%= total_jpy.toLocaleString() %></div>
+    <div class="stat-lbl">總日圓</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val">NT$<%= total_twd.toLocaleString() %></div>
+    <div class="stat-lbl">總台幣</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val">NT$<%= per_person.toLocaleString() %></div>
+    <div class="stat-lbl">每人均攤</div>
+  </div>
+</div>
+
+<%
+  const weekMap = ['日','一','二','三','四','五','六'];
+  // Group expenses by day
+  const grouped = {};
+  expenses.forEach(e => {
+    const key = e.day_id || 'none';
+    if (!grouped[key]) grouped[key] = { label: e.day_date ? e.day_title + ' · ' + e.day_date.replace(/-/g,'/') : '未分類', items: [] };
+    grouped[key].items.push(e);
+  });
+%>
+
+<div class="section">
+  <% if (expenses.length === 0) { %>
+    <div class="empty" style="padding:48px 24px">
+      <div class="empty-icon">💴</div>
+      <div class="empty-txt">尚無費用紀錄</div>
+      <div class="empty-hint">點擊下方按鈕新增</div>
+    </div>
+  <% } else { %>
+    <% Object.values(grouped).forEach(group => { %>
+      <div class="section-label"><%= group.label %></div>
+      <div class="card-list" style="margin-bottom:16px">
+        <% group.items.forEach(e => { %>
+          <div class="exp-item">
+            <div class="exp-info">
+              <div class="exp-name"><%= e.title %></div>
+              <% if (e.payer) { %><div class="exp-meta">付款：<%= e.payer %></div><% } %>
+              <% if (e.notes) { %><div class="exp-meta"><%= e.notes %></div><% } %>
+            </div>
+            <div class="exp-amt">
+              <% if (e.amount_jpy > 0) { %><div class="exp-jpy">¥<%= e.amount_jpy.toLocaleString() %></div><% } %>
+              <% if (e.amount_twd > 0) { %><div class="exp-twd">NT$<%= e.amount_twd.toLocaleString() %></div><% } %>
+            </div>
+            <button class="exp-del" onclick="deleteExpense(<%= e.id %>)" title="刪除">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                <path d="M10 11v6M14 11v6"/>
+              </svg>
+            </button>
+          </div>
+        <% }) %>
+      </div>
+    <% }) %>
+  <% } %>
+
+  <button class="add-btn" onclick="openAddExpense()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+    </svg>
+    新增費用
+  </button>
+
+  <!-- Day picker for expense -->
+  <script>
+    const TRIP_DAYS = <%- JSON.stringify(days.map(d => ({ id: d.id, label: d.title + ' · ' + d.date.replace(/-/g,'/') }))) %>;
+  </script>
+</div>
+
+<%- include('partials/footer', { activePage: 'expenses' }) %>

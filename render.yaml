@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: japan-trip-2027
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: TRIP_PIN
+        value: japan2027
+      - key: DATABASE_URL
+        fromDatabase:
+          name: japan-trip-db
+          property: connectionString
+
+databases:
+  - name: japan-trip-db
+    plan: free
