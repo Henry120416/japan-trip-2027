@@ -115,8 +115,11 @@ router.delete('/checklist/:id', requireToken, async (req, res) => {
 // Trip Info
 router.put('/info/:id', requireToken, async (req, res) => {
   try {
-    const { value } = req.body;
-    await run('UPDATE trip_info SET value=? WHERE id=?', [value, req.params.id]);
+    const { value, key, category } = req.body;
+    await run(
+      'UPDATE trip_info SET value=?, key=COALESCE(?,key), category=COALESCE(?,category) WHERE id=?',
+      [value, key || null, category || null, req.params.id]
+    );
     res.json({ success: true });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
