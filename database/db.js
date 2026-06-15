@@ -81,6 +81,8 @@ if (USE_PG) {
       );
     `);
 
+    await pool.query("ALTER TABLE activities ADD COLUMN IF NOT EXISTS image_url TEXT DEFAULT ''").catch(() => {});
+
     const dc = await pool.query('SELECT COUNT(*) as c FROM days');
     if (parseInt(dc.rows[0].c) === 0) {
       await pool.query(`INSERT INTO days (date, title, city) VALUES
@@ -129,7 +131,9 @@ if (USE_PG) {
         day_id INTEGER NOT NULL REFERENCES days(id) ON DELETE CASCADE,
         sort_order INTEGER DEFAULT 0, time TEXT DEFAULT '', title TEXT NOT NULL,
         location TEXT DEFAULT '', map_url TEXT DEFAULT '',
-        description TEXT DEFAULT '', category TEXT DEFAULT 'attraction')`);
+        description TEXT DEFAULT '', category TEXT DEFAULT 'attraction',
+        image_url TEXT DEFAULT '')`);
+      db.run(`ALTER TABLE activities ADD COLUMN image_url TEXT DEFAULT ''`, () => {});
       db.run(`CREATE TABLE IF NOT EXISTS expenses (id INTEGER PRIMARY KEY AUTOINCREMENT,
         day_id INTEGER REFERENCES days(id), title TEXT NOT NULL,
         amount_jpy INTEGER DEFAULT 0, amount_twd INTEGER DEFAULT 0,

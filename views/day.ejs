@@ -68,6 +68,9 @@
               <%= a.location %>
             </div>
           <% } %>
+          <% if (a.image_url) { %>
+            <img src="<%= a.image_url %>" alt="<%= a.title %>" class="act-img" loading="lazy" onerror="this.style.display='none'">
+          <% } %>
           <% if (a.description) { %>
             <div class="act-desc"><%= a.description %></div>
           <% } %>

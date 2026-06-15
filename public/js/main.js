@@ -77,6 +77,7 @@ function openAddActivity(dayId) {
     document.getElementById('actTitle').value = '';
     document.getElementById('actLocation').value = '';
     document.getElementById('actMapUrl').value = '';
+    document.getElementById('actImageUrl').value = '';
     document.getElementById('actDesc').value = '';
     setCat('transport');
     document.getElementById('actOverlay').classList.add('open');
@@ -93,6 +94,7 @@ function openEditActivity(data) {
     document.getElementById('actTitle').value = data.title || '';
     document.getElementById('actLocation').value = data.location || '';
     document.getElementById('actMapUrl').value = data.map_url || '';
+    document.getElementById('actImageUrl').value = data.image_url || '';
     document.getElementById('actDesc').value = data.description || '';
     setCat(data.category || 'attraction');
     document.getElementById('actOverlay').classList.add('open');
@@ -114,6 +116,7 @@ async function saveActivity() {
     title,
     location:    document.getElementById('actLocation').value.trim(),
     map_url:     document.getElementById('actMapUrl').value.trim(),
+    image_url:   document.getElementById('actImageUrl').value.trim(),
     description: document.getElementById('actDesc').value.trim(),
     category:    getSelectedCat(),
   };
