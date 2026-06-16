@@ -55,6 +55,24 @@ const mapped   = activities.filter(a => a.lat && a.lng);
                box-shadow:0 2px 5px rgba(0,0,0,.3); }
     .mp-wrap span { transform:rotate(45deg); color:#fff; font-size:12px; font-weight:700; }
     .map-empty { padding:40px 20px; text-align:center; color:var(--t4); font-size:14px; }
+    .dist-badge {
+      background: rgba(255,255,255,0.93);
+      border: 1.5px solid #6366F1;
+      color: #6366F1;
+      font-size: 10px; font-weight: 700;
+      padding: 2px 7px; border-radius: 10px;
+      white-space: nowrap;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      box-shadow: 0 1px 4px rgba(0,0,0,.15);
+    }
+    .ms-dist-row {
+      display: flex; align-items: center; gap: 6px;
+      padding: 2px 16px 2px 22px;
+      font-size: 10px; color: #6366F1; font-weight: 600;
+    }
+    .ms-dist-row::before { content: ''; flex: 1; height: 1px; background: #e0e0ff; }
+    .ms-dist-row::after  { content: ''; flex: 1; height: 1px; background: #e0e0ff; }
   </style>
 </head>
 <body>
@@ -76,10 +94,29 @@ const mapped   = activities.filter(a => a.lat && a.lng);
 
   <div class="map-sheet">
     <div class="ms-head"><%= day.date.replace(/-/g,'/') %> · <%= mapped.length %> 個地點</div>
-    <% let idx = 0; %>
+    <%
+      function haversineKm(lat1, lng1, lat2, lng2) {
+        const R = 6371;
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLng = (lng2 - lng1) * Math.PI / 180;
+        const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+        return R * 2 * Math.asin(Math.sqrt(a));
+      }
+      let idx = 0;
+      let prevMapped = null;
+    %>
     <% activities.forEach(a => { %>
       <% const hasCoords = !!(a.lat && a.lng); %>
-      <% if (hasCoords) idx++; %>
+      <% if (hasCoords) { %>
+        <% if (prevMapped) { %>
+          <%
+            const d = haversineKm(prevMapped.lat, prevMapped.lng, a.lat, a.lng);
+            const dStr = d < 1 ? Math.round(d*1000) + ' m' : d.toFixed(1) + ' km';
+          %>
+          <div class="ms-dist-row"><%= dStr %></div>
+        <% } %>
+        <% idx++; prevMapped = a; %>
+      <% } %>
       <div class="ms-item <%= hasCoords ? '' : 'ms-no-coords' %>"
            id="ms-<%= a.id %>"
            <% if (hasCoords) { %>onclick="panTo(<%= a.lat %>,<%= a.lng %>,<%= idx %>)"<% } %>>
@@ -106,6 +143,14 @@ const mapped   = activities.filter(a => a.lat && a.lng);
 <script>
 const acts = <%- JSON.stringify(mapped) %>;
 const catColor = { transport:'#3B82F6', food:'#F97316', attraction:'#10B981', hotel:'#8B5CF6', other:'#6B7280' };
+
+function haversine(lat1, lng1, lat2, lng2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+  return R * 2 * Math.asin(Math.sqrt(a));
+}
 
 const map = L.map('mapEl', { zoomControl: false });
 L.control.zoom({ position: 'topright' }).addTo(map);
@@ -144,6 +189,15 @@ acts.forEach((a, i) => {
 
 if (latlngs.length > 1) {
   L.polyline(latlngs, { color:'#6366F1', weight:3, opacity:0.8, dashArray:'8,5' }).addTo(map);
+  for (let i = 0; i < acts.length - 1; i++) {
+    const a = acts[i], b = acts[i+1];
+    const d = haversine(a.lat, a.lng, b.lat, b.lng);
+    const dStr = d < 1 ? Math.round(d*1000) + ' m' : d.toFixed(1) + ' km';
+    L.marker([(a.lat+b.lat)/2, (a.lng+b.lng)/2], {
+      icon: L.divIcon({ html: `<div class="dist-badge">${dStr}</div>`, className: '', iconSize: null }),
+      interactive: false
+    }).addTo(map);
+  }
 }
 if (latlngs.length > 0) {
   map.fitBounds(latlngs, { padding: [40, 40] });
