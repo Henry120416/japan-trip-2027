@@ -57,8 +57,12 @@ router.delete('/activities/:id', requireToken, async (req, res) => {
 
 router.patch('/activities/:id', requireToken, async (req, res) => {
   try {
-    const { image_url } = req.body;
-    await run('UPDATE activities SET image_url=? WHERE id=?', [image_url || '', req.params.id]);
+    const allowed = ['image_url', 'description', 'location', 'map_url', 'time', 'title', 'category'];
+    const fields = Object.keys(req.body).filter(k => allowed.includes(k));
+    if (!fields.length) return res.json({ success: true });
+    const setClauses = fields.map(f => `${f}=?`).join(', ');
+    const values = [...fields.map(f => req.body[f]), req.params.id];
+    await run(`UPDATE activities SET ${setClauses} WHERE id=?`, values);
     res.json({ success: true });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
