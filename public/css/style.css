@@ -573,6 +573,8 @@ body {
 .acc-hd.open .acc-arrow { transform: rotate(180deg); }
 .acc-body { display: none; padding: 4px 16px 14px; border-top: 1px solid var(--border-l); }
 .acc-body.open { display: block; }
+.acc-body .info-row { margin: 0 -16px; padding: 10px 16px; border-bottom: 1px solid var(--border-l); }
+.acc-body .info-row:last-child { border-bottom: none; margin-bottom: -4px; }
 
 /* ─── Speak Button ───────────────────────────────────── */
 .speak-btn {
