@@ -149,4 +149,14 @@ router.post('/info', requireToken, async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
+// Read-only: all activities that have lat/lng (for mapcode batch)
+router.get('/activities-with-coords', async (req, res) => {
+  try {
+    const rows = await all(
+      'SELECT id, title, lat, lng FROM activities WHERE lat IS NOT NULL AND lat != 0 ORDER BY id'
+    );
+    res.json(rows);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
 module.exports = router;
