@@ -430,6 +430,29 @@ body {
 }
 .check-del:hover { background: var(--fill); color: var(--t2); }
 
+/* ─── MAPCODE ───────────────────────────────────────── */
+.mapcode-row {
+  display: flex; align-items: center; gap: 8px;
+  background: #F0FDF4; border: 1px solid #BBF7D0;
+  border-radius: 10px; padding: 7px 12px; margin-top: 10px;
+}
+.mapcode-lbl {
+  font-size: 10px; font-weight: 700; color: #15803D;
+  letter-spacing: .5px; text-transform: uppercase; flex-shrink: 0;
+}
+.mapcode-val {
+  flex: 1; font-size: 14px; font-weight: 700; color: #166534;
+  font-family: 'SF Mono', 'Menlo', 'Courier New', monospace;
+  letter-spacing: .5px;
+}
+.mapcode-copy {
+  background: none; border: none; padding: 4px 6px;
+  cursor: pointer; color: #15803D; border-radius: 6px;
+  transition: all .15s; flex-shrink: 0;
+}
+.mapcode-copy:hover { background: #DCFCE7; }
+.mapcode-copy.copied { color: #166534; }
+
 /* ─── Transit Links ─────────────────────────────────── */
 .transit-links {
   display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px;

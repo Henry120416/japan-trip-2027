@@ -84,6 +84,7 @@ if (USE_PG) {
     await pool.query("ALTER TABLE activities ADD COLUMN IF NOT EXISTS image_url TEXT DEFAULT ''").catch(() => {});
     await pool.query("ALTER TABLE activities ADD COLUMN IF NOT EXISTS lat REAL").catch(() => {});
     await pool.query("ALTER TABLE activities ADD COLUMN IF NOT EXISTS lng REAL").catch(() => {});
+    await pool.query("ALTER TABLE activities ADD COLUMN IF NOT EXISTS mapcode TEXT DEFAULT ''").catch(() => {});
 
     const dc = await pool.query('SELECT COUNT(*) as c FROM days');
     if (parseInt(dc.rows[0].c) === 0) {
@@ -138,6 +139,7 @@ if (USE_PG) {
       db.run(`ALTER TABLE activities ADD COLUMN image_url TEXT DEFAULT ''`, () => {});
       db.run(`ALTER TABLE activities ADD COLUMN lat REAL`, () => {});
       db.run(`ALTER TABLE activities ADD COLUMN lng REAL`, () => {});
+      db.run(`ALTER TABLE activities ADD COLUMN mapcode TEXT DEFAULT ''`, () => {});
       db.run(`CREATE TABLE IF NOT EXISTS expenses (id INTEGER PRIMARY KEY AUTOINCREMENT,
         day_id INTEGER REFERENCES days(id), title TEXT NOT NULL,
         amount_jpy INTEGER DEFAULT 0, amount_twd INTEGER DEFAULT 0,

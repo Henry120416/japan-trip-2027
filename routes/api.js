@@ -25,12 +25,12 @@ router.post('/verify-pin', (req, res) => {
 // Activities
 router.post('/activities', requireToken, async (req, res) => {
   try {
-    const { day_id, time, title, location, map_url, description, category, image_url } = req.body;
+    const { day_id, time, title, location, map_url, description, category, image_url, mapcode } = req.body;
     const maxRow = await get('SELECT MAX(sort_order) as m FROM activities WHERE day_id = ?', [day_id]);
     const sort_order = (maxRow && maxRow.m ? maxRow.m : 0) + 1;
     const result = await run(
-      'INSERT INTO activities (day_id, time, title, location, map_url, description, category, image_url, sort_order) VALUES (?,?,?,?,?,?,?,?,?)',
-      [day_id, time || '', title, location || '', map_url || '', description || '', category || 'attraction', image_url || '', sort_order]
+      'INSERT INTO activities (day_id, time, title, location, map_url, description, category, image_url, mapcode, sort_order) VALUES (?,?,?,?,?,?,?,?,?,?)',
+      [day_id, time || '', title, location || '', map_url || '', description || '', category || 'attraction', image_url || '', mapcode || '', sort_order]
     );
     const row = await get('SELECT * FROM activities WHERE id = ?', [result.lastID]);
     res.json(row);
@@ -39,10 +39,10 @@ router.post('/activities', requireToken, async (req, res) => {
 
 router.put('/activities/:id', requireToken, async (req, res) => {
   try {
-    const { time, title, location, map_url, description, category, image_url } = req.body;
+    const { time, title, location, map_url, description, category, image_url, mapcode } = req.body;
     await run(
-      'UPDATE activities SET time=?, title=?, location=?, map_url=?, description=?, category=?, image_url=? WHERE id=?',
-      [time || '', title, location || '', map_url || '', description || '', category || 'attraction', image_url || '', req.params.id]
+      'UPDATE activities SET time=?, title=?, location=?, map_url=?, description=?, category=?, image_url=?, mapcode=? WHERE id=?',
+      [time || '', title, location || '', map_url || '', description || '', category || 'attraction', image_url || '', mapcode || '', req.params.id]
     );
     res.json(await get('SELECT * FROM activities WHERE id = ?', [req.params.id]));
   } catch (e) { res.status(500).json({ error: e.message }); }
@@ -57,7 +57,7 @@ router.delete('/activities/:id', requireToken, async (req, res) => {
 
 router.patch('/activities/:id', requireToken, async (req, res) => {
   try {
-    const allowed = ['image_url', 'description', 'location', 'map_url', 'time', 'title', 'category', 'lat', 'lng'];
+    const allowed = ['image_url', 'description', 'location', 'map_url', 'time', 'title', 'category', 'lat', 'lng', 'mapcode'];
     const fields = Object.keys(req.body).filter(k => allowed.includes(k));
     if (!fields.length) return res.json({ success: true });
     const setClauses = fields.map(f => `${f}=?`).join(', ');

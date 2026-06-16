@@ -79,6 +79,7 @@ function openAddActivity(dayId) {
     document.getElementById('actMapUrl').value = '';
     document.getElementById('actImageUrl').value = '';
     document.getElementById('actDesc').value = '';
+    document.getElementById('actMapcode').value = '';
     setCat('transport');
     document.getElementById('actOverlay').classList.add('open');
     setTimeout(() => document.getElementById('actTitle').focus(), 350);
@@ -96,6 +97,7 @@ function openEditActivity(data) {
     document.getElementById('actMapUrl').value = data.map_url || '';
     document.getElementById('actImageUrl').value = data.image_url || '';
     document.getElementById('actDesc').value = data.description || '';
+    document.getElementById('actMapcode').value = data.mapcode || '';
     setCat(data.category || 'attraction');
     document.getElementById('actOverlay').classList.add('open');
   });
@@ -119,6 +121,7 @@ async function saveActivity() {
     image_url:   document.getElementById('actImageUrl').value.trim(),
     description: document.getElementById('actDesc').value.trim(),
     category:    getSelectedCat(),
+    mapcode:     document.getElementById('actMapcode').value.trim(),
   };
 
   const url    = id ? `/api/activities/${id}` : '/api/activities';
@@ -237,6 +240,15 @@ async function deleteExpense(id) {
       showToast('刪除失敗，請重試');
     }
   });
+}
+
+/* ── MAPCODE Copy ───────────────────────────────── */
+function copyMC(code, btn) {
+  navigator.clipboard.writeText(code).then(() => {
+    btn.classList.add('copied');
+    showToast('MAPCODE 已複製');
+    setTimeout(() => btn.classList.remove('copied'), 1500);
+  }).catch(() => showToast('複製失敗'));
 }
 
 /* ── PWA Service Worker ─────────────────────────── */
