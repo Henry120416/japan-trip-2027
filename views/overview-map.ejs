@@ -1,0 +1,214 @@
+<%
+const DAY_COLORS = ['#3B82F6','#10B981','#8B5CF6','#F97316','#EF4444','#EC4899'];
+const catIco = { transport:'✈', food:'🍽', attraction:'🏛', hotel:'🏨', other:'📌' };
+%>
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#ffffff">
+  <title>六日動線總覽</title>
+  <link rel="stylesheet" href="/css/style.css?v=20260617">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <style>
+    html, body { height: 100%; margin: 0; }
+    .map-wrap { position: fixed; top: 54px; left: 0; right: 0; bottom: 164px; }
+    #mapEl { width: 100%; height: 100%; }
+
+    .ov-sheet {
+      position: fixed; bottom: 0; left: 0; right: 0; height: 164px;
+      background: var(--bg); border-top: 1.5px solid var(--border-l);
+      z-index: 500;
+    }
+    .ov-scroll {
+      display: flex; gap: 10px;
+      padding: 14px 16px 0;
+      overflow-x: auto; -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .ov-scroll::-webkit-scrollbar { display: none; }
+
+    .ov-all {
+      flex-shrink: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 5px;
+      width: 62px; height: 90px;
+      background: var(--t1); color: #fff;
+      border-radius: 16px; cursor: pointer;
+      transition: transform .15s ease;
+    }
+    .ov-all span { font-size: 11px; font-weight: 600; }
+    .ov-all:active { transform: scale(.95); }
+    .ov-all.dim { opacity: .4; }
+
+    .ov-day {
+      flex-shrink: 0; display: flex; flex-direction: column;
+      align-items: center; gap: 5px;
+      width: 72px; height: 90px;
+      background: var(--card); border-radius: 16px;
+      padding: 10px 8px; cursor: pointer;
+      box-shadow: var(--shadow-s);
+      border: 2px solid transparent;
+      transition: all .2s ease;
+    }
+    .ov-day.active { box-shadow: var(--shadow-m); }
+    .ov-day.dim { opacity: .35; }
+    .ov-day:active { transform: scale(.95); }
+
+    .od-num {
+      width: 30px; height: 30px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 800; color: #fff;
+    }
+    .od-date { font-size: 10px; color: var(--t4); font-weight: 500; }
+    .od-city { font-size: 11px; color: var(--t1); font-weight: 700; text-align: center; line-height: 1.2; }
+
+    .ov-hint {
+      text-align: center; font-size: 11px; color: var(--t5);
+      padding: 6px 0 0;
+    }
+
+    .lf-popup b { font-size: 13px; }
+    .lf-popup small { font-size: 11px; color: #666; }
+  </style>
+</head>
+<body>
+<div class="app">
+  <nav class="nav">
+    <a href="/" class="nav-back">
+      <svg width="9" height="16" viewBox="0 0 9 16" fill="none">
+        <path d="M8 1L1 8L8 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      首頁
+    </a>
+    <div class="nav-title">六日動線總覽</div>
+    <div class="nav-slot"></div>
+  </nav>
+
+  <div class="map-wrap"><div id="mapEl"></div></div>
+
+  <div class="ov-sheet">
+    <div class="ov-scroll">
+      <div class="ov-all" id="pill-all" onclick="showDay('all')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
+          <path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0"/>
+          <polyline points="12 8 12 12 14.5 14.5"/>
+        </svg>
+        <span>全部</span>
+      </div>
+
+      <% days.forEach((day, i) => { %>
+        <%
+          const d = new Date(day.date + 'T00:00:00');
+          const md = (d.getMonth()+1) + '/' + String(d.getDate()).padStart(2,'0');
+          const col = DAY_COLORS[i];
+        %>
+        <div class="ov-day" id="pill-<%= i %>"
+             style="border-color:<%= col %>"
+             onclick="showDay(<%= i %>)">
+          <div class="od-num" style="background:<%= col %>"><%= i+1 %></div>
+          <div class="od-date"><%= md %></div>
+          <div class="od-city"><%= day.city %></div>
+        </div>
+      <% }) %>
+    </div>
+    <div class="ov-hint">點選日期卡片可聚焦單日路線</div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const DAY_COLORS = <%- JSON.stringify(DAY_COLORS) %>;
+const allActs    = <%- JSON.stringify(acts) %>;
+const days       = <%- JSON.stringify(days) %>;
+const catIco     = { transport:'✈', food:'🍽', attraction:'🏛', hotel:'🏨', other:'📌' };
+
+const map = L.map('mapEl', { zoomControl: false });
+L.control.zoom({ position: 'topright' }).addTo(map);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19,
+  attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>'
+}).addTo(map);
+
+// Group activities by day_date
+const grouped = {};
+allActs.forEach(a => {
+  if (!grouped[a.day_date]) grouped[a.day_date] = [];
+  grouped[a.day_date].push(a);
+});
+
+const dayLayers   = {};   // dayIdx → { polyline, markers[] }
+const dayBounds   = {};   // dayIdx → [[lat,lng], ...]
+const allLatlngs  = allActs.map(a => [a.lat, a.lng]);
+
+days.forEach((day, i) => {
+  const acts = grouped[day.date] || [];
+  const color = DAY_COLORS[i];
+  const latlngs = acts.map(a => [a.lat, a.lng]);
+  dayBounds[i] = latlngs;
+
+  const markers = [];
+
+  // Polyline
+  let poly = null;
+  if (latlngs.length > 1) {
+    poly = L.polyline(latlngs, { color, weight: 3.5, opacity: 0.75, dashArray: '9,6' }).addTo(map);
+  }
+
+  // Markers
+  acts.forEach(a => {
+    const icon = L.divIcon({
+      html: `<div style="width:20px;height:20px;background:${color};border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff;box-shadow:0 1px 4px rgba(0,0,0,.35);border:1.5px solid rgba(255,255,255,.7)">${i+1}</div>`,
+      className: '', iconSize: [20, 20], iconAnchor: [10, 10], popupAnchor: [0, -12]
+    });
+    const ico = catIco[a.category] || '📌';
+    const loc = a.location ? a.location.replace(/[（(][^）)]*[）)]/g,'').trim() : '';
+    const m = L.marker([a.lat, a.lng], { icon }).addTo(map)
+      .bindPopup(
+        `<div class="lf-popup"><b>${ico} ${a.title}</b><br><small>Day ${i+1} · ${a.time||''}${loc ? ' · '+loc : ''}</small></div>`,
+        { maxWidth: 220 }
+      );
+    markers.push(m);
+  });
+
+  dayLayers[i] = { poly, markers };
+});
+
+// Fit all
+if (allLatlngs.length > 0) map.fitBounds(allLatlngs, { padding: [40, 40] });
+
+let currentDay = 'all';
+
+function showDay(idx) {
+  currentDay = idx;
+
+  // Update pill styles
+  document.getElementById('pill-all').classList.toggle('dim', idx !== 'all');
+  days.forEach((_, i) => {
+    const el = document.getElementById('pill-' + i);
+    if (!el) return;
+    const active = idx === 'all' || idx === i;
+    el.classList.toggle('dim', !active);
+    el.classList.toggle('active', idx === i);
+  });
+
+  // Show/hide layers
+  days.forEach((day, i) => {
+    const { poly, markers } = dayLayers[i];
+    const visible = idx === 'all' || idx === i;
+    const opacity = idx === 'all' ? 0.75 : (idx === i ? 1 : 0);
+    if (poly) poly.setStyle({ opacity });
+    markers.forEach(m => { visible ? m.addTo(map) : m.remove(); });
+  });
+
+  // Zoom
+  if (idx === 'all') {
+    map.fitBounds(allLatlngs, { padding: [40, 40] });
+  } else if (dayBounds[idx] && dayBounds[idx].length > 0) {
+    map.fitBounds(dayBounds[idx], { padding: [50, 50], maxZoom: 15 });
+  }
+}
+</script>
+</body>
+</html>

@@ -57,6 +57,19 @@ router.get('/day/:date/map', async (req, res) => {
   } catch (e) { res.status(500).send(e.message); }
 });
 
+router.get('/overview-map', async (req, res) => {
+  try {
+    const days = await all('SELECT * FROM days ORDER BY date');
+    const acts = await all(`
+      SELECT a.*, d.date as day_date, d.title as day_title, d.city as day_city
+      FROM activities a JOIN days d ON d.id = a.day_id
+      WHERE a.lat IS NOT NULL AND a.lng IS NOT NULL
+      ORDER BY d.date, a.time, a.sort_order
+    `);
+    res.render('overview-map', { days, acts });
+  } catch (e) { res.status(500).send(e.message); }
+});
+
 router.get('/expenses', async (req, res) => {
   try {
     const days = await all('SELECT * FROM days ORDER BY date');
