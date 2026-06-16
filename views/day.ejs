@@ -35,7 +35,12 @@
   <% } else { %>
     <% activities.forEach(a => { %>
       <div class="tl-item">
-        <div class="tl-time"><%= a.time || '—' %></div>
+        <div class="tl-time">
+          <%= a.time || '—' %>
+          <% if (a.time) { %>
+            <div class="tl-time-lbl"><%= a.category === 'transport' ? '出發' : '抵達' %></div>
+          <% } %>
+        </div>
         <div class="tl-track">
           <div class="tl-dot"></div>
           <div class="tl-line"></div>
