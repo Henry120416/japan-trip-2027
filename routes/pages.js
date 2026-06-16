@@ -1,6 +1,19 @@
 const express = require('express');
 const router = express.Router();
-const { get, all } = require('../database/db');
+const { get, all, run } = require('../database/db');
+
+async function geocode(loc) {
+  if (!loc) return null;
+  const clean = loc.replace(/[（(][^）)]*[）)]/g, '').trim();
+  try {
+    const q = encodeURIComponent(clean + ' 日本');
+    const r = await fetch(`https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1`, {
+      headers: { 'User-Agent': 'JapanTrip2027/1.0' }
+    });
+    const d = await r.json();
+    return d[0] ? { lat: +d[0].lat, lng: +d[0].lon } : null;
+  } catch { return null; }
+}
 
 router.get('/', async (req, res) => {
   try {
@@ -22,6 +35,25 @@ router.get('/day/:date', async (req, res) => {
       [day.id]
     );
     res.render('day', { day, activities });
+  } catch (e) { res.status(500).send(e.message); }
+});
+
+router.get('/day/:date/map', async (req, res) => {
+  try {
+    const day = await get('SELECT * FROM days WHERE date = ?', [req.params.date]);
+    if (!day) return res.redirect('/');
+    const acts = await all('SELECT * FROM activities WHERE day_id = ? ORDER BY time, sort_order', [day.id]);
+    for (const a of acts) {
+      if (a.lat == null && a.location) {
+        const c = await geocode(a.location);
+        if (c) {
+          await run('UPDATE activities SET lat=?, lng=? WHERE id=?', [c.lat, c.lng, a.id]);
+          a.lat = c.lat; a.lng = c.lng;
+        }
+        await new Promise(r => setTimeout(r, 350));
+      }
+    }
+    res.render('map', { day, activities: acts });
   } catch (e) { res.status(500).send(e.message); }
 });
 

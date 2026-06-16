@@ -199,6 +199,14 @@ body {
   font-size: 12px; color: var(--t4); text-decoration: none; margin-top: 6px;
 }
 .act-map:hover { color: var(--t1); }
+.map-route-link {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 12px; font-weight: 500; color: var(--primary);
+  text-decoration: none; padding: 4px 10px;
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  border-radius: 20px; white-space: nowrap;
+}
+.map-route-link:active { opacity: 0.7; }
 
 .cat-pill {
   display: inline-flex; align-items: center; gap: 3px;

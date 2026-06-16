@@ -17,8 +17,15 @@
 }) %>
 
 <div class="hero" style="padding:20px 20px 16px">
-  <div class="hero-sub" style="font-size:13px">
-    週<%= wd %> · <%= day.date.replace(/-/g,'/') %> · <span class="city-tag" style="vertical-align:middle"><%= day.city %></span>
+  <div class="hero-sub" style="font-size:13px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px">
+    <span>週<%= wd %> · <%= day.date.replace(/-/g,'/') %> · <span class="city-tag" style="vertical-align:middle"><%= day.city %></span></span>
+    <a href="/day/<%= day.date %>/map" class="map-route-link">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/>
+        <line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/>
+      </svg>
+      路線地圖
+    </a>
   </div>
   <% if (day.notes) { %>
     <div style="font-size:14px;color:var(--t3);margin-top:8px;line-height:1.5"><%= day.notes %></div>

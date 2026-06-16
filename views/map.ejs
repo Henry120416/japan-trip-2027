@@ -1,0 +1,158 @@
+<%
+const catColor = { transport:'#3B82F6', food:'#F97316', attraction:'#10B981', hotel:'#8B5CF6', other:'#6B7280' };
+const catIco   = { transport:'✈', food:'🍽', attraction:'🏛', hotel:'🏨', other:'📌' };
+const mapped   = activities.filter(a => a.lat && a.lng);
+%>
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#ffffff">
+  <title><%= day.title %> · 路線地圖</title>
+  <link rel="stylesheet" href="/css/style.css?v=20260616">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <style>
+    html, body { height: 100%; margin: 0; }
+    .map-wrap {
+      position: fixed;
+      top: 54px;
+      left: 0; right: 0;
+      bottom: 230px;
+    }
+    #mapEl { width: 100%; height: 100%; }
+    .map-sheet {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: 230px;
+      background: var(--bg);
+      border-top: 1.5px solid var(--border-l);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      z-index: 500;
+    }
+    .ms-head {
+      padding: 10px 16px 4px;
+      font-size: 11px; font-weight: 600; color: var(--t4);
+      letter-spacing: 0.5px; text-transform: uppercase;
+    }
+    .ms-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 16px; cursor: pointer;
+    }
+    .ms-item:active { background: var(--fill); }
+    .ms-badge {
+      width: 24px; height: 24px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; color: #fff; flex-shrink: 0;
+    }
+    .ms-no-coords { opacity: 0.35; pointer-events: none; }
+    .ms-name { font-size: 13px; color: var(--t1); font-weight: 500; line-height: 1.3; }
+    .ms-meta { font-size: 11px; color: var(--t4); margin-top: 1px; }
+    .mp-wrap { width:28px; height:28px; border-radius:50% 50% 50% 0; transform:rotate(-45deg);
+               display:flex; align-items:center; justify-content:center;
+               box-shadow:0 2px 5px rgba(0,0,0,.3); }
+    .mp-wrap span { transform:rotate(45deg); color:#fff; font-size:12px; font-weight:700; }
+    .map-empty { padding:40px 20px; text-align:center; color:var(--t4); font-size:14px; }
+  </style>
+</head>
+<body>
+<div class="app">
+  <nav class="nav">
+    <a href="/day/<%= day.date %>" class="nav-back">
+      <svg width="9" height="16" viewBox="0 0 9 16" fill="none">
+        <path d="M8 1L1 8L8 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      返回
+    </a>
+    <div class="nav-title"><%= day.title %> · 路線</div>
+    <div class="nav-slot"></div>
+  </nav>
+
+  <div class="map-wrap">
+    <div id="mapEl"></div>
+  </div>
+
+  <div class="map-sheet">
+    <div class="ms-head"><%= day.date.replace(/-/g,'/') %> · <%= mapped.length %> 個地點</div>
+    <% let idx = 0; %>
+    <% activities.forEach(a => { %>
+      <% const hasCoords = !!(a.lat && a.lng); %>
+      <% if (hasCoords) idx++; %>
+      <div class="ms-item <%= hasCoords ? '' : 'ms-no-coords' %>"
+           id="ms-<%= a.id %>"
+           <% if (hasCoords) { %>onclick="panTo(<%= a.lat %>,<%= a.lng %>,<%= idx %>)"<% } %>>
+        <div class="ms-badge" style="background:<%= catColor[a.category] || catColor.other %>">
+          <%= hasCoords ? idx : '·' %>
+        </div>
+        <div>
+          <div class="ms-name"><%= catIco[a.category] || '📌' %> <%= a.title %></div>
+          <div class="ms-meta">
+            <% if (a.time) { %><%= a.time %><% } %>
+            <% if (a.time && a.location) { %> · <% } %>
+            <% if (a.location) { %><%= a.location.replace(/[（(][^）)]*[）)]/g,'').trim() %><% } %>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+    <% if (mapped.length === 0) { %>
+      <div class="map-empty">正在載入地點座標，請稍後重新整理</div>
+    <% } %>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const acts = <%- JSON.stringify(mapped) %>;
+const catColor = { transport:'#3B82F6', food:'#F97316', attraction:'#10B981', hotel:'#8B5CF6', other:'#6B7280' };
+
+const map = L.map('mapEl', { zoomControl: false });
+L.control.zoom({ position: 'topright' }).addTo(map);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19,
+  attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>'
+}).addTo(map);
+
+const latlngs = [];
+const markers = {};
+
+acts.forEach((a, i) => {
+  const color = catColor[a.category] || catColor.other;
+  const icon = L.divIcon({
+    html: `<div class="mp-wrap" style="background:${color}"><span>${i+1}</span></div>`,
+    className: '',
+    iconSize: [28, 28],
+    iconAnchor: [14, 28],
+    popupAnchor: [0, -28]
+  });
+  const loc = (a.location || '').replace(/[（(][^）)]*[）)]/g,'').trim();
+  const m = L.marker([a.lat, a.lng], { icon }).addTo(map)
+    .bindPopup([
+      `<b>${i+1}. ${a.title}</b>`,
+      a.time ? `⏰ ${a.time}` : '',
+      loc ? `📍 ${loc}` : ''
+    ].filter(Boolean).join('<br>'), { maxWidth: 220 });
+
+  m.on('click', () => {
+    const el = document.getElementById('ms-' + a.id);
+    if (el) { el.scrollIntoView({ behavior:'smooth', block:'center' }); }
+  });
+  markers[i+1] = m;
+  latlngs.push([a.lat, a.lng]);
+});
+
+if (latlngs.length > 1) {
+  L.polyline(latlngs, { color:'#6366F1', weight:3, opacity:0.8, dashArray:'8,5' }).addTo(map);
+}
+if (latlngs.length > 0) {
+  map.fitBounds(latlngs, { padding: [40, 40] });
+}
+
+function panTo(lat, lng, idx) {
+  map.setView([lat, lng], 16, { animate: true });
+  if (markers[idx]) markers[idx].openPopup();
+}
+</script>
+</body>
+</html>
