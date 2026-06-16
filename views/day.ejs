@@ -79,14 +79,15 @@
               <%= catMap[a.category] ? catMap[a.category].ico : '📌' %>
               <%= catMap[a.category] ? catMap[a.category].lbl : a.category %>
             </span>
-            <% if (a.map_url) { %>
-              <a href="<%= a.map_url %>" target="_blank" class="act-map">
+            <% const mapLink = a.map_url || (a.location ? 'https://maps.google.com/?q=' + encodeURIComponent(a.location + '，日本') : ''); %>
+            <% if (mapLink) { %>
+              <a href="<%= mapLink %>" target="_blank" rel="noopener" class="act-map">
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
                   <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
                   <polyline points="15 3 21 3 21 9"/>
                   <line x1="10" y1="14" x2="21" y2="3"/>
                 </svg>
-                地圖
+                導航
               </a>
             <% } %>
           </div>
