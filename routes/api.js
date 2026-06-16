@@ -57,7 +57,7 @@ router.delete('/activities/:id', requireToken, async (req, res) => {
 
 router.patch('/activities/:id', requireToken, async (req, res) => {
   try {
-    const allowed = ['image_url', 'description', 'location', 'map_url', 'time', 'title', 'category'];
+    const allowed = ['image_url', 'description', 'location', 'map_url', 'time', 'title', 'category', 'lat', 'lng'];
     const fields = Object.keys(req.body).filter(k => allowed.includes(k));
     if (!fields.length) return res.json({ success: true });
     const setClauses = fields.map(f => `${f}=?`).join(', ');
