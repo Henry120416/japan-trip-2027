@@ -14,11 +14,12 @@ html { scroll-behavior: smooth; }
   --border:   #d2d2d7;
   --border-l: #e8e8ed;
   --fill:     #f2f2f7;
-  --r-sm:     8px;
-  --r-md:     12px;
-  --r-lg:     16px;
-  --shadow-s: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
-  --shadow-m: 0 4px 16px rgba(0,0,0,.07), 0 1px 4px rgba(0,0,0,.04);
+  --r-sm:     10px;
+  --r-md:     14px;
+  --r-lg:     20px;
+  --r-xl:     28px;
+  --shadow-s: 0 2px 8px rgba(0,0,0,.07), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-m: 0 6px 24px rgba(0,0,0,.09), 0 1px 4px rgba(0,0,0,.04);
 }
 
 body {
@@ -191,8 +192,8 @@ body {
 }
 .act-desc { font-size: 13px; color: var(--t2); margin-top: 6px; line-height: 1.6; white-space: pre-line; word-break: break-word; }
 .act-img {
-  width: 100%; height: 150px; object-fit: cover;
-  border-radius: 8px; margin: 8px 0 4px; display: block;
+  width: 100%; height: 160px; object-fit: cover;
+  border-radius: 12px; margin: 10px 0 6px; display: block;
 }
 .act-map {
   display: inline-flex; align-items: center; gap: 3px;
@@ -428,6 +429,47 @@ body {
   transition: all .15s; flex-shrink: 0;
 }
 .check-del:hover { background: var(--fill); color: var(--t2); }
+
+/* ─── Day Card (index) ──────────────────────────────── */
+.day-card {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--card); border-radius: var(--r-lg);
+  padding: 16px 14px 16px 16px; margin-bottom: 10px;
+  box-shadow: var(--shadow-s);
+  text-decoration: none; color: var(--t1);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.day-card:active { transform: scale(.98); box-shadow: none; }
+
+.day-num {
+  width: 46px; height: 46px; flex-shrink: 0;
+  background: var(--t1); color: var(--white);
+  border-radius: var(--r-md);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.day-num-n { font-size: 18px; font-weight: 700; line-height: 1; }
+.day-num-l { font-size: 9px; font-weight: 600; text-transform: uppercase; opacity: .6; }
+
+.day-card-body { flex: 1; min-width: 0; }
+.day-card-title { font-size: 16px; font-weight: 600; color: var(--t1); margin-bottom: 3px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.day-card-sub { font-size: 13px; color: var(--t3); }
+
+/* ─── Info Page Tabs ─────────────────────────────────── */
+.seg-ctrl {
+  display: flex; gap: 0;
+  background: var(--fill); border-radius: var(--r-md);
+  padding: 3px; margin: 16px 16px 4px;
+}
+.seg-btn {
+  flex: 1; padding: 8px 0;
+  background: none; border: none; border-radius: 10px;
+  font-size: 14px; font-weight: 500; color: var(--t3);
+  cursor: pointer; font-family: inherit; transition: all .2s ease;
+}
+.seg-btn.active {
+  background: var(--white); color: var(--t1); font-weight: 600;
+  box-shadow: 0 1px 4px rgba(0,0,0,.10);
+}
 
 /* ─── Scrollbar ─────────────────────────────────────── */
 ::-webkit-scrollbar { width: 0; height: 0; }

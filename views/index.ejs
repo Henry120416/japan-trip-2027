@@ -8,39 +8,37 @@
 
 <div class="section">
   <div class="section-label">六日行程</div>
-  <div class="card-list">
-    <% const weekMap = ['日','一','二','三','四','五','六']; %>
-    <% days.forEach((day, i) => { %>
-      <%
-        const d = new Date(day.date + 'T00:00:00');
-        const wd = weekMap[d.getDay()];
-        const md = `${d.getMonth()+1}/${String(d.getDate()).padStart(2,'0')}`;
-      %>
-      <a href="/day/<%= day.date %>" class="list-row">
-        <div class="day-badge">
-          <span class="day-badge-n"><%= i+1 %></span>
-          <span class="day-badge-l">Day</span>
+  <% const weekMap = ['日','一','二','三','四','五','六']; %>
+  <% days.forEach((day, i) => { %>
+    <%
+      const d = new Date(day.date + 'T00:00:00');
+      const wd = weekMap[d.getDay()];
+      const md = `${d.getMonth()+1}/${String(d.getDate()).padStart(2,'0')}`;
+    %>
+    <a href="/day/<%= day.date %>" class="day-card">
+      <div class="day-num">
+        <span class="day-num-n"><%= i+1 %></span>
+        <span class="day-num-l">Day</span>
+      </div>
+      <div class="day-card-body">
+        <div class="day-card-title">
+          <%= day.title %>
+          <span class="city-tag"><%= day.city %></span>
         </div>
-        <div class="row-main">
-          <div class="row-title">
-            <%= day.title %>
-            <span class="city-tag"><%= day.city %></span>
-          </div>
-          <div class="row-sub">
-            週<%= wd %> &nbsp;<%= md %>
-            <% if (day.activity_count > 0) { %>
-              &nbsp;·&nbsp; <%= day.activity_count %> 個行程
-            <% } else { %>
-              &nbsp;·&nbsp; 尚無行程
-            <% } %>
-          </div>
+        <div class="day-card-sub">
+          週<%= wd %> &nbsp;<%= md %>
+          <% if (day.activity_count > 0) { %>
+            &nbsp;·&nbsp; <%= day.activity_count %> 個行程
+          <% } else { %>
+            &nbsp;·&nbsp; 尚無行程
+          <% } %>
         </div>
-        <svg class="chevron" width="8" height="14" viewBox="0 0 8 14" fill="none">
-          <path d="M1 1l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </a>
-    <% }) %>
-  </div>
+      </div>
+      <svg class="chevron" width="8" height="14" viewBox="0 0 8 14" fill="none">
+        <path d="M1 1l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+  <% }) %>
 </div>
 
 <%- include('partials/footer', { activePage: 'home' }) %>

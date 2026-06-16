@@ -1,19 +1,13 @@
 <%- include('partials/header', { pageTitle: '旅遊資訊', navTitle: '旅遊資訊', navBack: null }) %>
 
-<!-- 打包進度 -->
-<div class="hero" style="padding:20px 20px 16px">
-  <div class="hero-label">Packing Progress</div>
-  <div style="display:flex;align-items:center;gap:12px;margin-top:4px">
-    <div style="flex:1;height:6px;background:var(--border-l);border-radius:3px;overflow:hidden">
-      <div id="progressBar" style="height:100%;background:var(--t1);border-radius:3px;transition:width .4s ease;width:<%= total > 0 ? Math.round(done/total*100) : 0 %>%"></div>
-    </div>
-    <div style="font-size:13px;color:var(--t3);white-space:nowrap">
-      <span id="progressText"><%= done %></span> / <%= total %>
-    </div>
-  </div>
+<!-- 分頁切換 -->
+<div class="seg-ctrl">
+  <button class="seg-btn active" id="seg-info" onclick="switchSeg('info')">旅遊資訊</button>
+  <button class="seg-btn" id="seg-check" onclick="switchSeg('check')">打包清單</button>
 </div>
 
-<!-- 旅遊資訊各區塊 -->
+<!-- ── 面板 A：旅遊資訊 ── -->
+<div id="panel-info">
 <%
 const catIcon = { '班機':'✈', '住宿':'🏨', '緊急':'🆘', '實用':'💡', '交通':'🚇', '上網':'📶', '租車':'🚗' };
 %>
@@ -38,13 +32,25 @@ const catIcon = { '班機':'✈', '住宿':'🏨', '緊急':'🆘', '實用':'�
   </div>
 </div>
 <% }) %>
+</div>
 
-<!-- 打包清單 -->
+<!-- ── 面板 B：打包清單 ── -->
+<div id="panel-check" style="display:none">
+<div class="hero" style="padding:14px 20px 12px;border-bottom:1px solid var(--border-l)">
+  <div style="display:flex;align-items:center;gap:12px">
+    <div style="flex:1;height:6px;background:var(--border-l);border-radius:3px;overflow:hidden">
+      <div id="progressBar" style="height:100%;background:var(--t1);border-radius:3px;transition:width .4s ease;width:<%= total > 0 ? Math.round(done/total*100) : 0 %>%"></div>
+    </div>
+    <div style="font-size:13px;color:var(--t3);white-space:nowrap;font-weight:500">
+      <span id="progressText"><%= done %></span> / <%= total %>
+    </div>
+  </div>
+</div>
+
+<% Object.entries(checks).forEach(([cat, items]) => { %>
 <div class="section">
-  <div class="section-label">🧳 &nbsp;打包清單</div>
-  <% Object.entries(checks).forEach(([cat, items]) => { %>
-  <div class="check-group-label"><%= cat %></div>
-  <div class="card-list" style="margin-bottom:10px">
+  <div class="section-label">🧳 &nbsp;<%= cat %></div>
+  <div class="card-list">
     <% items.forEach(item => { %>
     <label class="check-row" id="check-<%= item.id %>">
       <input type="checkbox" class="check-input" <%= item.checked ? 'checked' : '' %>
@@ -66,14 +72,17 @@ const catIcon = { '班機':'✈', '住宿':'🏨', '緊急':'🆘', '實用':'�
     </label>
     <% }) %>
   </div>
-  <% }) %>
+</div>
+<% }) %>
 
-  <button class="add-btn" onclick="openAddCheck()" style="margin-top:4px">
+<div style="padding:8px 16px 0">
+  <button class="add-btn" onclick="openAddCheck()">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
       <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
     </svg>
     新增項目
   </button>
+</div>
 </div>
 
 <!-- ── Info Edit Modal ─────────────────────────── -->
@@ -113,6 +122,13 @@ const catIcon = { '班機':'✈', '住宿':'🏨', '緊急':'🆘', '實用':'�
 </div>
 
 <script>
+function switchSeg(tab) {
+  document.getElementById('panel-info').style.display  = tab === 'info'  ? '' : 'none';
+  document.getElementById('panel-check').style.display = tab === 'check' ? '' : 'none';
+  document.getElementById('seg-info').classList.toggle('active',  tab === 'info');
+  document.getElementById('seg-check').classList.toggle('active', tab === 'check');
+}
+
 const CHECKLIST_TOTAL = <%= total %>;
 let checkDone = <%= done %>;
 
