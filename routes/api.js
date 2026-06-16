@@ -55,6 +55,14 @@ router.delete('/activities/:id', requireToken, async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
+router.patch('/activities/:id', requireToken, async (req, res) => {
+  try {
+    const { image_url } = req.body;
+    await run('UPDATE activities SET image_url=? WHERE id=?', [image_url || '', req.params.id]);
+    res.json({ success: true });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
 // Day title edit
 router.put('/days/:id', requireToken, async (req, res) => {
   try {
