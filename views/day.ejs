@@ -103,6 +103,27 @@
               </a>
             <% } %>
           </div>
+          <% if (a.category === 'transport') { %>
+          <div class="transit-links">
+            <% const dest = a.lat && a.lng ? a.lat + ',' + a.lng : encodeURIComponent((a.location||a.title)+'，日本'); %>
+            <% const gmTransit = a.lat && a.lng
+              ? 'https://www.google.com/maps/dir/?api=1&destination=' + a.lat + ',' + a.lng + '&travelmode=transit'
+              : 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent((a.location||a.title)+'，日本') + '&travelmode=transit'; %>
+            <% const yahooQ = encodeURIComponent(a.location || a.title); %>
+            <a href="<%= gmTransit %>" target="_blank" rel="noopener" class="transit-btn transit-btn-map">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              乘車路線
+            </a>
+            <a href="https://transit.yahoo.co.jp/search/result?to=<%= yahooQ %>&fromgid=&togid=&flatlon=&tlatlon=&via=&viaGid=&timeType=departure&useJR=1&usePrivate=1&useSubway=1&useBus=1&useFerry=0&useCar=0&fromSuggest=0&toSuggest=0" target="_blank" rel="noopener" class="transit-btn transit-btn-time">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              時刻表
+            </a>
+            <a href="https://www.navitime.co.jp/transfer/searchlist?orvStationName=<%= yahooQ %>" target="_blank" rel="noopener" class="transit-btn transit-btn-nav">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+              NAVITIME
+            </a>
+          </div>
+          <% } %>
         </div>
       </div>
     <% }) %>
