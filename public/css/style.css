@@ -510,6 +510,57 @@ body {
   box-shadow: 0 1px 4px rgba(0,0,0,.10);
 }
 
+/* ─── Taxi Guide ────────────────────────────────────── */
+.taxi-apps-row { display: flex; flex-direction: column; gap: 10px; padding: 0 16px; margin-bottom: 12px; }
+.taxi-app {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--card); border-radius: var(--r-md);
+  padding: 14px 16px; text-decoration: none; color: var(--t1);
+  box-shadow: var(--shadow-s); border: 1px solid var(--border-l);
+}
+.taxi-app-logo {
+  width: 48px; height: 48px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 900; letter-spacing: -.5px; flex-shrink: 0;
+}
+.taxi-app-info { flex: 1; }
+.taxi-app-name { font-size: 15px; font-weight: 600; color: var(--t1); }
+.taxi-app-sub  { font-size: 12px; color: var(--t3); margin-top: 2px; }
+.taxi-app svg  { color: var(--t4); flex-shrink: 0; }
+
+.info-block {
+  background: var(--card); border-radius: var(--r-md);
+  padding: 14px 16px; box-shadow: var(--shadow-s); border: 1px solid var(--border-l);
+}
+.info-block-title {
+  font-size: 11px; font-weight: 700; color: var(--t3);
+  text-transform: uppercase; letter-spacing: .6px; margin-bottom: 10px;
+}
+.taxi-fare-row {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 14px; padding: 7px 0; border-bottom: 1px solid var(--border-l);
+}
+.taxi-fare-row:last-child { border-bottom: none; }
+.taxi-fare-row span:first-child { color: var(--t2); }
+.taxi-fare-row span:last-child  { font-weight: 600; color: var(--t1); }
+.taxi-warn-row span { color: #D97706 !important; }
+.taxi-warn { color: #D97706 !important; }
+
+.taxi-tip {
+  font-size: 13.5px; color: var(--t2); line-height: 1.55;
+  padding: 5px 0; border-bottom: 1px solid var(--border-l);
+}
+.taxi-tip:last-child { border-bottom: none; padding-bottom: 0; }
+.taxi-tip strong { color: var(--t1); }
+
+.taxi-phrase {
+  display: flex; flex-direction: column; gap: 2px;
+  padding: 8px 0; border-bottom: 1px solid var(--border-l);
+}
+.taxi-phrase:last-child { border-bottom: none; padding-bottom: 0; }
+.taxi-jp { font-size: 15px; color: var(--t1); font-weight: 500; }
+.taxi-tw { font-size: 12px; color: var(--t3); }
+
 /* ─── Scrollbar ─────────────────────────────────────── */
 ::-webkit-scrollbar { width: 0; height: 0; }
 

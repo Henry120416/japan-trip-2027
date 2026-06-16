@@ -8,6 +8,95 @@
 
 <!-- ── 面板 A：旅遊資訊 ── -->
 <div id="panel-info">
+
+<!-- 🚕 計程車指南（固定內容） -->
+<div class="section">
+  <div class="section-label">🚕 &nbsp;計程車指南</div>
+
+  <!-- 叫車 App -->
+  <div class="taxi-apps-row">
+    <a href="https://go.goinc.jp/" target="_blank" rel="noopener" class="taxi-app">
+      <div class="taxi-app-logo" style="background:#1A1A1A;color:#E8FF00;font-size:15px">GO</div>
+      <div class="taxi-app-info">
+        <div class="taxi-app-name">GO タクシー</div>
+        <div class="taxi-app-sub">全日本最大叫車 App・免預付款</div>
+      </div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+    </a>
+    <a href="https://didimobility.co.jp/" target="_blank" rel="noopener" class="taxi-app">
+      <div class="taxi-app-logo" style="background:#FF6700;color:#fff;font-size:12px">DiDi</div>
+      <div class="taxi-app-info">
+        <div class="taxi-app-name">DiDi 打車</div>
+        <div class="taxi-app-sub">大阪・京都均可使用</div>
+      </div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+    </a>
+    <a href="https://www.uber.com/jp/ja/ride/" target="_blank" rel="noopener" class="taxi-app">
+      <div class="taxi-app-logo" style="background:#000;color:#fff;font-size:12px">Uber</div>
+      <div class="taxi-app-info">
+        <div class="taxi-app-name">Uber</div>
+        <div class="taxi-app-sub">日本為叫計程車服務（非共乘）</div>
+      </div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+    </a>
+  </div>
+
+  <!-- 車資 + 路線估算 + 注意事項 + 日語 -->
+  <div class="card-list">
+    <div class="info-block">
+      <div class="info-block-title">計費參考</div>
+      <div class="taxi-fare-row"><span>大阪 初乘</span><span>¥680 / 約 1km</span></div>
+      <div class="taxi-fare-row"><span>京都 初乘</span><span>¥670 / 約 1km</span></div>
+      <div class="taxi-fare-row"><span>追加跳表</span><span>約 ¥80 / 每 233m</span></div>
+      <div class="taxi-fare-row taxi-warn-row"><span>深夜加成 ⚠</span><span class="taxi-warn">22:00–05:00  +20%</span></div>
+    </div>
+
+    <div class="info-block">
+      <div class="info-block-title">路線車資估算</div>
+      <div class="taxi-fare-row"><span>難波 → 大阪城</span><span>約 ¥1,200</span></div>
+      <div class="taxi-fare-row"><span>難波 → 心齋橋</span><span>約 ¥700</span></div>
+      <div class="taxi-fare-row"><span>難波 → USJ</span><span>約 ¥2,500</span></div>
+      <div class="taxi-fare-row"><span>京都駅 → 清水寺</span><span>約 ¥1,000</span></div>
+      <div class="taxi-fare-row"><span>京都駅 → 金閣寺</span><span>約 ¥1,500</span></div>
+      <div class="taxi-fare-row"><span>京都駅 → 嵐山</span><span>約 ¥2,800</span></div>
+      <div class="taxi-fare-row taxi-warn-row"><span>KIX → 難波 ⚠ 建議搭電車</span><span class="taxi-warn">¥8,000–10,000</span></div>
+    </div>
+
+    <div class="info-block">
+      <div class="info-block-title">乘車小知識</div>
+      <div class="taxi-tip">🚪 後座<strong>左側車門自動開關</strong>，切勿用手拉</div>
+      <div class="taxi-tip">💴 不需小費，現金 / IC 卡 / 信用卡均可（各車略不同）</div>
+      <div class="taxi-tip">🙋 路邊招手或在車站「タクシー乗り場」排隊</div>
+      <div class="taxi-tip">📱 直接把 Google Maps 目的地畫面給司機看即可溝通</div>
+      <div class="taxi-tip">🧾 可索取收據（領収書），報帳或記帳用</div>
+    </div>
+
+    <div class="info-block">
+      <div class="info-block-title">常用日語</div>
+      <div class="taxi-phrase">
+        <span class="taxi-jp">ここまでお願いします</span>
+        <span class="taxi-tw">請帶我到這裡（搭配手機畫面指給司機看）</span>
+      </div>
+      <div class="taxi-phrase">
+        <span class="taxi-jp">ここで降ろしてください</span>
+        <span class="taxi-tw">請在這裡讓我下車</span>
+      </div>
+      <div class="taxi-phrase">
+        <span class="taxi-jp">領収書をください</span>
+        <span class="taxi-tw">請給我收據</span>
+      </div>
+      <div class="taxi-phrase">
+        <span class="taxi-jp">急いでいます</span>
+        <span class="taxi-tw">我趕時間</span>
+      </div>
+      <div class="taxi-phrase">
+        <span class="taxi-jp">クレジットカードは使えますか？</span>
+        <span class="taxi-tw">可以刷信用卡嗎？</span>
+      </div>
+    </div>
+  </div>
+</div>
+
 <%
 const catIcon = { '班機':'✈', '住宿':'🏨', '緊急':'🆘', '實用':'💡', '交通':'🚇', '上網':'📶', '租車':'🚗' };
 %>
