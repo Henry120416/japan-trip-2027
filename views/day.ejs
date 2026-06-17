@@ -91,6 +91,10 @@
           <% } %>
           <% if (a.image_url) { %>
             <img src="<%= a.image_url %>" alt="<%= a.title %>" class="act-img" loading="lazy" onerror="this.style.display='none'">
+          <% } else if (['attraction','food'].includes(a.category) && a.location) {
+               const wikiQ = a.location.replace(/（[^）]*）/g,'').replace(/\([^\)]*\)/g,'').split('・')[0].split('→')[0].trim();
+          %>
+            <div class="act-wiki-img" data-wiki="<%= wikiQ %>"></div>
           <% } %>
           <% if (a.description) { %>
             <div class="act-desc"><%= a.description %></div>
@@ -167,4 +171,40 @@
   </button>
 </div>
 
+<script>
+(async () => {
+  const els = [...document.querySelectorAll('.act-wiki-img')];
+  if (!els.length) return;
+  const terms = [...new Set(els.map(e => e.dataset.wiki).filter(Boolean))];
+  try {
+    const r = await fetch(
+      'https://ja.wikipedia.org/w/api.php?action=query&prop=pageimages&format=json&pithumbsize=800&origin=*&redirects=1&titles='
+      + terms.map(encodeURIComponent).join('|')
+    );
+    const d = await r.json();
+    const imgMap = {};
+    for (const p of Object.values(d.query?.pages || {})) {
+      if (p.thumbnail?.source) imgMap[p.title] = p.thumbnail.source;
+    }
+    // also map redirects
+    for (const rd of (d.query?.redirects || [])) {
+      if (imgMap[rd.to]) imgMap[rd.from] = imgMap[rd.to];
+    }
+    els.forEach(el => {
+      const term = el.dataset.wiki;
+      const url = imgMap[term] || Object.entries(imgMap).find(([k]) =>
+        k.includes(term.slice(0,4)) || term.includes(k.slice(0,4))
+      )?.[1];
+      if (url) {
+        const img = document.createElement('img');
+        img.src = url; img.className = 'act-img'; img.loading = 'lazy';
+        img.onerror = () => img.remove();
+        el.replaceWith(img);
+      } else {
+        el.remove();
+      }
+    });
+  } catch { els.forEach(e => e.remove()); }
+})();
+</script>
 <%- include('partials/footer', { activePage: 'home' }) %>

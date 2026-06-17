@@ -11,7 +11,8 @@ function getPlan(req) {
 router.get('/set-plan/:id', (req, res) => {
   const plan = parseInt(req.params.id) || 1;
   res.cookie('trip_plan', plan, { maxAge: 86400 * 730, path: '/' });
-  res.redirect('/');
+  const back = req.query.redirect || '/';
+  res.redirect(back);
 });
 
 async function geocode(loc) {
@@ -91,15 +92,23 @@ router.get('/overview-map', async (req, res) => {
 router.get('/expenses', async (req, res) => {
   try {
     const plan = getPlan(req);
+    const plans = await all('SELECT * FROM plans ORDER BY id');
     const days = await all('SELECT * FROM days WHERE plan_id = ? ORDER BY date', [plan]);
     const expenses = await all(`
       SELECT e.*, d.date as day_date, d.city as day_city, d.title as day_title
-      FROM expenses e LEFT JOIN days d ON d.id = e.day_id
+      FROM expenses e
+      LEFT JOIN days d ON d.id = e.day_id
+      WHERE d.plan_id = ? OR e.day_id IS NULL
       ORDER BY d.date, e.created_at
-    `);
-    const stats = await get('SELECT SUM(amount_jpy) as total_jpy, SUM(amount_twd) as total_twd FROM expenses');
+    `, [plan]);
+    const stats = await get(`
+      SELECT SUM(e.amount_jpy) as total_jpy, SUM(e.amount_twd) as total_twd
+      FROM expenses e
+      LEFT JOIN days d ON d.id = e.day_id
+      WHERE d.plan_id = ? OR e.day_id IS NULL
+    `, [plan]);
     res.render('expenses', {
-      days,
+      days, plans, currentPlan: plan,
       expenses,
       total_jpy: stats.total_jpy || 0,
       total_twd: stats.total_twd || 0,
