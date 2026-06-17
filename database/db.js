@@ -362,8 +362,46 @@ if (USE_PG) {
       }
     }
 
-    // ── 清除舊的錯誤 Wikimedia thumbnail URL（hash 路徑不正確）─────────
-    await pool.query(`UPDATE activities SET image_url='' WHERE image_url LIKE '%upload.wikimedia.org/wikipedia/commons/thumb%'`);
+    // ── 方案一活動圖片（Wikipedia/Wikimedia Commons 核實 URL，幂等）────
+    const P1_IMAGES = [
+      { kw:'抵達京都車站',         img:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Kyoto-STA_Central.jpg/960px-Kyoto-STA_Central.jpg' },
+      { kw:'鴨川夕陽散策',         img:'https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Kyoto_Sanjo_hashi.JPG/960px-Kyoto_Sanjo_hashi.JPG' },
+      { kw:'祇園白川燈籠夜色',     img:'https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/150124_Gion_Kyoto_Japan01s3.jpg/960px-150124_Gion_Kyoto_Japan01s3.jpg' },
+      { kw:'先斗町晚餐',           img:'https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/20111023_Gion1.jpg/960px-20111023_Gion1.jpg' },
+      { kw:'前往宇治',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/8A04%E7%B7%A8%E6%88%90.jpg/960px-8A04%E7%B7%A8%E6%88%90.jpg' },
+      { kw:'平等院鳳凰堂',         img:'https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Phoenix_Hall_in_Byodo-in_Temple%2C_Ujirenge_Uji_city_2026.jpg/960px-Phoenix_Hall_in_Byodo-in_Temple%2C_Ujirenge_Uji_city_2026.jpg' },
+      { kw:'宇治川・橘洲散步',     img:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Phoenix_Hall.jpg/960px-Phoenix_Hall.jpg' },
+      { kw:'中村藤吉本店',         img:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Tea_Minami-yamashiro%2C_Uji_Kyoto%2C_Japan.jpg/960px-Tea_Minami-yamashiro%2C_Uji_Kyoto%2C_Japan.jpg' },
+      { kw:'東寺（五重塔）',       img:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Toji_2015.JPG/960px-Toji_2015.JPG' },
+      { kw:'京都車站・伊勢丹',     img:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Kyoto-STA_Central.jpg/960px-Kyoto-STA_Central.jpg' },
+      { kw:'伏見稻荷大社',         img:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Fushimiinari-taisha%2C_gehaiden-1.jpg/960px-Fushimiinari-taisha%2C_gehaiden-1.jpg' },
+      { kw:'清水寺舞台',           img:'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Kiyomizu-dera%2C_Kyoto%2C_November_2016_-02.jpg/960px-Kiyomizu-dera%2C_Kyoto%2C_November_2016_-02.jpg' },
+      { kw:'二年坂・三年坂',       img:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Stone_stairway_Kiyomizu-dera.JPG/960px-Stone_stairway_Kiyomizu-dera.JPG' },
+      { kw:'石板路午餐',           img:'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/170923_Kodaiji_Kyoto_Japan09n.jpg/960px-170923_Kodaiji_Kyoto_Japan09n.jpg' },
+      { kw:'八坂神社・圓山公園',   img:'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/JP-Kyoto-yasaka.JPG/960px-JP-Kyoto-yasaka.JPG' },
+      { kw:'京都和牛燒肉晚餐',     img:'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/%E9%AB%98%E7%80%AC%E5%B7%9D2583.JPG/960px-%E9%AB%98%E7%80%AC%E5%B7%9D2583.JPG' },
+      { kw:'嵐山竹林小徑',         img:'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Arashiyama_%2887417598%29.jpg/960px-Arashiyama_%2887417598%29.jpg' },
+      { kw:'渡月橋・嵐山河岸風景', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/Togetsukyo_in_Kyoto_Arashiyama.jpg/960px-Togetsukyo_in_Kyoto_Arashiyama.jpg' },
+      { kw:'仁和寺・御室櫻',       img:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Ninnaji_Kyoto07n4500.jpg/960px-Ninnaji_Kyoto07n4500.jpg' },
+      { kw:'金閣寺（鹿苑寺）',     img:'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Kinkaku-ji_2015.JPG/960px-Kinkaku-ji_2015.JPG' },
+      { kw:'行李宅配・移往大阪',   img:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/JR_Osaka_Station_20260305.jpg/960px-JR_Osaka_Station_20260305.jpg' },
+      { kw:'心齋橋・道頓堀夜遊',   img:'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Dotonburi_River_Namba_Japan_by_Don_Ramey_Logan.jpg/960px-Dotonburi_River_Namba_Japan_by_Don_Ramey_Logan.jpg' },
+      { kw:'前往神戶・阪神電車',   img:'https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/Headquarters_of_Hanshin_Electric_Railway_Co.%2C_Ltd.JPG/960px-Headquarters_of_Hanshin_Electric_Railway_Co.%2C_Ltd.JPG' },
+      { kw:'北野異人館街',         img:'https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Kobe_City_Thomas_House.jpg/960px-Kobe_City_Thomas_House.jpg' },
+      { kw:'生田神社',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Ikuta-jinja%2C_haiden-1.jpg/960px-Ikuta-jinja%2C_haiden-1.jpg' },
+      { kw:'頂級神戶牛鐵板燒',     img:'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/4_Kobe_Beef%2C_Kobe_Japan.jpg/960px-4_Kobe_Beef%2C_Kobe_Japan.jpg' },
+      { kw:'神戶港灣・美利堅公園', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Kobe_Meriken_Park01bs3200.jpg/960px-Kobe_Meriken_Park01bs3200.jpg' },
+      { kw:'摩耶山掬星台',         img:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Amsterdam_at_Kobe10s3872.jpg/960px-Amsterdam_at_Kobe10s3872.jpg' },
+      { kw:'黑門市場・海鮮早餐',   img:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/%E9%BB%92%E9%96%80%E5%B8%82%E5%A0%B4_2024%281%29.jpg/960px-%E9%BB%92%E9%96%80%E5%B8%82%E5%A0%B4_2024%281%29.jpg' },
+      { kw:'臨空城 Outlet',        img:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Rinku_premium_outlets02s3200.jpg/960px-Rinku_premium_outlets02s3200.jpg' },
+      { kw:'關西國際機場・返程',   img:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Kix_aerial_photo.jpg/960px-Kix_aerial_photo.jpg' },
+    ];
+    for (const e of P1_IMAGES) {
+      await pool.query(
+        `UPDATE activities SET image_url=$1 WHERE title LIKE $2 AND day_id IN (SELECT id FROM days WHERE plan_id=1)`,
+        [e.img, `%${e.kw}%`]
+      );
+    }
 
     // ── Mapcode 自動填充（幂等，只補空白欄位）──────────────────────────
     const ENRICH = [
