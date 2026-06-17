@@ -11,6 +11,14 @@
       </svg>
       <span class="tab-lbl">行程</span>
     </a>
+    <a href="/overview-map" class="tab <%= typeof activePage !== 'undefined' && activePage === 'map' ? 'active' : '' %>">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/>
+        <line x1="9" y1="3" x2="9" y2="18"/>
+        <line x1="15" y1="6" x2="15" y2="21"/>
+      </svg>
+      <span class="tab-lbl">動線</span>
+    </a>
     <a href="/expenses" class="tab <%= typeof activePage !== 'undefined' && activePage === 'expenses' ? 'active' : '' %>">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
         <rect x="2" y="6" width="20" height="14" rx="3"/>
