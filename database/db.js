@@ -300,27 +300,45 @@ if (USE_PG) {
       await insAct(1, P1_ACTS);
       await insAct(2, P2_ACTS);
     } else {
-      // ── 已有資料：確保方案一（京都）存在 ────────────────
-      const p1count = await pool.query('SELECT COUNT(*) as c FROM days WHERE plan_id=1');
-      if (parseInt(p1count.rows[0].c) === 0) {
+      // ── 修正方案一（京都・神戶）若為舊錯誤資料 ──────────
+      const p1d1 = await pool.query(`SELECT title FROM days WHERE date='2027-04-17' AND plan_id=1`);
+      const p1title = p1d1.rows[0]?.title || '';
+      if (!p1title.includes('京都初抵')) {
         for (const d of P1_DAYS) {
-          const r = await pool.query(
-            'INSERT INTO days (date,title,city,notes,plan_id) VALUES ($1,$2,$3,$4,1) ON CONFLICT DO NOTHING RETURNING id',
-            [d.date, d.title, d.city, d.notes]
+          const upd = await pool.query(
+            'UPDATE days SET title=$1, city=$2, notes=$3 WHERE date=$4 AND plan_id=1 RETURNING id',
+            [d.title, d.city, d.notes, d.date]
           );
-          if (r.rows[0]) {
+          if (upd.rows[0]) {
+            await pool.query('DELETE FROM activities WHERE day_id=$1', [upd.rows[0].id]);
             for (const a of P1_ACTS.filter(x => x[0] === d.date)) {
               const [, sort, time, cat, title, loc, lat, lng, desc] = a;
               await pool.query(
                 `INSERT INTO activities (day_id,sort_order,time,category,title,location,lat,lng,description,map_url,image_url,mapcode)
                  VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,'','','')`,
-                [r.rows[0].id, sort, time, cat, title, loc, lat, lng, desc]
+                [upd.rows[0].id, sort, time, cat, title, loc, lat, lng, desc]
               );
+            }
+          } else {
+            // 若該日不存在（plan_id=1 rows 缺失），直接 INSERT
+            const r = await pool.query(
+              'INSERT INTO days (date,title,city,notes,plan_id) VALUES ($1,$2,$3,$4,1) ON CONFLICT DO NOTHING RETURNING id',
+              [d.date, d.title, d.city, d.notes]
+            );
+            if (r.rows[0]) {
+              for (const a of P1_ACTS.filter(x => x[0] === d.date)) {
+                const [, sort, time, cat, title, loc, lat, lng, desc] = a;
+                await pool.query(
+                  `INSERT INTO activities (day_id,sort_order,time,category,title,location,lat,lng,description,map_url,image_url,mapcode)
+                   VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,'','','')`,
+                  [r.rows[0].id, sort, time, cat, title, loc, lat, lng, desc]
+                );
+              }
             }
           }
         }
       }
-      // ── 修正方案二（大阪）若為舊佔位資料 ───────────────
+      // ── 修正方案二（大阪出發・原始方案）若為舊錯誤資料 ──
       const p2d1 = await pool.query(`SELECT title FROM days WHERE date='2027-04-17' AND plan_id=2`);
       const p2title = p2d1.rows[0]?.title || '';
       if (!p2title.includes('啟程')) {
