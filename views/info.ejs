@@ -361,7 +361,7 @@ const catOpenDef = { '班機': true, '住宿': true };
     <div style="flex:1;height:6px;background:var(--border-l);border-radius:3px;overflow:hidden">
       <div id="progressBar" style="height:100%;background:var(--t1);border-radius:3px;transition:width .4s ease;width:<%= total > 0 ? Math.round(done/total*100) : 0 %>%"></div>
     </div>
-    <div style="font-size:13px;color:var(--t3);white-space:nowrap;font-weight:500">
+    <div style="font-size:var(--fs-meta);color:var(--t3);white-space:nowrap;font-weight:500">
       <span id="progressText"><%= done %></span> / <%= total %>
     </div>
   </div>

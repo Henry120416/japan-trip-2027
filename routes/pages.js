@@ -2,6 +2,18 @@ const express = require('express');
 const router = express.Router();
 const { get, all, run } = require('../database/db');
 
+function getPlan(req) {
+  const c = req.headers.cookie || '';
+  const m = c.match(/\btrip_plan=(\d)/);
+  return m ? parseInt(m[1]) : 1;
+}
+
+router.get('/set-plan/:id', (req, res) => {
+  const plan = parseInt(req.params.id) || 1;
+  res.cookie('trip_plan', plan, { maxAge: 86400 * 730, path: '/' });
+  res.redirect('/');
+});
+
 async function geocode(loc) {
   if (!loc) return null;
   const clean = loc.replace(/[（(][^）)]*[）)]/g, '').trim();
@@ -17,30 +29,35 @@ async function geocode(loc) {
 
 router.get('/', async (req, res) => {
   try {
+    const plan = getPlan(req);
     const days = await all(`
       SELECT d.*, COUNT(a.id) as activity_count
       FROM days d LEFT JOIN activities a ON a.day_id = d.id
+      WHERE d.plan_id = ?
       GROUP BY d.id ORDER BY d.date
-    `);
-    res.render('index', { days });
+    `, [plan]);
+    const plans = await all('SELECT * FROM plans ORDER BY id');
+    res.render('index', { days, plans, currentPlan: plan });
   } catch (e) { res.status(500).send(e.message); }
 });
 
 router.get('/day/:date', async (req, res) => {
   try {
-    const day = await get('SELECT * FROM days WHERE date = ?', [req.params.date]);
+    const plan = getPlan(req);
+    const day = await get('SELECT * FROM days WHERE date = ? AND plan_id = ?', [req.params.date, plan]);
     if (!day) return res.redirect('/');
     const activities = await all(
       'SELECT * FROM activities WHERE day_id = ? ORDER BY time, sort_order',
       [day.id]
     );
-    res.render('day', { day, activities });
+    res.render('day', { day, activities, currentPlan: plan });
   } catch (e) { res.status(500).send(e.message); }
 });
 
 router.get('/day/:date/map', async (req, res) => {
   try {
-    const day = await get('SELECT * FROM days WHERE date = ?', [req.params.date]);
+    const plan = getPlan(req);
+    const day = await get('SELECT * FROM days WHERE date = ? AND plan_id = ?', [req.params.date, plan]);
     if (!day) return res.redirect('/');
     const acts = await all('SELECT * FROM activities WHERE day_id = ? ORDER BY time, sort_order', [day.id]);
     for (const a of acts) {
@@ -59,20 +76,22 @@ router.get('/day/:date/map', async (req, res) => {
 
 router.get('/overview-map', async (req, res) => {
   try {
-    const days = await all('SELECT * FROM days ORDER BY date');
+    const plan = getPlan(req);
+    const days = await all('SELECT * FROM days WHERE plan_id = ? ORDER BY date', [plan]);
     const acts = await all(`
       SELECT a.*, d.date as day_date, d.title as day_title, d.city as day_city
       FROM activities a JOIN days d ON d.id = a.day_id
-      WHERE a.lat IS NOT NULL AND a.lng IS NOT NULL
+      WHERE d.plan_id = ? AND a.lat IS NOT NULL AND a.lng IS NOT NULL
       ORDER BY d.date, a.time, a.sort_order
-    `);
+    `, [plan]);
     res.render('overview-map', { days, acts });
   } catch (e) { res.status(500).send(e.message); }
 });
 
 router.get('/expenses', async (req, res) => {
   try {
-    const days = await all('SELECT * FROM days ORDER BY date');
+    const plan = getPlan(req);
+    const days = await all('SELECT * FROM days WHERE plan_id = ? ORDER BY date', [plan]);
     const expenses = await all(`
       SELECT e.*, d.date as day_date, d.city as day_city, d.title as day_title
       FROM expenses e LEFT JOIN days d ON d.id = e.day_id
