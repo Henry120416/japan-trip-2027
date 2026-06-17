@@ -17,12 +17,12 @@ const DEFAULT_CHECKLIST = [
 
 // ── 預設重要資訊 ─────────────────────────────────────
 const DEFAULT_INFO = [
-  ['班機', '去程班機', ''],
-  ['班機', '去程出發時間', '2027/04/17'],
-  ['班機', '去程抵達時間', ''],
-  ['班機', '回程班機', ''],
-  ['班機', '回程出發時間', '2027/04/22'],
-  ['班機', '回程抵達時間', ''],
+  ['班機', '去程班機',     '星宇航空 JX（Taiwan to KIX）'],
+  ['班機', '去程出發時間', '2027/04/17  08:30（桃園）'],
+  ['班機', '去程抵達時間', '2027/04/17  12:15（關西KIX）'],
+  ['班機', '回程班機',     '星宇航空 JX（KIX to Taiwan）'],
+  ['班機', '回程出發時間', '2027/04/22  15:10（關西KIX）'],
+  ['班機', '回程抵達時間', '2027/04/22  17:05（桃園）'],
   ['住宿', '大阪飯店名稱', ''],
   ['住宿', '大阪飯店地址', ''],
   ['住宿', '大阪 Check-in / Check-out', ''],
@@ -359,6 +359,21 @@ if (USE_PG) {
             }
           }
         }
+      }
+    }
+
+    // ── 班機時間修正（幂等）──────────────────────────────────────────
+    // 去程：星宇 08:30 出發，12:15 抵達 KIX
+    const p2d1r = await pool.query(`SELECT d.id FROM days d WHERE d.date='2027-04-17' AND d.plan_id=2`);
+    if (p2d1r.rows[0]) {
+      await pool.query(`UPDATE activities SET time='12:15' WHERE day_id=$1 AND title LIKE '%抵達關西機場%'`, [p2d1r.rows[0].id]);
+      await pool.query(`UPDATE activities SET time='14:30' WHERE day_id=$1 AND title LIKE '%抵達京都%'`, [p2d1r.rows[0].id]);
+    }
+    // 回程：星宇 15:10 出發，需 13:00 到機場（臨空城→KIX 僅 5 分鐘）
+    for (const pid of [1, 2]) {
+      const d6r = await pool.query(`SELECT d.id FROM days d WHERE d.date='2027-04-22' AND d.plan_id=$1`, [pid]);
+      if (d6r.rows[0]) {
+        await pool.query(`UPDATE activities SET time='13:00', description='星宇航空 15:10 起飛，需 13:10 前完成報到。臨空城搭南海電車 1 站（5 分鐘）即達 KIX。建議 12:30 前離開 Outlet。' WHERE day_id=$1 AND title LIKE '%機場%'`, [d6r.rows[0].id]);
       }
     }
 
