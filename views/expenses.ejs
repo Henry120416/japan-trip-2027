@@ -36,7 +36,7 @@
     </div>
   <% } else { %>
     <% Object.values(grouped).forEach(group => { %>
-      <div class="section-label"><%= group.label %></div>
+      <div class="section-title"><%= group.label %></div>
       <div class="card-list" style="margin-bottom:16px">
         <% group.items.forEach(e => { %>
           <div class="exp-item">
