@@ -1,6 +1,7 @@
 <%
 function expCat(title) {
-  if (/電車|JR|南海|阪神|阪急|交通|宅配|HARUKA|纜車|機場|搭乘|Rapi|電鐵|巴士/.test(title)) return '交通';
+  if (/機票/.test(title)) return '機票';
+  if (/電車|JR|南海|阪神|阪急|交通|宅配|HARUKA|纜車|機場|搭乘|Rapi|電鐵|巴士|ロープウェイ|公車|地鐵/.test(title)) return '交通';
   if (/入場費|門票|參觀|入場|入館/.test(title)) return '景點門票';
   if (/午餐|晚餐|早餐|茶|燒肉|牛肉|料理|餐|市場|飲食|壽司|拉麵|串炸|甜點|美食|抹茶/.test(title)) return '餐飲';
   if (/購物|Outlet|免稅|手信|伴手禮/.test(title)) return '購物';
@@ -8,7 +9,7 @@ function expCat(title) {
   return '其他';
 }
 const PERSONS = 6;
-const catColors = { '交通':'#5E97F6','景點門票':'#FF9F43','餐飲':'#66BB6A','購物':'#EE5A24','住宿':'#A29BFE','其他':'#B2BEC3' };
+const catColors = { '機票':'#FD7043','住宿':'#A29BFE','交通':'#5E97F6','景點門票':'#FF9F43','餐飲':'#66BB6A','購物':'#EE5A24','其他':'#B2BEC3' };
 const catTotals = {};
 expenses.forEach(e => {
   const cat = expCat(e.title);
