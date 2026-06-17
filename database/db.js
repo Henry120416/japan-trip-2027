@@ -187,6 +187,13 @@ const PLAN2_ACTS = [
    '建議出發前3小時到機場。完成免稅退稅、關空免稅店最後掃貨，帶著滿滿回憶，期待下次再來！'],
 ];
 
+// 方案一 = 京都出發・神戶（PLAN2_DAYS/ACTS 的內容）
+// 方案二 = 大阪出發・環球影城（PLAN1_DAYS/ACTS 的內容）
+const P1_DAYS = PLAN2_DAYS;
+const P1_ACTS = PLAN2_ACTS;
+const P2_DAYS = PLAN1_DAYS;
+const P2_ACTS = PLAN1_ACTS;
+
 if (USE_PG) {
   const { Pool } = require('pg');
   const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
@@ -241,8 +248,8 @@ if (USE_PG) {
     await pool.query(`CREATE TABLE IF NOT EXISTS plans (
       id INTEGER PRIMARY KEY, name TEXT NOT NULL, subtitle TEXT
     )`);
-    await pool.query(`INSERT INTO plans (id,name,subtitle) VALUES (1,'方案一','大阪出發・環球影城') ON CONFLICT DO NOTHING`);
-    await pool.query(`INSERT INTO plans (id,name,subtitle) VALUES (2,'方案二','京都出發・神戶一日遊') ON CONFLICT DO NOTHING`);
+    await pool.query(`INSERT INTO plans (id,name,subtitle) VALUES (1,'方案一','京都出發・神戶一日遊') ON CONFLICT (id) DO UPDATE SET name=EXCLUDED.name, subtitle=EXCLUDED.subtitle`);
+    await pool.query(`INSERT INTO plans (id,name,subtitle) VALUES (2,'方案二','大阪出發・環球影城') ON CONFLICT (id) DO UPDATE SET name=EXCLUDED.name, subtitle=EXCLUDED.subtitle`);
     await pool.query(`ALTER TABLE days ADD COLUMN IF NOT EXISTS plan_id INTEGER DEFAULT 2`);
     // 移除舊的 date 單欄唯一約束，改為 (date, plan_id) 聯合唯一
     await pool.query(`ALTER TABLE days DROP CONSTRAINT IF EXISTS days_date_key`).catch(() => {});
@@ -261,57 +268,69 @@ if (USE_PG) {
     // ── 初始資料種子 ──────────────────────────────────────────
     const dc = await pool.query('SELECT COUNT(*) as c FROM days');
     if (parseInt(dc.rows[0].c) === 0) {
-      // 兩個方案的 days 一起種
-      for (const d of PLAN2_DAYS) {
-        await pool.query('INSERT INTO days (date,title,city,notes,plan_id) VALUES ($1,$2,$3,$4,2)',
-          [d.date, d.title, d.city, d.notes]);
-      }
-      for (const d of PLAN1_DAYS) {
+      // 全新 DB：種方案一（京都）plan_id=1
+      for (const d of P1_DAYS) {
         await pool.query('INSERT INTO days (date,title,city,notes,plan_id) VALUES ($1,$2,$3,$4,1)',
           [d.date, d.title, d.city, d.notes]);
       }
-      // 種方案一活動
-      for (const a of PLAN1_ACTS) {
-        const [date, sort, time, cat, title, loc, lat, lng, desc] = a;
-        const dayRow = await pool.query('SELECT id FROM days WHERE date=$1 AND plan_id=1', [date]);
-        if (dayRow.rows[0]) {
-          await pool.query(
-            `INSERT INTO activities (day_id,sort_order,time,category,title,location,lat,lng,description,map_url,image_url,mapcode)
-             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,'','','')`,
-            [dayRow.rows[0].id, sort, time, cat, title, loc, lat, lng, desc]
-          );
-        }
+      // 種方案二（大阪）plan_id=2
+      for (const d of P2_DAYS) {
+        await pool.query('INSERT INTO days (date,title,city,notes,plan_id) VALUES ($1,$2,$3,$4,2)',
+          [d.date, d.title, d.city, d.notes]);
       }
-      // 種方案二活動
-      for (const a of PLAN2_ACTS) {
-        const [date, sort, time, cat, title, loc, lat, lng, desc] = a;
-        const dayRow = await pool.query('SELECT id FROM days WHERE date=$1 AND plan_id=2', [date]);
-        if (dayRow.rows[0]) {
-          await pool.query(
-            `INSERT INTO activities (day_id,sort_order,time,category,title,location,lat,lng,description,map_url,image_url,mapcode)
-             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,'','','')`,
-            [dayRow.rows[0].id, sort, time, cat, title, loc, lat, lng, desc]
-          );
+      const insAct = async (plan_id, acts) => {
+        for (const a of acts) {
+          const [date, sort, time, cat, title, loc, lat, lng, desc] = a;
+          const dr = await pool.query('SELECT id FROM days WHERE date=$1 AND plan_id=$2', [date, plan_id]);
+          if (dr.rows[0]) {
+            await pool.query(
+              `INSERT INTO activities (day_id,sort_order,time,category,title,location,lat,lng,description,map_url,image_url,mapcode)
+               VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,'','','')`,
+              [dr.rows[0].id, sort, time, cat, title, loc, lat, lng, desc]
+            );
+          }
         }
-      }
+      };
+      await insAct(1, P1_ACTS);
+      await insAct(2, P2_ACTS);
     } else {
-      // ── 已有資料：確保方案一存在 ─────────────────────────
+      // ── 已有資料：確保方案一（京都）存在 ────────────────
       const p1count = await pool.query('SELECT COUNT(*) as c FROM days WHERE plan_id=1');
       if (parseInt(p1count.rows[0].c) === 0) {
-        for (const d of PLAN1_DAYS) {
+        for (const d of P1_DAYS) {
           const r = await pool.query(
             'INSERT INTO days (date,title,city,notes,plan_id) VALUES ($1,$2,$3,$4,1) ON CONFLICT DO NOTHING RETURNING id',
             [d.date, d.title, d.city, d.notes]
           );
           if (r.rows[0]) {
-            const dayId = r.rows[0].id;
-            const dayActs = PLAN1_ACTS.filter(a => a[0] === d.date);
-            for (const a of dayActs) {
+            for (const a of P1_ACTS.filter(x => x[0] === d.date)) {
               const [, sort, time, cat, title, loc, lat, lng, desc] = a;
               await pool.query(
                 `INSERT INTO activities (day_id,sort_order,time,category,title,location,lat,lng,description,map_url,image_url,mapcode)
                  VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,'','','')`,
-                [dayId, sort, time, cat, title, loc, lat, lng, desc]
+                [r.rows[0].id, sort, time, cat, title, loc, lat, lng, desc]
+              );
+            }
+          }
+        }
+      }
+      // ── 修正方案二（大阪）若為舊佔位資料 ───────────────
+      const p2d1 = await pool.query(`SELECT title FROM days WHERE date='2027-04-17' AND plan_id=2`);
+      const p2title = p2d1.rows[0]?.title || '';
+      if (!p2title.includes('抵達大阪')) {
+        for (const d of P2_DAYS) {
+          const upd = await pool.query(
+            'UPDATE days SET title=$1, city=$2, notes=$3 WHERE date=$4 AND plan_id=2 RETURNING id',
+            [d.title, d.city, d.notes, d.date]
+          );
+          if (upd.rows[0]) {
+            await pool.query('DELETE FROM activities WHERE day_id=$1', [upd.rows[0].id]);
+            for (const a of P2_ACTS.filter(x => x[0] === d.date)) {
+              const [, sort, time, cat, title, loc, lat, lng, desc] = a;
+              await pool.query(
+                `INSERT INTO activities (day_id,sort_order,time,category,title,location,lat,lng,description,map_url,image_url,mapcode)
+                 VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,'','','')`,
+                [upd.rows[0].id, sort, time, cat, title, loc, lat, lng, desc]
               );
             }
           }
@@ -378,8 +397,8 @@ if (USE_PG) {
         category TEXT NOT NULL, key TEXT NOT NULL,
         value TEXT DEFAULT '', sort_order INTEGER DEFAULT 0)`);
       db.run(`CREATE TABLE IF NOT EXISTS plans (id INTEGER PRIMARY KEY, name TEXT NOT NULL, subtitle TEXT)`);
-      db.run(`INSERT OR IGNORE INTO plans VALUES (1,'方案一','大阪出發・環球影城')`);
-      db.run(`INSERT OR IGNORE INTO plans VALUES (2,'方案二','京都出發・神戶一日遊')`);
+      db.run(`INSERT OR REPLACE INTO plans VALUES (1,'方案一','京都出發・神戶一日遊')`);
+      db.run(`INSERT OR REPLACE INTO plans VALUES (2,'方案二','大阪出發・環球影城')`);
       db.run(`ALTER TABLE days ADD COLUMN plan_id INTEGER DEFAULT 1`, () => {});
 
       setTimeout(resolve, 300);
