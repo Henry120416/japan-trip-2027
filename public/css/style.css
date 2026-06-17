@@ -20,6 +20,12 @@ html { scroll-behavior: smooth; }
   --r-xl:     28px;
   --shadow-s: 0 2px 8px rgba(0,0,0,.07), 0 1px 2px rgba(0,0,0,.04);
   --shadow-m: 0 6px 24px rgba(0,0,0,.09), 0 1px 4px rgba(0,0,0,.04);
+
+  /* ── Typography Scale ─────────────────── */
+  --fs-title: 15px;   /* 卡片/項目標題 */
+  --fs-body:  14px;   /* 正文、數值、說明 */
+  --fs-meta:  13px;   /* 次要資訊、時間、地點 */
+  --fs-label: 11px;   /* 全大寫標籤、欄位名稱 */
 }
 
 body {
@@ -79,19 +85,19 @@ body {
   border-bottom: 1px solid var(--border-l);
 }
 .hero-label {
-  font-size: 12px; font-weight: 600; text-transform: uppercase;
+  font-size: var(--fs-label); font-weight: 600; text-transform: uppercase;
   letter-spacing: .8px; color: var(--t4); margin-bottom: 6px;
 }
 .hero-title {
-  font-size: 32px; font-weight: 700; letter-spacing: -.5px;
+  font-size: 28px; font-weight: 700; letter-spacing: -.5px;
   color: var(--t1); margin-bottom: 4px;
 }
-.hero-sub { font-size: 15px; color: var(--t3); }
+.hero-sub { font-size: var(--fs-body); color: var(--t3); }
 
 /* ─── Section ──────────────────────────────────────── */
 .section { padding: 20px 16px 0; }
 .section-label {
-  font-size: 12px; font-weight: 600; text-transform: uppercase;
+  font-size: var(--fs-label); font-weight: 600; text-transform: uppercase;
   letter-spacing: .5px; color: var(--t4); margin-bottom: 10px; padding: 0 4px;
 }
 
@@ -121,8 +127,8 @@ body {
 .day-badge-l { font-size: 9px; font-weight: 600; text-transform: uppercase; opacity: .65; }
 
 .row-main { flex: 1; min-width: 0; }
-.row-title { font-size: 16px; font-weight: 500; color: var(--t1); margin-bottom: 2px; display: flex; align-items: center; gap: 6px; }
-.row-sub { font-size: 13px; color: var(--t3); }
+.row-title { font-size: var(--fs-title); font-weight: 600; color: var(--t1); margin-bottom: 2px; display: flex; align-items: center; gap: 6px; }
+.row-sub { font-size: var(--fs-meta); color: var(--t3); }
 
 .city-tag {
   display: inline-block; background: var(--fill);
@@ -152,10 +158,10 @@ body {
 .tl-time {
   width: 44px; flex-shrink: 0;
   padding-top: 17px; text-align: right;
-  font-size: 12px; font-weight: 500; color: var(--t4);
+  font-size: var(--fs-meta); font-weight: 500; color: var(--t3);
 }
 .tl-time-lbl {
-  font-size: 9px; color: var(--t5); letter-spacing: 0.2px; margin-top: 2px;
+  font-size: 10px; color: var(--t5); letter-spacing: 0.2px; margin-top: 2px;
 }
 
 .tl-track {
@@ -176,7 +182,7 @@ body {
 }
 
 .tl-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
-.act-title { font-size: 15px; font-weight: 600; color: var(--t1); line-height: 1.3; flex: 1; }
+.act-title { font-size: var(--fs-title); font-weight: 600; color: var(--t1); line-height: 1.3; flex: 1; }
 .act-actions { display: flex; gap: 2px; flex-shrink: 0; }
 .act-btn {
   background: none; border: none; padding: 4px 6px;
@@ -188,9 +194,9 @@ body {
 
 .act-loc {
   display: flex; align-items: center; gap: 4px;
-  font-size: 12px; color: var(--t3); margin-top: 5px;
+  font-size: var(--fs-meta); color: var(--t3); margin-top: 5px;
 }
-.act-desc { font-size: 13px; color: var(--t2); margin-top: 6px; line-height: 1.6; white-space: pre-line; word-break: break-word; }
+.act-desc { font-size: var(--fs-body); color: var(--t2); margin-top: 6px; line-height: 1.6; white-space: pre-line; word-break: break-word; }
 .act-img {
   width: 100%; height: 160px; object-fit: cover;
   border-radius: 12px; margin: 10px 0 6px; display: block;
@@ -242,11 +248,11 @@ body {
 }
 .exp-item:last-child { border-bottom: none; }
 .exp-info { flex: 1; min-width: 0; }
-.exp-name { font-size: 15px; font-weight: 500; color: var(--t1); }
-.exp-meta { font-size: 12px; color: var(--t4); margin-top: 2px; }
+.exp-name { font-size: var(--fs-title); font-weight: 600; color: var(--t1); }
+.exp-meta { font-size: var(--fs-meta); color: var(--t3); margin-top: 2px; }
 .exp-amt { text-align: right; margin: 0 10px; flex-shrink: 0; }
-.exp-jpy { font-size: 14px; font-weight: 600; color: var(--t1); }
-.exp-twd { font-size: 11px; color: var(--t4); }
+.exp-jpy { font-size: var(--fs-body); font-weight: 600; color: var(--t1); }
+.exp-twd { font-size: var(--fs-meta); color: var(--t3); }
 .exp-del {
   background: none; border: none; color: var(--t5);
   font-size: 17px; padding: 4px; cursor: pointer;
@@ -380,11 +386,11 @@ body {
   margin-bottom: 3px;
 }
 .info-key {
-  font-size: 11px; font-weight: 600; color: var(--t4);
+  font-size: var(--fs-label); font-weight: 600; color: var(--t4);
   letter-spacing: 0.3px; text-transform: uppercase;
 }
 .info-val {
-  font-size: 14px; color: var(--t1); line-height: 1.6;
+  font-size: var(--fs-body); color: var(--t1); line-height: 1.6;
   white-space: pre-line; word-break: break-word;
 }
 .info-val.empty { color: var(--t5); }
@@ -418,7 +424,7 @@ body {
 .check-box.checked { background: var(--t1); border-color: var(--t1); }
 
 .check-label {
-  flex: 1; font-size: 15px; color: var(--t1);
+  flex: 1; font-size: var(--fs-title); color: var(--t1);
   transition: all .2s ease;
 }
 .check-label.checked { color: var(--t5); text-decoration: line-through; }
@@ -490,8 +496,8 @@ body {
 .day-num-l { font-size: 9px; font-weight: 600; text-transform: uppercase; opacity: .6; }
 
 .day-card-body { flex: 1; min-width: 0; }
-.day-card-title { font-size: 16px; font-weight: 600; color: var(--t1); margin-bottom: 3px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-.day-card-sub { font-size: 13px; color: var(--t3); }
+.day-card-title { font-size: var(--fs-title); font-weight: 600; color: var(--t1); margin-bottom: 3px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.day-card-sub { font-size: var(--fs-meta); color: var(--t3); }
 
 /* ─── Info Page Tabs ─────────────────────────────────── */
 .seg-ctrl {
@@ -524,8 +530,8 @@ body {
   font-size: 13px; font-weight: 900; letter-spacing: -.5px; flex-shrink: 0;
 }
 .taxi-app-info { flex: 1; }
-.taxi-app-name { font-size: 15px; font-weight: 600; color: var(--t1); }
-.taxi-app-sub  { font-size: 12px; color: var(--t3); margin-top: 2px; }
+.taxi-app-name { font-size: var(--fs-title); font-weight: 600; color: var(--t1); }
+.taxi-app-sub  { font-size: var(--fs-meta); color: var(--t3); margin-top: 2px; }
 .taxi-app svg  { color: var(--t4); flex-shrink: 0; }
 
 .info-block {
@@ -533,12 +539,12 @@ body {
   padding: 14px 16px; box-shadow: var(--shadow-s); border: 1px solid var(--border-l);
 }
 .info-block-title {
-  font-size: 11px; font-weight: 700; color: var(--t3);
+  font-size: var(--fs-label); font-weight: 700; color: var(--t3);
   text-transform: uppercase; letter-spacing: .6px; margin-bottom: 10px;
 }
 .taxi-fare-row {
   display: flex; justify-content: space-between; align-items: center;
-  font-size: 14px; padding: 7px 0; border-bottom: 1px solid var(--border-l);
+  font-size: var(--fs-body); padding: 7px 0; border-bottom: 1px solid var(--border-l);
 }
 .taxi-fare-row:last-child { border-bottom: none; }
 .taxi-fare-row span:first-child { color: var(--t2); }
@@ -547,8 +553,8 @@ body {
 .taxi-warn { color: #D97706 !important; }
 
 .taxi-tip {
-  font-size: 13.5px; color: var(--t2); line-height: 1.55;
-  padding: 5px 0; border-bottom: 1px solid var(--border-l);
+  font-size: var(--fs-body); color: var(--t2); line-height: 1.6;
+  padding: 6px 0; border-bottom: 1px solid var(--border-l);
 }
 .taxi-tip:last-child { border-bottom: none; padding-bottom: 0; }
 .taxi-tip strong { color: var(--t1); }
@@ -568,7 +574,7 @@ body {
   padding: 14px 16px; cursor: pointer; user-select: none;
 }
 .acc-hd-icon { font-size: 16px; flex-shrink: 0; }
-.acc-title { flex: 1; font-size: 14px; font-weight: 600; color: var(--t1); }
+.acc-title { flex: 1; font-size: var(--fs-title); font-weight: 600; color: var(--t1); }
 .acc-arrow { width: 16px; height: 16px; color: var(--t4); flex-shrink: 0; transition: transform .25s ease; }
 .acc-hd.open .acc-arrow { transform: rotate(180deg); }
 .acc-body { display: none; padding: 4px 16px 14px; border-top: 1px solid var(--border-l); }
@@ -592,8 +598,8 @@ body {
   padding: 9px 0; border-bottom: 1px solid var(--border-l);
 }
 .taxi-phrase:last-child { border-bottom: none; padding-bottom: 0; }
-.taxi-jp { grid-column: 1; font-size: 15px; font-weight: 500; color: var(--t1); }
-.taxi-tw { grid-column: 1; font-size: 12px; color: var(--t3); margin-top: 2px; }
+.taxi-jp { grid-column: 1; font-size: var(--fs-title); font-weight: 500; color: var(--t1); }
+.taxi-tw { grid-column: 1; font-size: var(--fs-meta); color: var(--t3); margin-top: 2px; }
 .taxi-phrase .speak-btn { grid-column: 2; grid-row: 1 / 3; }
 
 /* ─── Scrollbar ─────────────────────────────────────── */
