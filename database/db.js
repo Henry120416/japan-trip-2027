@@ -362,43 +362,42 @@ if (USE_PG) {
       }
     }
 
-    // ── Mapcode & 圖片自動填充（幂等，只補空白欄位）──────────────────
+    // ── 清除舊的錯誤 Wikimedia thumbnail URL（hash 路徑不正確）─────────
+    await pool.query(`UPDATE activities SET image_url='' WHERE image_url LIKE '%upload.wikimedia.org/wikipedia/commons/thumb%'`);
+
+    // ── Mapcode 自動填充（幂等，只補空白欄位）──────────────────────────
     const ENRICH = [
-      { kw:'伏見稻荷',     mc:'8 437 898*38', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Fushimi_Inari-taisha_Shrine_Kyoto02s5s4110.jpg/1200px-Fushimi_Inari-taisha_Shrine_Kyoto02s5s4110.jpg' },
-      { kw:'清水寺',       mc:'8 468 687*22', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Kiyomizu-dera_in_Kyoto.jpg/1200px-Kiyomizu-dera_in_Kyoto.jpg' },
-      { kw:'金閣寺',       mc:'8 468 360*82', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Kinkaku-ji_3.jpg/1200px-Kinkaku-ji_3.jpg' },
-      { kw:'嵐山竹林',     mc:'8 437 255*34', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Kyoto_-_Arashiyama_bamboo_grove_-_2015.jpg/1200px-Kyoto_-_Arashiyama_bamboo_grove_-_2015.jpg' },
-      { kw:'渡月橋',       mc:'8 437 255*52', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Togetsukyo_Bridge_Arashiyama_Kyoto01n.jpg/1200px-Togetsukyo_Bridge_Arashiyama_Kyoto01n.jpg' },
-      { kw:'八坂神社',     mc:'8 468 658*11', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Yasaka_shrine_haiden.jpg/1200px-Yasaka_shrine_haiden.jpg' },
-      { kw:'東寺',         mc:'8 437 785*65', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Toji_Kyoto_Pagoda01.jpg/1200px-Toji_Kyoto_Pagoda01.jpg' },
-      { kw:'平等院',       mc:'8 436 472*52', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Byodoin20100525-2.jpg/1200px-Byodoin20100525-2.jpg' },
-      { kw:'仁和寺',       mc:'8 468 286*14', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Ninnaji12.jpg/1200px-Ninnaji12.jpg' },
-      { kw:'二条城',       mc:'8 468 235*40', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Nijojo_from_Honmaru_Goten.jpg/1200px-Nijojo_from_Honmaru_Goten.jpg' },
-      { kw:'北野異人館',   mc:'10 524 580*74', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Kitano_district_Kobe.jpg/1200px-Kitano_district_Kobe.jpg' },
-      { kw:'生田神社',     mc:'10 524 576*18', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/IkutaShrineKobe.jpg/1200px-IkutaShrineKobe.jpg' },
-      { kw:'美利堅公園',   mc:'10 524 636*13', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Kobe_harbor_from_the_air.jpg/1200px-Kobe_harbor_from_the_air.jpg' },
-      { kw:'掬星台',       mc:'10 524 741*00', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Kobe_night_view.jpg/1200px-Kobe_night_view.jpg' },
-      { kw:'黑門市場',     mc:'8 369 604*37',  img:'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Kuromon_Ichiba_Osaka.jpg/1200px-Kuromon_Ichiba_Osaka.jpg' },
-      { kw:'臨空城',       mc:'8 277 449*34',  img:'' },
-      { kw:'關西國際機場', mc:'8 247 823*08',  img:'' },
-      { kw:'通天閣',       mc:'8 369 574*43',  img:'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Tsutenkaku_2012.jpg/1200px-Tsutenkaku_2012.jpg' },
-      { kw:'道頓堀',       mc:'8 369 690*12',  img:'https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Dotonbori_Glico_sign.jpg/1200px-Dotonbori_Glico_sign.jpg' },
-      { kw:'鴨川',         mc:'',              img:'https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Kamo_river_in_Kyoto_0.jpg/1200px-Kamo_river_in_Kyoto_0.jpg' },
-      { kw:'祇園白川',     mc:'8 468 658*43',  img:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Shirakawa_canal_Gion.jpg/1200px-Shirakawa_canal_Gion.jpg' },
-      { kw:'先斗町',       mc:'8 468 439*54',  img:'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Pontocho.jpg/1200px-Pontocho.jpg' },
-      { kw:'大阪城',       mc:'8 370 076*35',  img:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Osaka_Castle_01.jpg/1200px-Osaka_Castle_01.jpg' },
-      { kw:'環球影城',     mc:'8 306 120*14',  img:'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Universal_Studios_Japan_area.jpg/1200px-Universal_Studios_Japan_area.jpg' },
-      { kw:'中村藤吉',     mc:'8 436 472*56',  img:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Nakamura_Tokichi_Uji.jpg/1200px-Nakamura_Tokichi_Uji.jpg' },
-      { kw:'神戶牛',       mc:'',              img:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/KobeBeef.jpg/1200px-KobeBeef.jpg' },
+      { kw:'伏見稻荷',     mc:'8 437 898*38' },
+      { kw:'清水寺',       mc:'8 468 687*22' },
+      { kw:'金閣寺',       mc:'8 468 360*82' },
+      { kw:'嵐山竹林',     mc:'8 437 255*34' },
+      { kw:'渡月橋',       mc:'8 437 255*52' },
+      { kw:'八坂神社',     mc:'8 468 658*11' },
+      { kw:'東寺',         mc:'8 437 785*65' },
+      { kw:'平等院',       mc:'8 436 472*52' },
+      { kw:'仁和寺',       mc:'8 468 286*14' },
+      { kw:'二条城',       mc:'8 468 235*40' },
+      { kw:'北野異人館',   mc:'10 524 580*74' },
+      { kw:'生田神社',     mc:'10 524 576*18' },
+      { kw:'美利堅公園',   mc:'10 524 636*13' },
+      { kw:'掬星台',       mc:'10 524 741*00' },
+      { kw:'黑門市場',     mc:'8 369 604*37'  },
+      { kw:'臨空城',       mc:'8 277 449*34'  },
+      { kw:'關西國際機場', mc:'8 247 823*08'  },
+      { kw:'通天閣',       mc:'8 369 574*43'  },
+      { kw:'道頓堀',       mc:'8 369 690*12'  },
+      { kw:'祇園白川',     mc:'8 468 658*43'  },
+      { kw:'先斗町',       mc:'8 468 439*54'  },
+      { kw:'大阪城',       mc:'8 370 076*35'  },
+      { kw:'環球影城',     mc:'8 306 120*14'  },
+      { kw:'中村藤吉',     mc:'8 436 472*56'  },
+      { kw:'二年坂',       mc:'8 468 687*34'  },
+      { kw:'宇治川',       mc:'8 436 495*50'  },
     ];
     for (const e of ENRICH) {
-      if (e.mc) await pool.query(
+      await pool.query(
         `UPDATE activities SET mapcode=$1 WHERE title LIKE $2 AND (mapcode IS NULL OR mapcode='')`,
         [e.mc, `%${e.kw}%`]
-      );
-      if (e.img) await pool.query(
-        `UPDATE activities SET image_url=$1 WHERE title LIKE $2 AND (image_url IS NULL OR image_url='')`,
-        [e.img, `%${e.kw}%`]
       );
     }
 

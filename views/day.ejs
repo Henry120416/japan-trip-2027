@@ -175,25 +175,51 @@
 (async () => {
   const els = [...document.querySelectorAll('.act-wiki-img')];
   if (!els.length) return;
-  const terms = [...new Set(els.map(e => e.dataset.wiki).filter(Boolean))];
+
+  // 繁體中文 → 日文漢字對應（用於 ja.wikipedia.org 查詢）
+  const TC2JP = [
+    ['稻荷','稲荷'],['稻','稲'],['黑','黒'],['國','国'],['關','関'],
+    ['兩','両'],['來','来'],['會','会'],['萬','万'],['鐵','鉄'],
+    ['號','号'],['區','区'],['藝','芸'],['觀','観'],['覽','覧'],
+    ['澤','沢'],['濱','浜'],['橋','橋'],['豐','豊'],['禪','禅'],
+    ['龍','龍'],['總','総'],['體','体'],['寶','宝'],['齊','斉'],
+    ['邊','辺'],['圓','円'],['驛','駅'],['處','処'],['廟','廟'],
+  ];
+  function toJP(s) {
+    let r = s;
+    for (const [tc, jp] of TC2JP) r = r.replaceAll(tc, jp);
+    return r;
+  }
+
+  const rawTerms = [...new Set(els.map(e => e.dataset.wiki).filter(Boolean))];
+  // 每個 term 同時用原始繁體與轉換後日文查詢
+  const termMap = {}; // jpTerm → originalTerm
+  rawTerms.forEach(t => { termMap[toJP(t)] = t; });
+  const jpTerms = Object.keys(termMap);
+
   try {
     const r = await fetch(
       'https://ja.wikipedia.org/w/api.php?action=query&prop=pageimages&format=json&pithumbsize=800&origin=*&redirects=1&titles='
-      + terms.map(encodeURIComponent).join('|')
+      + jpTerms.map(encodeURIComponent).join('|')
     );
     const d = await r.json();
-    const imgMap = {};
+    const imgMap = {}; // originalTerm → imgUrl
     for (const p of Object.values(d.query?.pages || {})) {
-      if (p.thumbnail?.source) imgMap[p.title] = p.thumbnail.source;
+      if (!p.thumbnail?.source) continue;
+      const orig = termMap[p.title] || p.title;
+      imgMap[orig] = p.thumbnail.source;
     }
-    // also map redirects
     for (const rd of (d.query?.redirects || [])) {
-      if (imgMap[rd.to]) imgMap[rd.from] = imgMap[rd.to];
+      const target = imgMap[termMap[rd.to] || rd.to];
+      if (target) {
+        const origFrom = termMap[rd.from] || rd.from;
+        imgMap[origFrom] = target;
+      }
     }
     els.forEach(el => {
       const term = el.dataset.wiki;
       const url = imgMap[term] || Object.entries(imgMap).find(([k]) =>
-        k.includes(term.slice(0,4)) || term.includes(k.slice(0,4))
+        k.includes(term.slice(0,3)) || term.includes(k.slice(0,3))
       )?.[1];
       if (url) {
         const img = document.createElement('img');
