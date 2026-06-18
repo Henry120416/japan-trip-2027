@@ -40,7 +40,7 @@ const DEFAULT_INFO = [
 
 // ── 方案二行程資料（大阪出發・環球影城，原始方案）─────────────
 const PLAN1_DAYS = [
-  { date:'2027-04-17', title:'啟程・前往京都',            city:'京都',      notes:'從關西機場搭HARUKA特急直達京都，入住飯店後漫步鴨川感受京都第一夜。[t1]' },
+  { date:'2027-04-17', title:'啟程・前往京都',            city:'京都',      notes:'從關西機場搭HARUKA特急直達京都，入住飯店後漫步鴨川感受京都第一夜。[t2]' },
   { date:'2027-04-18', title:'京都・伏見稻荷 × 清水寺',  city:'京都',      notes:'早起衝伏見稻荷千本鳥居，再前往清水寺、二三年坂、祇園散策。' },
   { date:'2027-04-19', title:'京都・嵐山 × 金閣寺',      city:'京都',      notes:'嵐山竹林、渡月橋，下午前往金閣寺，傍晚錦市場晚餐。' },
   { date:'2027-04-20', title:'移動・入住大阪',            city:'大阪',      notes:'上午告別京都，搭JR移居大阪，下午探索道頓堀與心齋橋。' },
@@ -343,7 +343,7 @@ if (USE_PG) {
       const p2d1 = await pool.query(`SELECT title, notes FROM days WHERE date='2027-04-17' AND plan_id=2`);
       const p2title = p2d1.rows[0]?.title || '';
       const p2notes = p2d1.rows[0]?.notes || '';
-      if (!p2title.includes('啟程') || !p2notes.includes('[t1]')) {
+      if (!p2title.includes('啟程') || !p2notes.includes('[t2]')) {
         for (const d of P2_DAYS) {
           const upd = await pool.query(
             'UPDATE days SET title=$1, city=$2, notes=$3 WHERE date=$4 AND plan_id=2 RETURNING id',
