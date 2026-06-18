@@ -302,7 +302,7 @@ async function reset() {
   ];
   for (const t of TRANSIT_DESCS) {
     await run(
-      `UPDATE activities SET description=? WHERE title LIKE ? AND description NOT LIKE '▶%' AND day_id IN (SELECT id FROM days WHERE plan_id=? AND date=?)`,
+      `UPDATE activities SET description=? WHERE title LIKE ? AND day_id IN (SELECT id FROM days WHERE plan_id=? AND date=?)`,
       [t.desc, `%${t.kw}%`, t.pid, t.date]
     );
   }

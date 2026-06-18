@@ -476,7 +476,6 @@ if (USE_PG) {
       await pool.query(
         `UPDATE activities SET description=$1
          WHERE title LIKE $2
-         AND description NOT LIKE '▶%'
          AND day_id IN (SELECT id FROM days WHERE plan_id=$3 AND date=$4)`,
         [t.desc, `%${t.kw}%`, t.pid, t.date]
       );
