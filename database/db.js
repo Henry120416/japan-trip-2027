@@ -600,6 +600,17 @@ if (USE_PG) {
       }
     }
 
+    // 更正機票金額：每人 NT$16,307，6人共 NT$97,842
+    for (const planId of [1, 2]) {
+      const dr = await pool.query(`SELECT id FROM days WHERE date='2027-04-17' AND plan_id=$1`, [planId]);
+      if (dr.rows[0]) {
+        await pool.query(
+          `UPDATE expenses SET amount_twd=97842, notes='NT$16,307/人' WHERE day_id=$1 AND title LIKE '%機票%'`,
+          [dr.rows[0].id]
+        );
+      }
+    }
+
     // 出發前交通：八德→桃園機場（九人座）NT$1000，兩方案各加一筆
     for (const planId of [1, 2]) {
       const dr = await pool.query(`SELECT id FROM days WHERE date='2027-04-17' AND plan_id=$1`, [planId]);
