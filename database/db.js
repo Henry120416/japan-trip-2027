@@ -600,6 +600,20 @@ if (USE_PG) {
       }
     }
 
+    // 出發前交通：八德→桃園機場（九人座）NT$1000，兩方案各加一筆
+    for (const planId of [1, 2]) {
+      const dr = await pool.query(`SELECT id FROM days WHERE date='2027-04-17' AND plan_id=$1`, [planId]);
+      if (dr.rows[0]) {
+        const ex = await pool.query(`SELECT id FROM expenses WHERE day_id=$1 AND title LIKE '%八德%桃園%'`, [dr.rows[0].id]);
+        if (!ex.rows.length) {
+          await pool.query(
+            `INSERT INTO expenses (day_id,title,amount_jpy,amount_twd,payer,notes) VALUES ($1,$2,$3,$4,$5,$6)`,
+            [dr.rows[0].id, '八德→桃園機場（九人座）', 0, 1000, '', 'NT$167/人']
+          );
+        }
+      }
+    }
+
     const cl = await pool.query('SELECT COUNT(*) as c FROM checklist');
     if (parseInt(cl.rows[0].c) === 0) {
       for (let i = 0; i < DEFAULT_CHECKLIST.length; i++) {
