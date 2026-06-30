@@ -51,17 +51,6 @@ expenses.forEach(e => {
 .exp-section-title{padding:4px 16px 6px;font-size:.72rem;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em}
 </style>
 
-<!-- 方案切換 -->
-<div class="plan-switch-wrap">
-  <div class="plan-switch">
-    <% plans.forEach(p => { %>
-      <a href="/set-plan/<%= p.id %>?redirect=/expenses" class="plan-btn <%= currentPlan === p.id ? 'active' : '' %>">
-        <span class="plan-btn-name"><%= p.name %></span>
-        <span class="plan-btn-sub"><%= p.subtitle %></span>
-      </a>
-    <% }) %>
-  </div>
-</div>
 
 <!-- Stats -->
 <div class="stats-strip" style="margin-top:14px">

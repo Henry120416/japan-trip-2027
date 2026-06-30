@@ -6,17 +6,6 @@
   <div class="hero-sub" style="margin-top:4px">04/17 — 04/22 &nbsp;·&nbsp; 6 人同行</div>
 </div>
 
-<!-- 方案切換器 -->
-<div class="plan-switch-wrap">
-  <div class="plan-switch">
-    <% plans.forEach(p => { %>
-      <a href="/set-plan/<%= p.id %>" class="plan-btn <%= currentPlan === p.id ? 'active' : '' %>">
-        <span class="plan-btn-name"><%= p.name %></span>
-        <span class="plan-btn-sub"><%= p.subtitle %></span>
-      </a>
-    <% }) %>
-  </div>
-</div>
 
 <div class="section">
   <div class="section-label">六日行程</div>
