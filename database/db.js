@@ -433,6 +433,28 @@ if (USE_PG) {
       }
     }
 
+    // ── Day 1（方案一）補齊 KIX 抵達及 HARUKA 出發活動（幂等）─────────────
+    const p1d1r = await pool.query(`SELECT id FROM days WHERE date='2027-04-17' AND plan_id=1`);
+    if (p1d1r.rows[0]) {
+      const dayId = p1d1r.rows[0].id;
+      const existingKix = await pool.query(
+        `SELECT id FROM activities WHERE day_id=$1 AND time='12:15' AND title LIKE '%KIX%'`, [dayId]
+      );
+      if (existingKix.rows.length === 0) {
+        await pool.query(`UPDATE activities SET sort_order = sort_order + 2 WHERE day_id=$1`, [dayId]);
+        await pool.query(`
+          INSERT INTO activities (day_id, sort_order, time, category, title, location, lat, lng, description)
+          VALUES ($1, 1, '12:15', 'transport', '抵達KIX・辦理入境', '關西國際空港（KIX）', 34.4347, 135.2440,
+            '星宇航空 JX 12:15 落地 KIX。依序辦理入境（護照查驗）、領取行李、通關，預計 1 小時完成。\n\n📋 建議出發前完成 Visit Japan Web 預填，可走電子通道加速入境。出關後在 B1F 換日幣（或台灣先換好）、取 ICOCA 儲值卡。')
+        `, [dayId]);
+        await pool.query(`
+          INSERT INTO activities (day_id, sort_order, time, category, title, location, lat, lng, description)
+          VALUES ($1, 2, '13:30', 'transport', '搭乘HARUKA特急（往京都）', '關西國際空港（KIX）JR站', 34.4347, 135.2440,
+            '入境完成後前往 JR 關西空港站，搭「HARUKA 特急」直達京都駅（約 75 分鐘，2,850円）。\n\n🎫 建議搭配「ICOCA+HARUKA 套票」（3,600円）：含 ICOCA 儲值卡（1,500円加值）＋來回各一張 HARUKA 特急乘車券，到京都後直接用 ICOCA 搭地鐵。')
+        `, [dayId]);
+      }
+    }
+
     // ── 方案一活動圖片（Wikipedia/Wikimedia Commons 核實 URL，幂等）────
     const P1_IMAGES = [
       { kw:'抵達京都車站',         img:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Kyoto-STA_Central.jpg/960px-Kyoto-STA_Central.jpg' },
