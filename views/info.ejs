@@ -84,8 +84,13 @@ const catOpenDef = {};
 
   <!-- 票券使用指南 -->
   <div class="section">
-    <div style="background:var(--card);border-radius:var(--r-lg);box-shadow:var(--shadow-s)">
-      <div>
+    <div class="accordion" style="overflow:visible">
+      <div class="acc-hd" onclick="toggleAcc(this)">
+        <span class="acc-hd-icon">🎫</span>
+        <span class="acc-title">票券使用指南</span>
+        <svg class="acc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="acc-body" style="padding:0">
         <div class="pass-legend">
           <div class="pass-legend-item"><span class="pass-legend-dot" style="background:#F4845F"></span>HARUKA（外國人優惠票）</div>
           <div class="pass-legend-item"><span class="pass-legend-dot" style="background:#5E97F6"></span>ICOCA（西瓜卡）</div>
@@ -443,32 +448,40 @@ PASS_ROWS.forEach(r => { %>
     </div>
   </div>
 </div>
-<% Object.entries(checks).forEach(([cat, items]) => { %>
 <div class="section">
-  <div class="section-title">🧳 &nbsp;<%= cat %></div>
   <div class="card-list">
-    <% items.forEach(item => { %>
-    <label class="check-row" id="check-<%= item.id %>">
-      <input type="checkbox" class="check-input" <%= item.checked ? 'checked' : '' %>
-        onchange="toggleCheck(<%= item.id %>, this.checked)" style="display:none">
-      <div class="check-box <%= item.checked ? 'checked' : '' %>" id="checkBox-<%= item.id %>">
-        <% if (item.checked) { %>
-        <svg width="11" height="9" viewBox="0 0 11 9" fill="none">
-          <path d="M1 4L4 7L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <% } %>
+    <% Object.entries(checks).forEach(([cat, items]) => { %>
+    <div class="accordion">
+      <div class="acc-hd" onclick="toggleAcc(this)">
+        <span class="acc-hd-icon">🧳</span>
+        <span class="acc-title"><%= cat %></span>
+        <svg class="acc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
       </div>
-      <span class="check-label <%= item.checked ? 'checked' : '' %>" id="checkLabel-<%= item.id %>"><%= item.item %></span>
-      <button class="check-del" onclick="event.preventDefault();deleteCheck(<%= item.id %>)">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-        </svg>
-      </button>
-    </label>
+      <div class="acc-body" style="padding:0">
+        <% items.forEach(item => { %>
+        <label class="check-row" id="check-<%= item.id %>">
+          <input type="checkbox" class="check-input" <%= item.checked ? 'checked' : '' %>
+            onchange="toggleCheck(<%= item.id %>, this.checked)" style="display:none">
+          <div class="check-box <%= item.checked ? 'checked' : '' %>" id="checkBox-<%= item.id %>">
+            <% if (item.checked) { %>
+            <svg width="11" height="9" viewBox="0 0 11 9" fill="none">
+              <path d="M1 4L4 7L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <% } %>
+          </div>
+          <span class="check-label <%= item.checked ? 'checked' : '' %>" id="checkLabel-<%= item.id %>"><%= item.item %></span>
+          <button class="check-del" onclick="event.preventDefault();deleteCheck(<%= item.id %>)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </label>
+        <% }) %>
+      </div>
+    </div>
     <% }) %>
   </div>
 </div>
-<% }) %>
 <div style="padding:8px 16px 0">
   <button class="add-btn" onclick="openAddCheck()">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
