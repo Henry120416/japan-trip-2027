@@ -106,7 +106,7 @@ router.get('/expenses', async (req, res) => {
 
 router.get('/info', async (req, res) => {
   try {
-    const infoRows = await all('SELECT * FROM trip_info ORDER BY sort_order');
+    const infoRows = await all(`SELECT * FROM trip_info WHERE category != 'system' ORDER BY sort_order`);
     const checklist = await all('SELECT * FROM checklist ORDER BY sort_order');
 
     // Group info by category
