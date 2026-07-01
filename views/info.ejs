@@ -5,6 +5,23 @@ function speakerSVG() {
 %>
 <%- include('partials/header', { pageTitle: '旅遊資訊', navTitle: '旅遊資訊', navBack: null }) %>
 
+<style>
+.pass-tbl{width:100%;min-width:530px;border-collapse:collapse;font-size:.75rem}
+.pass-tbl th,.pass-tbl td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--border-l);vertical-align:middle}
+.pass-tbl thead tr{background:var(--bg2)}
+.pass-tbl th{color:var(--t3);font-weight:600;white-space:nowrap}
+.pt-day,.pt-dc{width:34px;min-width:34px;white-space:nowrap;font-weight:700;color:var(--t1)}
+.pt-route,.pt-rc{min-width:128px;color:var(--t1)}
+.pt-mode,.pt-mc{min-width:100px;color:var(--t2);white-space:nowrap}
+.pt-tick,.pt-tc{width:56px;min-width:56px;white-space:nowrap;font-weight:700}
+.pt-cost,.pt-cc{min-width:72px;white-space:nowrap;color:var(--t2)}
+.pt-H{color:#F4845F}.pt-I{color:#5E97F6}.pt-K{color:#66BB6A}.pt-C{color:#B2BEC3}
+.pt-sep td{border-top:2px solid var(--border)}
+.pass-legend{display:flex;flex-wrap:wrap;gap:6px 14px;padding:10px 14px 8px}
+.pass-legend-item{display:flex;align-items:center;gap:5px;font-size:.72rem;color:var(--t2)}
+.pass-legend-dot{display:inline-block;width:11px;height:11px;border-radius:3px;flex-shrink:0}
+</style>
+
 <!-- 分頁切換 -->
 <div class="seg-ctrl">
   <button class="seg-btn active" id="seg-trip"       onclick="switchSeg('trip')">行程</button>
@@ -59,6 +76,79 @@ const catOpenDef = { '班機': true, '住宿': true };
      面板 B：交通（計程車）
 ═══════════════════════════════════════════════════ -->
 <div id="panel-taxi" style="display:none">
+
+  <!-- 票券使用指南 -->
+  <div class="section">
+    <div class="section-title">🎫 &nbsp;票券使用指南</div>
+    <div class="card-list">
+      <div>
+        <div class="pass-legend">
+          <div class="pass-legend-item"><span class="pass-legend-dot" style="background:#F4845F"></span>HARUKA（外國人優惠票）</div>
+          <div class="pass-legend-item"><span class="pass-legend-dot" style="background:#5E97F6"></span>ICOCA（西瓜卡）</div>
+          <div class="pass-legend-item"><span class="pass-legend-dot" style="background:#66BB6A"></span>KANSAI PASS（關西鐵路周遊券）</div>
+          <div class="pass-legend-item"><span class="pass-legend-dot" style="background:#B2BEC3"></span>現金</div>
+        </div>
+        <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
+          <table class="pass-tbl">
+            <thead>
+              <tr>
+                <th class="pt-day">日</th>
+                <th class="pt-route">路線</th>
+                <th class="pt-mode">交通方式</th>
+                <th class="pt-tick" style="color:#F4845F">H</th>
+                <th class="pt-tick" style="color:#5E97F6">I</th>
+                <th class="pt-tick" style="color:#66BB6A">K</th>
+                <th class="pt-tick" style="color:#B2BEC3">C</th>
+                <th class="pt-cost">費用/人</th>
+              </tr>
+            </thead>
+            <tbody>
+<%
+const PASS_ROWS = [
+  { day:'D1', sep:true,  route:'KIX → 京都駅',           mode:'JR HARUKA 特急',    H:1,I:0,K:0,C:0, cost:'¥2,200' },
+  { day:'',   sep:false, route:'京都駅 → Minn 飯店',      mode:'地下鐵・步行',       H:0,I:1,K:0,C:0, cost:'¥260'   },
+  { day:'D2', sep:true,  route:'三条京阪 → 丹波橋',       mode:'京阪本線',           H:0,I:0,K:1,C:0, cost:'¥280'   },
+  { day:'',   sep:false, route:'丹波橋 → 近鐵奈良',       mode:'近鐵急行',           H:0,I:0,K:1,C:0, cost:'¥780'   },
+  { day:'',   sep:false, route:'奈良市內巴士',             mode:'市內バス',           H:0,I:1,K:0,C:0, cost:'~¥250'  },
+  { day:'',   sep:false, route:'近鐵奈良 → 三条京阪',     mode:'近鐵＋京阪',         H:0,I:0,K:1,C:0, cost:'¥1,060' },
+  { day:'D3', sep:true,  route:'三条 → 出町柳',           mode:'京阪本線',           H:0,I:0,K:1,C:0, cost:'¥220'   },
+  { day:'',   sep:false, route:'出町柳 → 貴船口',          mode:'叡山電鐵',           H:0,I:0,K:1,C:0, cost:'¥430'   },
+  { day:'',   sep:false, route:'貴船口 → 三条',            mode:'叡電＋京阪',         H:0,I:0,K:1,C:0, cost:'¥650'   },
+  { day:'D4', sep:true,  route:'飯店 → 伏見稻荷',         mode:'計程車',             H:0,I:0,K:0,C:1, cost:'~¥400※' },
+  { day:'',   sep:false, route:'伏見稻荷 → 清水坂',       mode:'計程車',             H:0,I:0,K:0,C:1, cost:'~¥350※' },
+  { day:'',   sep:false, route:'清水 → 八坂 → 飯店',     mode:'步行',               H:0,I:0,K:0,C:0, cost:'免費'   },
+  { day:'',   sep:false, route:'飯店 → 京都駅',           mode:'地下鐵',             H:0,I:1,K:0,C:0, cost:'¥260'   },
+  { day:'',   sep:false, route:'京都 → 大阪（梅田）',     mode:'JR 新快速',          H:0,I:1,K:0,C:0, cost:'¥570'   },
+  { day:'',   sep:false, route:'梅田 → 難波',             mode:'大阪メトロ',         H:0,I:1,K:0,C:0, cost:'¥180'   },
+  { day:'D5', sep:true,  route:'難波 → 三宮',             mode:'阪神電車',           H:0,I:1,K:0,C:0, cost:'¥430'   },
+  { day:'',   sep:false, route:'三宮 → 摩耶ケーブル下',   mode:'市バス',             H:0,I:1,K:0,C:0, cost:'¥230'   },
+  { day:'',   sep:false, route:'摩耶山 纜車往返',           mode:'纜車＋ロープウェイ', H:0,I:0,K:0,C:1, cost:'¥1,560' },
+  { day:'',   sep:false, route:'摩耶 → 三宮',             mode:'市バス',             H:0,I:1,K:0,C:0, cost:'¥230'   },
+  { day:'',   sep:false, route:'三宮 → 難波',             mode:'阪神電車',           H:0,I:1,K:0,C:0, cost:'¥430'   },
+  { day:'D6', sep:true,  route:'難波 → りんくうタウン',   mode:'南海本線',           H:0,I:0,K:1,C:0, cost:'¥920'   },
+  { day:'',   sep:false, route:'りんくう → KIX',           mode:'南海空港線',         H:0,I:0,K:1,C:0, cost:'¥120'   },
+];
+PASS_ROWS.forEach(r => { %>
+              <tr class="<%= r.sep ? 'pt-sep' : '' %>">
+                <td class="pt-dc"><%= r.day %></td>
+                <td class="pt-rc"><%= r.route %></td>
+                <td class="pt-mc"><%= r.mode %></td>
+                <td class="pt-tc <%= r.H ? 'pt-H' : '' %>"><%= r.H ? '✓' : '' %></td>
+                <td class="pt-tc <%= r.I ? 'pt-I' : '' %>"><%= r.I ? '✓' : '' %></td>
+                <td class="pt-tc <%= r.K ? 'pt-K' : '' %>"><%= r.K ? '✓' : '' %></td>
+                <td class="pt-tc <%= r.C ? 'pt-C' : '' %>"><%= r.C ? '✓' : '' %></td>
+                <td class="pt-cc"><%= r.cost %></td>
+              </tr>
+<% }); %>
+            </tbody>
+          </table>
+        </div>
+        <div style="padding:10px 14px 6px;font-size:.7rem;color:var(--t3);line-height:1.7">
+          ※ 計程車費用為 6 人包車均攤估算 &nbsp;·&nbsp; K = KANSAI RAILWAY PASS LITE 3日券 ¥6,500/人（建議啟用日：D2・D3・D6）
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- 叫車 App -->
   <div class="section">
