@@ -20,6 +20,11 @@ function speakerSVG() {
 .pass-legend{display:flex;flex-wrap:wrap;gap:6px 14px;padding:10px 12px 8px}
 .pass-legend-item{display:flex;align-items:center;gap:5px;font-size:.72rem;color:var(--t2)}
 .pass-legend-dot{display:inline-block;width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.app-chips{display:flex;flex-wrap:wrap;gap:8px;padding:8px 0 6px}
+.app-chip{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;background:var(--fill);border:1px solid var(--border-l);font-size:13px;font-weight:500;color:var(--t1);text-decoration:none;transition:background .12s}
+.app-chip:active{background:var(--border-l)}
+.app-chip-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.acc-sub{font-size:.72rem;color:var(--t3);line-height:1.6;padding-top:2px}
 </style>
 
 <!-- 分頁切換 -->
@@ -79,8 +84,7 @@ const catOpenDef = { '班機': true, '住宿': true };
 
   <!-- 票券使用指南 -->
   <div class="section">
-    <div class="section-title">🎫 &nbsp;票券使用指南</div>
-    <div class="card-list">
+    <div style="background:var(--card);border-radius:var(--r-lg);box-shadow:var(--shadow-s)">
       <div>
         <div class="pass-legend">
           <div class="pass-legend-item"><span class="pass-legend-dot" style="background:#F4845F"></span>HARUKA（外國人優惠票）</div>
@@ -151,41 +155,32 @@ PASS_ROWS.forEach(r => { %>
     </div>
   </div>
 
-  <!-- 叫車 App -->
-  <div class="section">
-    <div class="section-title">🚕 &nbsp;叫車 App</div>
-    <div class="taxi-apps-row">
-      <a href="https://go.goinc.jp/" target="_blank" rel="noopener" class="taxi-app">
-        <div class="taxi-app-logo" style="background:#1A1A1A;color:#E8FF00;font-size:15px">GO</div>
-        <div class="taxi-app-info">
-          <div class="taxi-app-name">GO タクシー</div>
-          <div class="taxi-app-sub">全日本最大・免預付款・最推薦</div>
-        </div>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-      </a>
-      <a href="https://didimobility.co.jp/" target="_blank" rel="noopener" class="taxi-app">
-        <div class="taxi-app-logo" style="background:#FF6700;color:#fff;font-size:12px">DiDi</div>
-        <div class="taxi-app-info">
-          <div class="taxi-app-name">DiDi 打車</div>
-          <div class="taxi-app-sub">大阪・京都均可使用</div>
-        </div>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-      </a>
-      <a href="https://www.uber.com/jp/ja/ride/" target="_blank" rel="noopener" class="taxi-app">
-        <div class="taxi-app-logo" style="background:#000;color:#fff;font-size:12px">Uber</div>
-        <div class="taxi-app-info">
-          <div class="taxi-app-name">Uber</div>
-          <div class="taxi-app-sub">日本叫計程車（非共乘）</div>
-        </div>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-      </a>
-    </div>
-  </div>
-
   <!-- Accordion 參考資訊 -->
   <div class="section">
-    <div class="section-title">📋 &nbsp;參考資訊</div>
     <div class="card-list">
+
+      <!-- 叫車 App -->
+      <div class="accordion">
+        <div class="acc-hd open" onclick="toggleAcc(this)">
+          <span class="acc-hd-icon">🚕</span>
+          <span class="acc-title">叫車 App</span>
+          <svg class="acc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="acc-body open">
+          <div class="app-chips">
+            <a href="https://go.goinc.jp/" target="_blank" rel="noopener" class="app-chip">
+              <span class="app-chip-dot" style="background:#E8FF00;border:1px solid #ccc"></span>GO タクシー
+            </a>
+            <a href="https://didimobility.co.jp/" target="_blank" rel="noopener" class="app-chip">
+              <span class="app-chip-dot" style="background:#FF6700"></span>DiDi 打車
+            </a>
+            <a href="https://www.uber.com/jp/ja/ride/" target="_blank" rel="noopener" class="app-chip">
+              <span class="app-chip-dot" style="background:#000"></span>Uber
+            </a>
+          </div>
+          <div class="acc-sub">GO 全日本最大・免預付款最推薦　DiDi 大阪京都均可　Uber 日本為正規計程車</div>
+        </div>
+      </div>
 
       <!-- 計費方式 -->
       <div class="accordion">
@@ -281,41 +276,32 @@ PASS_ROWS.forEach(r => { %>
 ═══════════════════════════════════════════════════ -->
 <div id="panel-restaurant" style="display:none">
 
-  <!-- 美食 App -->
-  <div class="section">
-    <div class="section-title">📲 &nbsp;美食 App</div>
-    <div class="taxi-apps-row">
-      <a href="https://tabelog.com/" target="_blank" rel="noopener" class="taxi-app">
-        <div class="taxi-app-logo" style="background:#C8353A;color:#fff;font-size:10px;letter-spacing:0">食べログ</div>
-        <div class="taxi-app-info">
-          <div class="taxi-app-name">食べログ</div>
-          <div class="taxi-app-sub">日本最大評分平台，可看評論與評分</div>
-        </div>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-      </a>
-      <a href="https://www.gnavi.co.jp/" target="_blank" rel="noopener" class="taxi-app">
-        <div class="taxi-app-logo" style="background:#E84A2F;color:#fff;font-size:9px;letter-spacing:0">ぐるなび</div>
-        <div class="taxi-app-info">
-          <div class="taxi-app-name">ぐるなび</div>
-          <div class="taxi-app-sub">可線上訂位，部分提供英文介面</div>
-        </div>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-      </a>
-      <a href="https://www.hotpepper.jp/gourmet/" target="_blank" rel="noopener" class="taxi-app">
-        <div class="taxi-app-logo" style="background:#FF0033;color:#fff;font-size:9px;letter-spacing:0">Hot Pepper</div>
-        <div class="taxi-app-info">
-          <div class="taxi-app-name">Hot Pepper グルメ</div>
-          <div class="taxi-app-sub">訂位常附折扣券，可省費用</div>
-        </div>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-      </a>
-    </div>
-  </div>
-
   <!-- Accordion 指南 -->
   <div class="section">
-    <div class="section-title">📋 &nbsp;用餐指南</div>
     <div class="card-list">
+
+      <!-- 美食 App -->
+      <div class="accordion">
+        <div class="acc-hd open" onclick="toggleAcc(this)">
+          <span class="acc-hd-icon">📲</span>
+          <span class="acc-title">美食 App</span>
+          <svg class="acc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="acc-body open">
+          <div class="app-chips">
+            <a href="https://tabelog.com/" target="_blank" rel="noopener" class="app-chip">
+              <span class="app-chip-dot" style="background:#C8353A"></span>食べログ
+            </a>
+            <a href="https://www.gnavi.co.jp/" target="_blank" rel="noopener" class="app-chip">
+              <span class="app-chip-dot" style="background:#E84A2F"></span>ぐるなび
+            </a>
+            <a href="https://www.hotpepper.jp/gourmet/" target="_blank" rel="noopener" class="app-chip">
+              <span class="app-chip-dot" style="background:#FF0033"></span>Hot Pepper
+            </a>
+          </div>
+          <div class="acc-sub">食べログ 最大評分平台　ぐるなび 線上訂位（含英文）　Hot Pepper 訂位附折扣券</div>
+        </div>
+      </div>
 
       <!-- 用餐禮儀 -->
       <div class="accordion">
