@@ -6,20 +6,20 @@ function speakerSVG() {
 <%- include('partials/header', { pageTitle: '旅遊資訊', navTitle: '旅遊資訊', navBack: null }) %>
 
 <style>
-.pass-tbl{width:100%;min-width:530px;border-collapse:collapse;font-size:.75rem}
-.pass-tbl th,.pass-tbl td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--border-l);vertical-align:middle}
+.pass-tbl{width:100%;border-collapse:collapse;font-size:.73rem}
+.pass-tbl th,.pass-tbl td{text-align:left;padding:6px 7px;border-bottom:1px solid var(--border-l);vertical-align:middle}
 .pass-tbl thead tr{background:var(--bg2)}
 .pass-tbl th{color:var(--t3);font-weight:600;white-space:nowrap}
-.pt-day,.pt-dc{width:34px;min-width:34px;white-space:nowrap;font-weight:700;color:var(--t1)}
-.pt-route,.pt-rc{min-width:128px;color:var(--t1)}
-.pt-mode,.pt-mc{min-width:100px;color:var(--t2);white-space:nowrap}
-.pt-tick,.pt-tc{width:56px;min-width:56px;white-space:nowrap;font-weight:700}
-.pt-cost,.pt-cc{min-width:72px;white-space:nowrap;color:var(--t2)}
+.pt-day,.pt-dc{width:26px;min-width:26px;white-space:nowrap;font-weight:700;color:var(--t1);padding-left:10px}
+.pt-route,.pt-rc{color:var(--t1)}
+.pt-rc-mode{font-size:.65rem;color:var(--t3);margin-top:2px}
+.pt-tick,.pt-tc{width:24px;min-width:24px;text-align:center;padding:6px 3px;font-weight:700}
+.pt-cost,.pt-cc{min-width:54px;white-space:nowrap;color:var(--t2);text-align:right;padding-right:10px}
 .pt-H{color:#F4845F}.pt-I{color:#5E97F6}.pt-K{color:#66BB6A}.pt-C{color:#B2BEC3}
 .pt-sep td{border-top:2px solid var(--border)}
-.pass-legend{display:flex;flex-wrap:wrap;gap:6px 14px;padding:10px 14px 8px}
+.pass-legend{display:flex;flex-wrap:wrap;gap:6px 14px;padding:10px 12px 8px}
 .pass-legend-item{display:flex;align-items:center;gap:5px;font-size:.72rem;color:var(--t2)}
-.pass-legend-dot{display:inline-block;width:11px;height:11px;border-radius:3px;flex-shrink:0}
+.pass-legend-dot{display:inline-block;width:10px;height:10px;border-radius:3px;flex-shrink:0}
 </style>
 
 <!-- 分頁切換 -->
@@ -93,8 +93,7 @@ const catOpenDef = { '班機': true, '住宿': true };
             <thead>
               <tr>
                 <th class="pt-day">日</th>
-                <th class="pt-route">路線</th>
-                <th class="pt-mode">交通方式</th>
+                <th class="pt-route">路線／方式</th>
                 <th class="pt-tick" style="color:#F4845F">H</th>
                 <th class="pt-tick" style="color:#5E97F6">I</th>
                 <th class="pt-tick" style="color:#66BB6A">K</th>
@@ -105,34 +104,36 @@ const catOpenDef = { '班機': true, '住宿': true };
             <tbody>
 <%
 const PASS_ROWS = [
-  { day:'D1', sep:true,  route:'KIX → 京都駅',           mode:'JR HARUKA 特急',    H:1,I:0,K:0,C:0, cost:'¥2,200' },
-  { day:'',   sep:false, route:'京都駅 → Minn 飯店',      mode:'地下鐵・步行',       H:0,I:1,K:0,C:0, cost:'¥260'   },
-  { day:'D2', sep:true,  route:'三条京阪 → 丹波橋',       mode:'京阪本線',           H:0,I:0,K:1,C:0, cost:'¥280'   },
-  { day:'',   sep:false, route:'丹波橋 → 近鐵奈良',       mode:'近鐵急行',           H:0,I:0,K:1,C:0, cost:'¥780'   },
-  { day:'',   sep:false, route:'奈良市內巴士',             mode:'市內バス',           H:0,I:1,K:0,C:0, cost:'~¥250'  },
-  { day:'',   sep:false, route:'近鐵奈良 → 三条京阪',     mode:'近鐵＋京阪',         H:0,I:0,K:1,C:0, cost:'¥1,060' },
-  { day:'D3', sep:true,  route:'三条 → 出町柳',           mode:'京阪本線',           H:0,I:0,K:1,C:0, cost:'¥220'   },
-  { day:'',   sep:false, route:'出町柳 → 貴船口',          mode:'叡山電鐵',           H:0,I:0,K:1,C:0, cost:'¥430'   },
-  { day:'',   sep:false, route:'貴船口 → 三条',            mode:'叡電＋京阪',         H:0,I:0,K:1,C:0, cost:'¥650'   },
-  { day:'D4', sep:true,  route:'飯店 → 伏見稻荷',         mode:'計程車',             H:0,I:0,K:0,C:1, cost:'~¥400※' },
-  { day:'',   sep:false, route:'伏見稻荷 → 清水坂',       mode:'計程車',             H:0,I:0,K:0,C:1, cost:'~¥350※' },
-  { day:'',   sep:false, route:'清水 → 八坂 → 飯店',     mode:'步行',               H:0,I:0,K:0,C:0, cost:'免費'   },
-  { day:'',   sep:false, route:'飯店 → 京都駅',           mode:'地下鐵',             H:0,I:1,K:0,C:0, cost:'¥260'   },
-  { day:'',   sep:false, route:'京都 → 大阪（梅田）',     mode:'JR 新快速',          H:0,I:1,K:0,C:0, cost:'¥570'   },
-  { day:'',   sep:false, route:'梅田 → 難波',             mode:'大阪メトロ',         H:0,I:1,K:0,C:0, cost:'¥180'   },
-  { day:'D5', sep:true,  route:'難波 → 三宮',             mode:'阪神電車',           H:0,I:1,K:0,C:0, cost:'¥430'   },
-  { day:'',   sep:false, route:'三宮 → 摩耶ケーブル下',   mode:'市バス',             H:0,I:1,K:0,C:0, cost:'¥230'   },
-  { day:'',   sep:false, route:'摩耶山 纜車往返',           mode:'纜車＋ロープウェイ', H:0,I:0,K:0,C:1, cost:'¥1,560' },
-  { day:'',   sep:false, route:'摩耶 → 三宮',             mode:'市バス',             H:0,I:1,K:0,C:0, cost:'¥230'   },
-  { day:'',   sep:false, route:'三宮 → 難波',             mode:'阪神電車',           H:0,I:1,K:0,C:0, cost:'¥430'   },
-  { day:'D6', sep:true,  route:'難波 → りんくうタウン',   mode:'南海本線',           H:0,I:0,K:1,C:0, cost:'¥920'   },
-  { day:'',   sep:false, route:'りんくう → KIX',           mode:'南海空港線',         H:0,I:0,K:1,C:0, cost:'¥120'   },
+  { day:'D1', sep:true,  route:'KIX → 京都駅',         mode:'JR HARUKA 特急',    H:1,I:0,K:0,C:0, cost:'¥2,200' },
+  { day:'',   sep:false, route:'京都駅 → Minn 飯店',    mode:'地下鐵・步行',       H:0,I:1,K:0,C:0, cost:'¥260'   },
+  { day:'D2', sep:true,  route:'三条京阪 → 丹波橋',     mode:'京阪本線',           H:0,I:0,K:1,C:0, cost:'¥280'   },
+  { day:'',   sep:false, route:'丹波橋 → 近鐵奈良',     mode:'近鐵急行',           H:0,I:0,K:1,C:0, cost:'¥780'   },
+  { day:'',   sep:false, route:'奈良市內巴士',           mode:'市內バス',           H:0,I:1,K:0,C:0, cost:'~¥250'  },
+  { day:'',   sep:false, route:'近鐵奈良 → 三条京阪',   mode:'近鐵＋京阪',         H:0,I:0,K:1,C:0, cost:'¥1,060' },
+  { day:'D3', sep:true,  route:'三条 → 出町柳',         mode:'京阪本線',           H:0,I:0,K:1,C:0, cost:'¥220'   },
+  { day:'',   sep:false, route:'出町柳 → 貴船口',        mode:'叡山電鐵',           H:0,I:0,K:1,C:0, cost:'¥430'   },
+  { day:'',   sep:false, route:'貴船口 → 三条',          mode:'叡電＋京阪',         H:0,I:0,K:1,C:0, cost:'¥650'   },
+  { day:'D4', sep:true,  route:'飯店 → 伏見稻荷',       mode:'計程車',             H:0,I:0,K:0,C:1, cost:'~¥400※' },
+  { day:'',   sep:false, route:'伏見稻荷 → 清水坂',     mode:'計程車',             H:0,I:0,K:0,C:1, cost:'~¥350※' },
+  { day:'',   sep:false, route:'清水 → 八坂 → 飯店',   mode:'步行',               H:0,I:0,K:0,C:0, cost:'免費'   },
+  { day:'',   sep:false, route:'飯店 → 京都駅',         mode:'地下鐵',             H:0,I:1,K:0,C:0, cost:'¥260'   },
+  { day:'',   sep:false, route:'京都 → 大阪梅田',       mode:'JR 新快速',          H:0,I:1,K:0,C:0, cost:'¥570'   },
+  { day:'',   sep:false, route:'梅田 → 難波',           mode:'大阪メトロ',         H:0,I:1,K:0,C:0, cost:'¥180'   },
+  { day:'D5', sep:true,  route:'難波 → 三宮',           mode:'阪神電車',           H:0,I:1,K:0,C:0, cost:'¥430'   },
+  { day:'',   sep:false, route:'三宮 → 摩耶纜車站',     mode:'市バス',             H:0,I:1,K:0,C:0, cost:'¥230'   },
+  { day:'',   sep:false, route:'摩耶山 纜車往返',         mode:'纜車＋ロープウェイ', H:0,I:0,K:0,C:1, cost:'¥1,560' },
+  { day:'',   sep:false, route:'摩耶 → 三宮',           mode:'市バス',             H:0,I:1,K:0,C:0, cost:'¥230'   },
+  { day:'',   sep:false, route:'三宮 → 難波',           mode:'阪神電車',           H:0,I:1,K:0,C:0, cost:'¥430'   },
+  { day:'D6', sep:true,  route:'難波 → りんくうタウン', mode:'南海本線',           H:0,I:0,K:1,C:0, cost:'¥920'   },
+  { day:'',   sep:false, route:'りんくう → KIX',         mode:'南海空港線',         H:0,I:0,K:1,C:0, cost:'¥120'   },
 ];
 PASS_ROWS.forEach(r => { %>
               <tr class="<%= r.sep ? 'pt-sep' : '' %>">
                 <td class="pt-dc"><%= r.day %></td>
-                <td class="pt-rc"><%= r.route %></td>
-                <td class="pt-mc"><%= r.mode %></td>
+                <td class="pt-rc">
+                  <%= r.route %>
+                  <div class="pt-rc-mode"><%= r.mode %></div>
+                </td>
                 <td class="pt-tc <%= r.H ? 'pt-H' : '' %>"><%= r.H ? '✓' : '' %></td>
                 <td class="pt-tc <%= r.I ? 'pt-I' : '' %>"><%= r.I ? '✓' : '' %></td>
                 <td class="pt-tc <%= r.K ? 'pt-K' : '' %>"><%= r.K ? '✓' : '' %></td>
