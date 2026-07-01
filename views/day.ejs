@@ -110,10 +110,12 @@
           <% } %>
           <% if (a.image_url) { %>
             <img src="<%= a.image_url %>" alt="<%= a.title %>" class="act-img" loading="lazy" onerror="this.style.display='none'">
-          <% } else if (['attraction','food'].includes(a.category) && a.location) {
-               const wikiQ = a.location.replace(/（[^）]*）/g,'').replace(/\([^\)]*\)/g,'').split('・')[0].split('→')[0].trim();
+          <% } else if (['attraction','food'].includes(a.category)) {
+               const _c = s => (s||'').replace(/（[^）]*）/g,'').replace(/\([^\)]*\)/g,'').trim();
+               const _titleQ = _c(a.title).split(/[・→\s]+/)[0].trim();
+               const _locQ   = _c(a.location).split(/[・→\s]+/)[0].trim();
           %>
-            <div class="act-wiki-img" data-wiki="<%= wikiQ %>"></div>
+            <div class="act-wiki-img" data-wiki="<%= _titleQ %>" data-loc="<%= _locQ %>"></div>
           <% } %>
           <% if (a.description) { %>
             <div class="act-desc"><%= a.description %></div>
@@ -195,14 +197,16 @@
   const els = [...document.querySelectorAll('.act-wiki-img')];
   if (!els.length) return;
 
-  // 繁體中文 → 日文漢字對應（用於 ja.wikipedia.org 查詢）
+  // 繁體中文 → 日文漢字對應
   const TC2JP = [
     ['稻荷','稲荷'],['稻','稲'],['黑','黒'],['國','国'],['關','関'],
     ['兩','両'],['來','来'],['會','会'],['萬','万'],['鐵','鉄'],
     ['號','号'],['區','区'],['藝','芸'],['觀','観'],['覽','覧'],
-    ['澤','沢'],['濱','浜'],['橋','橋'],['豐','豊'],['禪','禅'],
-    ['龍','龍'],['總','総'],['體','体'],['寶','宝'],['齊','斉'],
-    ['邊','辺'],['圓','円'],['驛','駅'],['處','処'],['廟','廟'],
+    ['澤','沢'],['濱','浜'],['豐','豊'],['禪','禅'],['龍','龍'],
+    ['總','総'],['體','体'],['寶','宝'],['齊','斉'],['邊','辺'],
+    ['圓','円'],['驛','駅'],['處','処'],['廟','廟'],['舊','旧'],
+    ['戶','戸'],['歷','歴'],['廣','広'],['傳','伝'],['氣','気'],
+    ['惠','恵'],['竈','竈'],['攤','屋台'],
   ];
   function toJP(s) {
     let r = s;
@@ -210,36 +214,48 @@
     return r;
   }
 
-  const rawTerms = [...new Set(els.map(e => e.dataset.wiki).filter(Boolean))];
-  // 每個 term 同時用原始繁體與轉換後日文查詢
+  // 收集所有唯一搜尋詞：title（主）＋ location（備援）
+  const termSet = new Set();
+  els.forEach(e => {
+    if (e.dataset.wiki) termSet.add(e.dataset.wiki);
+    if (e.dataset.loc && e.dataset.loc !== e.dataset.wiki) termSet.add(e.dataset.loc);
+  });
+  const rawTerms = [...termSet].filter(Boolean);
+
   const termMap = {}; // jpTerm → originalTerm
   rawTerms.forEach(t => { termMap[toJP(t)] = t; });
   const jpTerms = Object.keys(termMap);
 
   try {
-    const r = await fetch(
-      'https://ja.wikipedia.org/w/api.php?action=query&prop=pageimages&format=json&pithumbsize=800&origin=*&redirects=1&titles='
-      + jpTerms.map(encodeURIComponent).join('|')
-    );
-    const d = await r.json();
-    const imgMap = {}; // originalTerm → imgUrl
-    for (const p of Object.values(d.query?.pages || {})) {
-      if (!p.thumbnail?.source) continue;
-      const orig = termMap[p.title] || p.title;
-      imgMap[orig] = p.thumbnail.source;
-    }
-    for (const rd of (d.query?.redirects || [])) {
-      const target = imgMap[termMap[rd.to] || rd.to];
-      if (target) {
-        const origFrom = termMap[rd.from] || rd.from;
-        imgMap[origFrom] = target;
+    // Wikipedia 最多50個 titles，分批處理
+    const imgMap = {};
+    for (let i = 0; i < jpTerms.length; i += 45) {
+      const batch = jpTerms.slice(i, i + 45);
+      const r = await fetch(
+        'https://ja.wikipedia.org/w/api.php?action=query&prop=pageimages&format=json&pithumbsize=800&origin=*&redirects=1&titles='
+        + batch.map(encodeURIComponent).join('|')
+      );
+      const d = await r.json();
+      for (const p of Object.values(d.query?.pages || {})) {
+        if (!p.thumbnail?.source) continue;
+        const orig = termMap[p.title] || p.title;
+        imgMap[orig] = p.thumbnail.source;
+      }
+      for (const rd of (d.query?.redirects || [])) {
+        const target = imgMap[termMap[rd.to] || rd.to];
+        if (target) { imgMap[termMap[rd.from] || rd.from] = target; }
       }
     }
+
     els.forEach(el => {
-      const term = el.dataset.wiki;
-      const url = imgMap[term] || Object.entries(imgMap).find(([k]) =>
-        k.includes(term.slice(0,3)) || term.includes(k.slice(0,3))
-      )?.[1];
+      const wiki = el.dataset.wiki || '';
+      const loc  = el.dataset.loc  || '';
+      // 優先 title 查詢結果，再 fallback 到 location，最後模糊比對
+      const url = imgMap[wiki] || imgMap[loc]
+        || Object.entries(imgMap).find(([k]) =>
+            (wiki.length >= 2 && (k.startsWith(wiki.slice(0,2)) || wiki.startsWith(k.slice(0,2)))) ||
+            (loc.length  >= 2 && (k.startsWith(loc.slice(0,2))  || loc.startsWith(k.slice(0,2))))
+          )?.[1];
       if (url) {
         const img = document.createElement('img');
         img.src = url; img.className = 'act-img'; img.loading = 'lazy';
