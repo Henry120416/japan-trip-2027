@@ -49,7 +49,7 @@
       <div class="empty-hint">點擊下方按鈕新增第一個行程</div>
     </div>
   <% } else { %>
-    <% activities.forEach(a => { %>
+    <% activities.forEach((a, idx) => { %>
       <div class="tl-item">
         <div class="tl-time">
           <%= a.time || '—' %>
@@ -58,7 +58,7 @@
           <% } %>
         </div>
         <div class="tl-track">
-          <div class="tl-dot"></div>
+          <div class="tl-dot"><%= idx + 1 %></div>
           <div class="tl-line"></div>
         </div>
         <div class="tl-card">
