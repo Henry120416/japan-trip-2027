@@ -489,6 +489,22 @@ if (USE_PG) {
       { kw:'頂級神戶牛',           img:'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/4_Kobe_Beef%2C_Kobe_Japan.jpg/960px-4_Kobe_Beef%2C_Kobe_Japan.jpg' },
       { kw:'舊居留地',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/151229_Kobe_Port_Japan01bs.jpg/960px-151229_Kobe_Port_Japan01bs.jpg' },
       { kw:'神戶港',               img:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/KOBE_PORT_TOWER_001.jpg/960px-KOBE_PORT_TOWER_001.jpg' },
+      // ── 交通・車站・空港 ──────────────────────────────────────────
+      { kw:'HARUKA',               img:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Kix_aerial_photo.jpg/960px-Kix_aerial_photo.jpg' },
+      { kw:'抵達KIX',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Kix_aerial_photo.jpg/960px-Kix_aerial_photo.jpg' },
+      { kw:'返台班機',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Kix_aerial_photo.jpg/960px-Kix_aerial_photo.jpg' },
+      { kw:'前往關西機場',         img:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Kix_aerial_photo.jpg/960px-Kix_aerial_photo.jpg' },
+      { kw:'京都駅',               img:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Kyoto-STA_Central.jpg/960px-Kyoto-STA_Central.jpg' },
+      { kw:'返回京都',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Kyoto-STA_Central.jpg/960px-Kyoto-STA_Central.jpg' },
+      { kw:'搭近鐵',               img:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/%E8%BF%91%E9%89%84%E5%A5%88%E8%89%AF%E9%A7%85%EF%BC%882024%E5%B9%B4%EF%BC%89.jpg/960px-%E8%BF%91%E9%89%84%E5%A5%88%E8%89%AF%E9%A7%85%EF%BC%882024%E5%B9%B4%EF%BC%89.jpg' },
+      { kw:'叡山電鐵',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Kibuneguchi_station_20200411.jpg/960px-Kibuneguchi_station_20200411.jpg' },
+      { kw:'京都→大阪',           img:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/JR_Osaka_Station_20260305.jpg/960px-JR_Osaka_Station_20260305.jpg' },
+      { kw:'搭阪神電車',           img:'https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/Headquarters_of_Hanshin_Electric_Railway_Co.%2C_Ltd.JPG/960px-Headquarters_of_Hanshin_Electric_Railway_Co.%2C_Ltd.JPG' },
+      { kw:'返回大阪',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Namba_Station.JPG/960px-Namba_Station.JPG' },
+      { kw:'南海難波',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Namba_Station.JPG/960px-Namba_Station.JPG' },
+      // ── 飯店 ──────────────────────────────────────────────────────
+      { kw:'Minn 祇園三條',        img:'https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Kyoto_Sanjo_hashi.JPG/960px-Kyoto_Sanjo_hashi.JPG' },
+      { kw:'Minn 難波',            img:'https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Namba_Station.JPG/960px-Namba_Station.JPG' },
     ];
     for (const e of P1_IMAGES) {
       await pool.query(
