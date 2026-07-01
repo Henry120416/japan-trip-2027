@@ -41,7 +41,7 @@ function speakerSVG() {
 <div id="panel-trip">
 <%
 const catIcon    = { '班機':'✈️', '住宿':'🏨', '緊急':'🆘', '實用':'💡', '交通':'🚇', '上網':'📶', '租車':'🚗' };
-const catOpenDef = { '班機': true, '住宿': true };
+const catOpenDef = {};
 %>
 <div class="section">
   <div class="section-title">📋 &nbsp;行程資訊</div>
@@ -161,12 +161,12 @@ PASS_ROWS.forEach(r => { %>
 
       <!-- 叫車 App -->
       <div class="accordion">
-        <div class="acc-hd open" onclick="toggleAcc(this)">
+        <div class="acc-hd" onclick="toggleAcc(this)">
           <span class="acc-hd-icon">🚕</span>
           <span class="acc-title">叫車 App</span>
           <svg class="acc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
-        <div class="acc-body open">
+        <div class="acc-body">
           <div class="app-chips">
             <a href="https://go.goinc.jp/" target="_blank" rel="noopener" class="app-chip">
               <span class="app-chip-dot" style="background:#E8FF00;border:1px solid #ccc"></span>GO タクシー
@@ -184,12 +184,12 @@ PASS_ROWS.forEach(r => { %>
 
       <!-- 計費方式 -->
       <div class="accordion">
-        <div class="acc-hd open" onclick="toggleAcc(this)">
+        <div class="acc-hd" onclick="toggleAcc(this)">
           <span class="acc-hd-icon">💴</span>
           <span class="acc-title">計費方式</span>
           <svg class="acc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
-        <div class="acc-body open">
+        <div class="acc-body">
           <div class="taxi-fare-row"><span>大阪 初乘</span><span>¥680 / 約 1km</span></div>
           <div class="taxi-fare-row"><span>京都 初乘</span><span>¥670 / 約 1km</span></div>
           <div class="taxi-fare-row"><span>追加跳表</span><span>約 ¥80 / 每 233m</span></div>
@@ -233,12 +233,12 @@ PASS_ROWS.forEach(r => { %>
 
       <!-- 常用日語 + TTS -->
       <div class="accordion">
-        <div class="acc-hd open" onclick="toggleAcc(this)">
+        <div class="acc-hd" onclick="toggleAcc(this)">
           <span class="acc-hd-icon">💬</span>
           <span class="acc-title">常用日語 <small style="font-weight:400;color:var(--t3);font-size:11px">點 🔊 聽發音</small></span>
           <svg class="acc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
-        <div class="acc-body open">
+        <div class="acc-body">
           <div class="taxi-phrase">
             <span class="taxi-jp">ここまでお願いします</span>
             <span class="taxi-tw">請帶我到這裡（搭配手機畫面）</span>
@@ -282,12 +282,12 @@ PASS_ROWS.forEach(r => { %>
 
       <!-- 美食 App -->
       <div class="accordion">
-        <div class="acc-hd open" onclick="toggleAcc(this)">
+        <div class="acc-hd" onclick="toggleAcc(this)">
           <span class="acc-hd-icon">📲</span>
           <span class="acc-title">美食 App</span>
           <svg class="acc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
-        <div class="acc-body open">
+        <div class="acc-body">
           <div class="app-chips">
             <a href="https://tabelog.com/" target="_blank" rel="noopener" class="app-chip">
               <span class="app-chip-dot" style="background:#C8353A"></span>食べログ
@@ -305,12 +305,12 @@ PASS_ROWS.forEach(r => { %>
 
       <!-- 用餐禮儀 -->
       <div class="accordion">
-        <div class="acc-hd open" onclick="toggleAcc(this)">
+        <div class="acc-hd" onclick="toggleAcc(this)">
           <span class="acc-hd-icon">🙏</span>
           <span class="acc-title">用餐禮儀</span>
           <svg class="acc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
-        <div class="acc-body open">
+        <div class="acc-body">
           <div class="taxi-tip">🙏 <strong>いただきます</strong> 開動前說，<strong>ごちそうさまでした</strong> 結束後說</div>
           <div class="taxi-tip">🍜 吃拉麵、蕎麥麵發出聲音是正常且有禮的</div>
           <div class="taxi-tip">🧻 入座有冷/熱毛巾（おしぼり），擦手用，不擦臉</div>
@@ -340,12 +340,12 @@ PASS_ROWS.forEach(r => { %>
 
       <!-- 點餐日語 + TTS -->
       <div class="accordion">
-        <div class="acc-hd open" onclick="toggleAcc(this)">
+        <div class="acc-hd" onclick="toggleAcc(this)">
           <span class="acc-hd-icon">💬</span>
           <span class="acc-title">點餐日語 <small style="font-weight:400;color:var(--t3);font-size:11px">點 🔊 聽發音</small></span>
           <svg class="acc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
-        <div class="acc-body open">
+        <div class="acc-body">
           <div class="taxi-phrase">
             <span class="taxi-jp">すみません</span>
             <span class="taxi-tw">不好意思（呼叫服務員）</span>
