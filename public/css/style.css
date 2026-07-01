@@ -5,6 +5,9 @@ html { scroll-behavior: smooth; }
 :root {
   --white:    #ffffff;
   --bg:       #f5f5f7;
+  --accent:   #5E97F6;
+  --depart:   #FF9F43;
+  --arrive:   #34C759;
   --card:     #ffffff;
   --t1:       #1d1d1f;
   --t2:       #515154;
@@ -209,8 +212,15 @@ body {
   font-size: var(--fs-meta); font-weight: 500; color: var(--t3);
 }
 .tl-time-lbl {
-  font-size: 10px; color: var(--t5); letter-spacing: 0.2px; margin-top: 2px;
+  font-size: 10px; letter-spacing: 0.2px; margin-top: 2px; font-weight: 600;
 }
+.tl-time-lbl.depart { color: var(--depart); }
+.tl-time-lbl.arrive { color: var(--arrive); }
+.tl-stay {
+  font-size: 9px; font-weight: 600; color: var(--accent);
+  margin-top: 5px; line-height: 1.2;
+}
+.tl-stay-lbl { font-size: 8px; color: var(--t5); }
 
 .tl-track {
   display: flex; flex-direction: column; align-items: center;
@@ -220,8 +230,9 @@ body {
   width: 18px; height: 18px; border-radius: 50%;
   background: var(--t1); margin-top: 15px; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
-  font-size: 9px; font-weight: 700; color: var(--bg1);
+  font-size: 9px; font-weight: 700; color: #fff;
 }
+.tl-dot-hotel { background: var(--accent); }
 .tl-line { width: 1px; flex: 1; min-height: 12px; background: var(--border-l); }
 .tl-item:last-child .tl-line { display: none; }
 

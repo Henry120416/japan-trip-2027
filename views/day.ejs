@@ -49,16 +49,35 @@
       <div class="empty-hint">點擊下方按鈕新增第一個行程</div>
     </div>
   <% } else { %>
-    <% activities.forEach((a, idx) => { %>
+    <% activities.forEach((a, idx) => {
+      const _next = activities[idx + 1];
+      let _stay = '';
+      if (a.time && _next && _next.time) {
+        const _toMin = t => { const [h,m] = t.split(':').map(Number); return h*60+m; };
+        const _diff = _toMin(_next.time) - _toMin(a.time);
+        if (_diff > 0 && _diff < 720) {
+          const _h = Math.floor(_diff/60), _m = _diff%60;
+          _stay = _h > 0 ? (_h+'h'+(_m>0?_m+'m':'')) : (_m+'m');
+        }
+      }
+      const _isTransport = a.category === 'transport';
+      const _isHotel = a.category === 'hotel';
+    %>
       <div class="tl-item">
         <div class="tl-time">
           <%= a.time || '—' %>
           <% if (a.time) { %>
-            <div class="tl-time-lbl"><%= a.category === 'transport' ? '出發' : '抵達' %></div>
+            <div class="tl-time-lbl <%= _isTransport ? 'depart' : 'arrive' %>">
+              <%= _isTransport ? '出發' : '抵達' %>
+            </div>
+          <% } %>
+          <% if (_stay) { %>
+            <div class="tl-stay"><%= _stay %></div>
+            <div class="tl-stay-lbl"><%= _isTransport ? '車程' : '停留' %></div>
           <% } %>
         </div>
         <div class="tl-track">
-          <div class="tl-dot"><%= idx + 1 %></div>
+          <div class="tl-dot<%= _isHotel ? ' tl-dot-hotel' : '' %>"><%= idx + 1 %></div>
           <div class="tl-line"></div>
         </div>
         <div class="tl-card">
