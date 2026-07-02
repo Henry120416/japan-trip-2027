@@ -114,7 +114,7 @@ const PLAN1_ACTS = [
 
 // ── 方案二行程資料（京都出發・神戶一日遊）─────────────
 const PLAN2_DAYS = [
-  { date:'2027-04-17', title:'京都慢慢開始',             city:'京都',      notes:'從關西機場搭 HARUKA 抵達，入住 Minn 祇園三條，漫步白川與鴨川，先斗町晚餐。[t5]' },
+  { date:'2027-04-17', title:'京都慢慢開始',             city:'京都',      notes:'從關西機場搭 HARUKA 抵達，入住 Mimaru 五條河原町，漫步鴨川，先斗町晚餐。[t5]' },
   { date:'2027-04-18', title:'奈良早攻',                 city:'奈良・京都', notes:'早攻東大寺・奈良公園，下午返京都漫步河原町新京極。' },
   { date:'2027-04-19', title:'貴船慢活',                 city:'京都・貴船', notes:'叡山電鐵前往貴船，神社・紅燈籠・川床，悠閒度過週日。' },
   { date:'2027-04-20', title:'京都黃金時段→移大阪',     city:'京都・大阪', notes:'清晨伏見稻荷・清水寺無人時段，中午移往大阪，道頓堀晚餐。' },
@@ -525,8 +525,8 @@ if (USE_PG) {
       { kw:'返回大阪',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Namba_Station.JPG/960px-Namba_Station.JPG' },
       { kw:'南海難波',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Namba_Station.JPG/960px-Namba_Station.JPG' },
       // ── 飯店 ──────────────────────────────────────────────────────
-      { kw:'Minn 祇園三條',        img:'https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Kyoto_Sanjo_hashi.JPG/960px-Kyoto_Sanjo_hashi.JPG' },
-      { kw:'Minn 難波',            img:'https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Namba_Station.JPG/960px-Namba_Station.JPG' },
+      { kw:'Mimaru 五條河原町',     img:'https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Kyoto_Sanjo_hashi.JPG/960px-Kyoto_Sanjo_hashi.JPG' },
+      { kw:'Mimaru 大阪難波',      img:'https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Namba_Station.JPG/960px-Namba_Station.JPG' },
     ];
     for (const e of P1_IMAGES) {
       await pool.query(
@@ -601,7 +601,7 @@ if (USE_PG) {
     // ── 活動名稱・地點・說明修正（幂等，可同時更新 title/location/description）────
     const ACTIVITY_FIXES = [
       // Day 2（2027-04-18）改走京阪丹波橋換近鐵，不需繞道京都駅
-      { pid:1, date:'2027-04-18', kw:'從 Minn 祇園三條 出發',
+      { pid:1, date:'2027-04-18', kw:'從 Mimaru 五條河原町 出發',
         title:null, location:null,
         desc:'從飯店步行5分鐘至三条京阪駅，搭京阪本線急行→丹波橋（12分，280円），步行5分換乘近鐵丹波橋，搭近鐵急行→近鉄奈良（40分，780円）。全程約55分，無需繞道京都駅。' },
       { pid:1, date:'2027-04-18', kw:'搭近鐵',
@@ -632,6 +632,38 @@ if (USE_PG) {
         vals
       );
     }
+
+    // ── 飯店更正：Minn → Mimaru（幂等批次替換）─────────────────────────
+    await pool.query(`
+      UPDATE activities SET
+        title       = REPLACE(title,       'Minn 祇園三條', 'Mimaru 五條河原町'),
+        location    = REPLACE(location,    'Minn 祇園三條（東山区三条通）', 'Mimaru 五條河原町（下京区河原町通五条）'),
+        description = REPLACE(description, 'Minn 祇園三條', 'Mimaru 五條河原町')
+      WHERE (title LIKE '%Minn 祇園三條%' OR location LIKE '%Minn 祇園三條%' OR description LIKE '%Minn 祇園三條%')
+        AND day_id IN (SELECT id FROM days WHERE plan_id=1)`);
+
+    await pool.query(`
+      UPDATE activities SET
+        title       = REPLACE(title,       'Minn 難波 South', 'Mimaru 大阪難波 Station'),
+        location    = REPLACE(location,    'Minn 難波 South（千日前2丁目）', 'Mimaru 大阪難波 Station（難波中2丁目）'),
+        description = REPLACE(description, 'Minn 難波 South', 'Mimaru 大阪難波 Station')
+      WHERE (title LIKE '%Minn 難波%' OR location LIKE '%Minn 難波%' OR description LIKE '%Minn 難波%')
+        AND day_id IN (SELECT id FROM days WHERE plan_id=1)`);
+
+    await pool.query(`
+      UPDATE activities SET description=$1, lat=34.9960, lng=135.7720
+      WHERE title LIKE '%Check-in%Mimaru 五條河原町%'
+        AND day_id IN (SELECT id FROM days WHERE plan_id=1 AND date='2027-04-17')`,
+      ['📍 地址：京都市下京区河原町通五条上ル\n最近車站：京阪電車「清水五条駅」步行4分・阪急「河原町駅」步行15分\nCheck-in：15:00～ ／ Check-out：～11:00\n\n位於鴨川沿岸五条橋附近，步行可達祇園・清水寺，鴨川河岸散步絕佳。']);
+
+    await pool.query(`
+      UPDATE activities SET description=$1, lat=34.6615, lng=135.4965
+      WHERE title LIKE '%Check-in%Mimaru 大阪難波 Station%'
+        AND day_id IN (SELECT id FROM days WHERE plan_id=1 AND date='2027-04-20')`,
+      ['📍 地址：大阪市浪速区難波中2丁目\n最近車站：JR「難波駅」步行1分・地下鐵御堂筋線「難波駅」步行5分・南海電車「難波駅」步行5分\nCheck-in：15:00～ ／ Check-out：～11:00\n\n緊鄰JR難波駅，道頓堀・心齋橋步行均可達，交通極為便利。']);
+
+    await pool.query(`UPDATE trip_info SET value='Mimaru 五條河原町' WHERE key='京都飯店名稱'`);
+    await pool.query(`UPDATE trip_info SET value='Mimaru 大阪難波 Station' WHERE key='大阪飯店名稱'`);
 
     // ── Mapcode 自動填充（幂等，只補空白欄位）──────────────────────────
     const ENRICH = [
