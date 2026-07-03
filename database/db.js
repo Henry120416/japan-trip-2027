@@ -764,79 +764,78 @@ if (USE_PG) {
     // ── 方案一活動圖片（Wikipedia/Wikimedia Commons 核實 URL，幂等）────
     const P1_IMAGES = [
       // ── D1 京都抵達 ────────────────────────────────────────────────
+      // 抵達關西機場 → KIX 航拍；Haruka 搭車 → 火車圖（與 KIX 不同）；飯店 → 京都橋
       { kw:'關西機場',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Kix_aerial_photo.jpg/960px-Kix_aerial_photo.jpg' },
-      { kw:'Haruka',               img:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Kix_aerial_photo.jpg/960px-Kix_aerial_photo.jpg' },
-      { kw:'HARUKA',               img:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Kix_aerial_photo.jpg/960px-Kix_aerial_photo.jpg' },
+      { kw:'Haruka',               img:'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/JRW_281_series_Haruka.jpg/960px-JRW_281_series_Haruka.jpg' },
       { kw:'京都站前往飯店',       img:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Kyoto-STA_Central.jpg/960px-Kyoto-STA_Central.jpg' },
+      // 高瀨川/木屋町/鴨川 → 鴨川河景；先斗町漫步 → 巷弄夜景；燒肉弘晚餐 → 和牛圖（覆蓋先斗町）
       { kw:'高瀨川',               img:'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/%E9%B4%A8%E5%B7%9D%E3%83%87%E3%83%AB%E3%82%BF3.jpg/960px-%E9%B4%A8%E5%B7%9D%E3%83%87%E3%83%AB%E3%82%BF3.jpg' },
-      { kw:'木屋町',               img:'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/%E9%B4%A8%E5%B7%9D%E3%83%87%E3%83%AB%E3%82%BF3.jpg/960px-%E9%B4%A8%E5%B7%9D%E3%83%87%E3%83%AB%E3%82%BF3.jpg' },
+      { kw:'木屋町',               img:'https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Kyoto_Sanjo_hashi.JPG/960px-Kyoto_Sanjo_hashi.JPG' },
       { kw:'鴨川',                 img:'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/%E9%B4%A8%E5%B7%9D%E3%83%87%E3%83%AB%E3%82%BF3.jpg/960px-%E9%B4%A8%E5%B7%9D%E3%83%87%E3%83%AB%E3%82%BF3.jpg' },
       { kw:'先斗町',               img:'https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/20111023_Gion1.jpg/960px-20111023_Gion1.jpg' },
+      { kw:'燒肉弘',               img:'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/4_Kobe_Beef%2C_Kobe_Japan.jpg/960px-4_Kobe_Beef%2C_Kobe_Japan.jpg' },
       { kw:'四條河原町',           img:'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Nishiki_Ichiba_by_matsuyuki.jpg/960px-Nishiki_Ichiba_by_matsuyuki.jpg' },
       // ── D2 奈良 ────────────────────────────────────────────────────
+      // 東大寺 → 大仏殿；奈良公園 → 興福寺五重塔；江戶川(午餐) → 柿葉壽司；奈良町 → 春日燈籠
       { kw:'東大寺',               img:'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/%E6%9D%B1%E5%A4%A7%E5%AF%BA_%E5%A4%A7%E4%BB%8F%E6%AE%BF%EF%BC%882024%E5%B9%B4%EF%BC%89.jpg/960px-%E6%9D%B1%E5%A4%A7%E5%AF%BA_%E5%A4%A7%E4%BB%8F%E6%AE%BF%EF%BC%882024%E5%B9%B4%EF%BC%89.jpg' },
       { kw:'奈良公園',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Five-storied_Pagoda%2C_Kofuku-ji_-_Nara%2C_Japan_-_DSC07497.jpg/960px-Five-storied_Pagoda%2C_Kofuku-ji_-_Nara%2C_Japan_-_DSC07497.jpg' },
-      { kw:'江戶川',               img:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Five-storied_Pagoda%2C_Kofuku-ji_-_Nara%2C_Japan_-_DSC07497.jpg/960px-Five-storied_Pagoda%2C_Kofuku-ji_-_Nara%2C_Japan_-_DSC07497.jpg' },
-      { kw:'奈良町',               img:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Five-storied_Pagoda%2C_Kofuku-ji_-_Nara%2C_Japan_-_DSC07497.jpg/960px-Five-storied_Pagoda%2C_Kofuku-ji_-_Nara%2C_Japan_-_DSC07497.jpg' },
+      { kw:'江戶川',               img:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Kakinohazusi.jpg/960px-Kakinohazusi.jpg' },
+      { kw:'奈良町',               img:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Kasuga-d%C5%8Dr%C5%8D_parts.jpg/960px-Kasuga-d%C5%8Dr%C5%8D_parts.jpg' },
       { kw:'錦市場',               img:'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Nishiki_Ichiba_by_matsuyuki.jpg/960px-Nishiki_Ichiba_by_matsuyuki.jpg' },
       { kw:'新京極',               img:'https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/%E6%96%B0%E4%BA%AC%E6%A5%B54262.JPG/960px-%E6%96%B0%E4%BA%AC%E6%A5%B54262.JPG' },
+      // 京都勝牛/京都晚餐 → 花見小路；錦市場/新京極不同，已各自指定
       { kw:'京都勝牛',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Gion_Hanamik%C3%B4ji-d%C3%B4ri.jpg/960px-Gion_Hanamik%C3%B4ji-d%C3%B4ri.jpg' },
-      { kw:'京都晚餐',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Gion_Hanamik%C3%B4ji-d%C3%B4ri.jpg/960px-Gion_Hanamik%C3%B4ji-d%C3%B4ri.jpg' },
       // ── D3 貴船 ────────────────────────────────────────────────────
+      // 貴船神社 → 神社紅燈籠；溪流散步 → 川床圖；茶屋午餐 → 川床料理（不同）；平野神社/祇園牛禪 → 各自獨立
       { kw:'貴船神社',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Kibune_Shinto_Shrine001.jpg/960px-Kibune_Shinto_Shrine001.jpg' },
       { kw:'水占卜',               img:'https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Kamigamo-Omikuji-M1587.jpg/960px-Kamigamo-Omikuji-M1587.jpg' },
-      { kw:'貴船溪流',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Kibune_Shinto_Shrine001.jpg/960px-Kibune_Shinto_Shrine001.jpg' },
-      { kw:'貴船茶屋',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Noryo_yuka_by_w00kie_in_Kyoto.jpg/960px-Noryo_yuka_by_w00kie_in_Kyoto.jpg' },
-      { kw:'川床',                 img:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Noryo_yuka_by_w00kie_in_Kyoto.jpg/960px-Noryo_yuka_by_w00kie_in_Kyoto.jpg' },
-      { kw:'平野神社',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/JP-Kyoto-yasaka.JPG/960px-JP-Kyoto-yasaka.JPG' },
-      { kw:'祇園牛禪',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Gion_Hanamik%C3%B4ji-d%C3%B4ri.jpg/960px-Gion_Hanamik%C3%B4ji-d%C3%B4ri.jpg' },
-      { kw:'祇園晚餐',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Gion_Hanamik%C3%B4ji-d%C3%B4ri.jpg/960px-Gion_Hanamik%C3%B4ji-d%C3%B4ri.jpg' },
+      { kw:'貴船溪流',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Noryo_yuka_by_w00kie_in_Kyoto.jpg/960px-Noryo_yuka_by_w00kie_in_Kyoto.jpg' },
+      { kw:'貴船茶屋',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Tea_Minami-yamashiro%2C_Uji_Kyoto%2C_Japan.jpg/960px-Tea_Minami-yamashiro%2C_Uji_Kyoto%2C_Japan.jpg' },
+      { kw:'平野神社',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Ninnaji_Kyoto07n4500.jpg/960px-Ninnaji_Kyoto07n4500.jpg' },
+      { kw:'祇園牛禪',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/150124_Gion_Kyoto_Japan01s3.jpg/960px-150124_Gion_Kyoto_Japan01s3.jpg' },
       // ── D4 清水寺→移大阪 ──────────────────────────────────────────
+      // 伏見稻荷 → 千本鳥居；清水寺 → 舞台；二年坂/三年坂 → 石板路（同景區但不同活動，可同圖）
+      // 八坂塔 → 塔圖；阿古屋茶屋 → 高台寺附近；道頓堀逛街 → 戎橋；北極星晚餐 → 大阪站（覆蓋道頓堀）
       { kw:'伏見稻荷大社',         img:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Fushimiinari-taisha%2C_gehaiden-1.jpg/960px-Fushimiinari-taisha%2C_gehaiden-1.jpg' },
       { kw:'清水寺',               img:'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Kiyomizu-dera%2C_Kyoto%2C_November_2016_-02.jpg/960px-Kiyomizu-dera%2C_Kyoto%2C_November_2016_-02.jpg' },
       { kw:'二年坂',               img:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Stone_stairway_Kiyomizu-dera.JPG/960px-Stone_stairway_Kiyomizu-dera.JPG' },
       { kw:'三年坂',               img:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Stone_stairway_Kiyomizu-dera.JPG/960px-Stone_stairway_Kiyomizu-dera.JPG' },
       { kw:'八坂塔',               img:'https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/Hokanji_Kyoto01n4272.jpg/960px-Hokanji_Kyoto01n4272.jpg' },
-      { kw:'八坂の塔',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/Hokanji_Kyoto01n4272.jpg/960px-Hokanji_Kyoto01n4272.jpg' },
-      { kw:'八坂神社',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/JP-Kyoto-yasaka.JPG/960px-JP-Kyoto-yasaka.JPG' },
       { kw:'阿古屋茶屋',           img:'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/170923_Kodaiji_Kyoto_Japan09n.jpg/960px-170923_Kodaiji_Kyoto_Japan09n.jpg' },
       { kw:'道頓堀',               img:'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Dotonburi_River_Namba_Japan_by_Don_Ramey_Logan.jpg/960px-Dotonburi_River_Namba_Japan_by_Don_Ramey_Logan.jpg' },
-      { kw:'北極星',               img:'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Dotonburi_River_Namba_Japan_by_Don_Ramey_Logan.jpg/960px-Dotonburi_River_Namba_Japan_by_Don_Ramey_Logan.jpg' },
+      { kw:'北極星',               img:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/JR_Osaka_Station_20260305.jpg/960px-JR_Osaka_Station_20260305.jpg' },
       // ── D5 大阪 ────────────────────────────────────────────────────
+      // 黑門 → 黑門圖；難波商圈 → 難波站；梅田 → 大阪站；前往梅田(交通) → 御堂筋線（覆蓋梅田）；中之島 → 公會堂；和牛燒肉 → 和牛；空中庭園 → スカイビル
       { kw:'黑門市場',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/%E9%BB%92%E9%96%80%E5%B8%82%E5%A0%B4_2024%281%29.jpg/960px-%E9%BB%92%E9%96%80%E5%B8%82%E5%A0%B4_2024%281%29.jpg' },
-      { kw:'難波商圈',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Dotonburi_River_Namba_Japan_by_Don_Ramey_Logan.jpg/960px-Dotonburi_River_Namba_Japan_by_Don_Ramey_Logan.jpg' },
+      { kw:'難波商圈',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Namba_Station.JPG/960px-Namba_Station.JPG' },
       { kw:'Grand Front',          img:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/JR_Osaka_Station_20260305.jpg/960px-JR_Osaka_Station_20260305.jpg' },
       { kw:'梅田',                 img:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/JR_Osaka_Station_20260305.jpg/960px-JR_Osaka_Station_20260305.jpg' },
+      { kw:'前往梅田',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/%E8%BF%91%E9%89%84%E5%A5%88%E8%89%AF%E9%A7%85%EF%BC%882024%E5%B9%B4%EF%BC%89.jpg/960px-%E8%BF%91%E9%89%84%E5%A5%88%E8%89%AF%E9%A7%85%EF%BC%882024%E5%B9%B4%EF%BC%89.jpg' },
       { kw:'中之島',               img:'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Osaka_Central_Public_Hall01s3200.jpg/960px-Osaka_Central_Public_Hall01s3200.jpg' },
       { kw:'和牛燒肉',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/4_Kobe_Beef%2C_Kobe_Japan.jpg/960px-4_Kobe_Beef%2C_Kobe_Japan.jpg' },
       { kw:'空中庭園',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Umeda_Sky_Building_Osaka.jpg/960px-Umeda_Sky_Building_Osaka.jpg' },
       // ── D6 返台 ────────────────────────────────────────────────────
+      // 造幣局 → 大阪Mint櫻花；臨空城/金子半之助 → Outlet圖（同場所）；報到/返台 → KIX（覆蓋前面）
       { kw:'造幣局',               img:'https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Osaka_Mint_Sakura_2009.jpg/960px-Osaka_Mint_Sakura_2009.jpg' },
       { kw:'臨空城',               img:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Rinku_premium_outlets02s3200.jpg/960px-Rinku_premium_outlets02s3200.jpg' },
       { kw:'金子半之助',           img:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Rinku_premium_outlets02s3200.jpg/960px-Rinku_premium_outlets02s3200.jpg' },
-      { kw:'星宇航空',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Kix_aerial_photo.jpg/960px-Kix_aerial_photo.jpg' },
-      { kw:'返台',                 img:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Kix_aerial_photo.jpg/960px-Kix_aerial_photo.jpg' },
-      { kw:'辦理報到',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Kix_aerial_photo.jpg/960px-Kix_aerial_photo.jpg' },
       { kw:'前往關西機場',         img:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Kix_aerial_photo.jpg/960px-Kix_aerial_photo.jpg' },
+      { kw:'辦理報到',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Kix_aerial_photo.jpg/960px-Kix_aerial_photo.jpg' },
+      { kw:'星宇航空',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Kix_aerial_photo.jpg/960px-Kix_aerial_photo.jpg' },
       // ── 交通 ──────────────────────────────────────────────────────
       { kw:'返回京都',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Kyoto-STA_Central.jpg/960px-Kyoto-STA_Central.jpg' },
-      { kw:'京都駅',               img:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Kyoto-STA_Central.jpg/960px-Kyoto-STA_Central.jpg' },
-      { kw:'搭近鐵',               img:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/%E8%BF%91%E9%89%84%E5%A5%88%E8%89%AF%E9%A7%85%EF%BC%882024%E5%B9%B4%EF%BC%89.jpg/960px-%E8%BF%91%E9%89%84%E5%A5%88%E8%89%AF%E9%A7%85%EF%BC%882024%E5%B9%B4%EF%BC%89.jpg' },
       { kw:'叡山電鐵',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Kibuneguchi_station_20200411.jpg/960px-Kibuneguchi_station_20200411.jpg' },
       { kw:'南海難波',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Namba_Station.JPG/960px-Namba_Station.JPG' },
-      { kw:'返回大阪',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Namba_Station.JPG/960px-Namba_Station.JPG' },
-      // ── 飯店 ──────────────────────────────────────────────────────
+      // ── 飯店（透過 location 欄位匹配，各 MIMARU 獨立圖片）────────
       { kw:'MIMARU京都',           img:'https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Kyoto_Sanjo_hashi.JPG/960px-Kyoto_Sanjo_hashi.JPG' },
       { kw:'MIMARU大阪',           img:'https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Namba_Station.JPG/960px-Namba_Station.JPG' },
-      { kw:'MIMARU難波',           img:'https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Namba_Station.JPG/960px-Namba_Station.JPG' },
-      // ── 雨天備案場景 ──────────────────────────────────────────────
+      // ── 雨天備案 ──────────────────────────────────────────────────
       { kw:'平等院鳳凰堂',         img:'https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Phoenix_Hall_in_Byodo-in_Temple%2C_Ujirenge_Uji_city_2026.jpg/960px-Phoenix_Hall_in_Byodo-in_Temple%2C_Ujirenge_Uji_city_2026.jpg' },
       { kw:'中村藤吉',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Tea_Minami-yamashiro%2C_Uji_Kyoto%2C_Japan.jpg/960px-Tea_Minami-yamashiro%2C_Uji_Kyoto%2C_Japan.jpg' },
-      { kw:'白川巽橋',             img:'https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/150124_Gion_Kyoto_Japan01s3.jpg/960px-150124_Gion_Kyoto_Japan01s3.jpg' },
     ];
     for (const e of P1_IMAGES) {
       await pool.query(
-        `UPDATE activities SET image_url=$1 WHERE title LIKE $2 AND day_id IN (SELECT id FROM days WHERE plan_id=1)`,
+        `UPDATE activities SET image_url=$1 WHERE (title LIKE $2 OR location LIKE $2) AND day_id IN (SELECT id FROM days WHERE plan_id=1)`,
         [e.img, `%${e.kw}%`]
       );
     }
