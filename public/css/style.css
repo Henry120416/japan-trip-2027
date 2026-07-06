@@ -110,9 +110,8 @@ body {
 
 /* ─── Home Hero Header ──────────────────────────────────── */
 .home-hero {
-  padding: 68px 22px 20px;
+  padding: 68px 22px 24px;
   background: #fff;
-  border-bottom: 1px solid var(--border-l);
 }
 .home-hero-row {
   display: flex; align-items: flex-start;
@@ -137,9 +136,8 @@ body {
 
 /* ─── Shortcut Row ─────────────────────────────── */
 .shortcut-row {
-  display: flex; padding: 20px 16px 18px;
+  display: flex; padding: 20px 16px 20px;
   background: var(--white);
-  border-bottom: 1px solid var(--border-l);
   gap: 4px;
 }
 .shortcut-item {
@@ -149,10 +147,9 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 .shortcut-ico {
-  width: 60px; height: 60px; border-radius: 18px;
+  width: 64px; height: 64px; border-radius: 22px;
   display: flex; align-items: center; justify-content: center;
   transition: transform .18s ease;
-  box-shadow: 0 4px 14px rgba(0,0,0,.09), 0 1px 3px rgba(0,0,0,.05);
 }
 .shortcut-item:active .shortcut-ico { transform: scale(.88); }
 .shortcut-lbl {
@@ -623,8 +620,8 @@ body {
   transition: transform .2s ease;
   -webkit-tap-highlight-color: transparent;
 }
-.day-card--short { height: 175px; }
-.day-card--tall  { height: 248px; }
+.day-card--short { height: 168px; }
+.day-card--tall  { height: 278px; }
 .day-card:active { transform: scale(.96); }
 
 .dc-photo {
@@ -647,23 +644,27 @@ body {
   background: linear-gradient(to bottom, transparent 30%, rgba(0,0,0,.55) 100%);
 }
 
-/* Text overlay at card bottom */
+/* Text overlay at card bottom — matches reference rating+city pattern */
 .dc-info {
   position: absolute; bottom: 0; left: 0; right: 0;
-  padding: 10px 12px 12px;
+  padding: 8px 12px 13px;
 }
-.dc-info-num {
-  font-size: 10px; font-weight: 700; letter-spacing: .3px;
-  color: rgba(255,255,255,.65); margin-bottom: 2px;
+.dc-badge {
+  display: inline-flex; align-items: center; gap: 3px;
+  background: rgba(255,255,255,.85);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  border-radius: 20px; padding: 3px 8px;
+  font-size: 10px; font-weight: 700; color: #1d1d1f;
+  margin-bottom: 6px;
 }
 .dc-info-city {
   font-size: 9px; font-weight: 700; letter-spacing: 1.4px;
-  text-transform: uppercase; color: rgba(255,255,255,.6);
+  text-transform: uppercase; color: rgba(255,255,255,.7);
   margin-bottom: 3px;
 }
 .dc-info-title {
-  font-size: 13px; font-weight: 800; color: #fff;
-  line-height: 1.25; word-break: keep-all;
+  font-size: 14px; font-weight: 800; color: #fff;
+  line-height: 1.2; word-break: keep-all;
 }
 
 /* city-tag: used in day.ejs hero */
