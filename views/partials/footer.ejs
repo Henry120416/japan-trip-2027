@@ -153,5 +153,8 @@
 <div id="toast" class="toast"></div>
 
 <script src="/js/main.js"></script>
+<% if (typeof extraScript !== 'undefined' && extraScript) { %>
+<script src="<%= extraScript %>"></script>
+<% } %>
 </body>
 </html>

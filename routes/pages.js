@@ -4,6 +4,19 @@ const { get, all, run } = require('../database/db');
 
 const PLAN = 1;
 
+const CAT_COLORS = { '機票':'#FD7043','住宿':'#A29BFE','交通':'#5E97F6','景點門票':'#FF9F43','餐飲':'#66BB6A','購物':'#EE5A24','其他':'#B2BEC3' };
+const PERSONS = 6;
+
+function expCat(title) {
+  if (/機票/.test(title))                                                             return '機票';
+  if (/電車|JR|南海|阪神|阪急|交通|宅配|HARUKA|纜車|機場|搭乘|Rapi|電鐵|巴士|ロープウェイ|公車|地鐵/.test(title)) return '交通';
+  if (/入場費|門票|參觀|入場|入館/.test(title))                                         return '景點門票';
+  if (/午餐|晚餐|早餐|茶|燒肉|牛肉|料理|餐|市場|飲食|壽司|拉麵|串炸|甜點|美食|抹茶/.test(title)) return '餐飲';
+  if (/購物|Outlet|免稅|手信|伴手禮/.test(title))                                       return '購物';
+  if (/住宿|飯店|旅館|Hotel/.test(title))                                               return '住宿';
+  return '其他';
+}
+
 async function geocode(loc) {
   if (!loc) return null;
   const clean = loc.replace(/[（(][^）)]*[）)]/g, '').trim();
@@ -94,12 +107,36 @@ router.get('/expenses', async (req, res) => {
       LEFT JOIN days d ON d.id = e.day_id
       WHERE d.plan_id = ? OR e.day_id IS NULL
     `, [PLAN]);
+
+    const catTotals = {};
+    expenses.forEach(e => {
+      const cat = expCat(e.title);
+      catTotals[cat] = (catTotals[cat] || 0) + (e.amount_twd || 0);
+    });
+    const chartLabels = Object.keys(catTotals).filter(k => catTotals[k] > 0);
+    const chartData   = chartLabels.map(k => Math.ceil(catTotals[k] / PERSONS));
+    const chartColors = chartLabels.map(k => CAT_COLORS[k] || CAT_COLORS['其他']);
+
+    const grouped = {};
+    expenses.forEach(e => {
+      const key = e.day_id || 'none';
+      if (!grouped[key]) grouped[key] = {
+        label: e.day_date ? e.day_title + ' · ' + e.day_date.replace(/-/g,'/') : '未分類',
+        items: []
+      };
+      grouped[key].items.push(e);
+    });
+
     res.render('expenses', {
       days,
       expenses,
+      grouped,
+      chartLabels,
+      chartData,
+      chartColors,
       total_jpy: stats.total_jpy || 0,
       total_twd: stats.total_twd || 0,
-      per_person: Math.ceil((stats.total_twd || 0) / 6),
+      per_person: Math.ceil((stats.total_twd || 0) / PERSONS),
     });
   } catch (e) { res.status(500).send(e.message); }
 });

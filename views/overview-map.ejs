@@ -1,6 +1,5 @@
 <%
 const DAY_COLORS = ['#3B82F6','#10B981','#8B5CF6','#F97316','#EF4444','#EC4899'];
-const catIco = { transport:'✈', food:'🍽', attraction:'🏛', hotel:'🏨', other:'📌' };
 %>
 <!DOCTYPE html>
 <html lang="zh-TW">
@@ -14,67 +13,10 @@ const catIco = { transport:'✈', food:'🍽', attraction:'🏛', hotel:'🏨', 
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <style>
     html, body { height: 100%; margin: 0; }
-    .map-wrap { position: fixed; top: 54px; left: 0; right: 0; bottom: calc(164px + 72px); }
-    #mapEl { width: 100%; height: 100%; }
-
-    .ov-sheet {
-      position: fixed; bottom: 72px; left: 0; right: 0; height: 164px;
-      background: var(--bg); border-top: 1.5px solid var(--border-l);
-      z-index: 500;
-    }
+    .map-wrap { bottom: calc(164px + 72px); }
     @supports (padding: max(0px)) {
-      .ov-sheet { bottom: calc(72px + env(safe-area-inset-bottom)); }
-      .map-wrap  { bottom: calc(236px + env(safe-area-inset-bottom)); }
+      .map-wrap { bottom: calc(236px + env(safe-area-inset-bottom)); }
     }
-    .ov-scroll {
-      display: flex; gap: 10px;
-      padding: 14px 16px 0;
-      overflow-x: auto; -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
-    }
-    .ov-scroll::-webkit-scrollbar { display: none; }
-
-    .ov-all {
-      flex-shrink: 0; display: flex; flex-direction: column;
-      align-items: center; justify-content: center; gap: 5px;
-      width: 62px; height: 90px;
-      background: var(--t1); color: #fff;
-      border-radius: 16px; cursor: pointer;
-      transition: transform .15s ease;
-    }
-    .ov-all span { font-size: 11px; font-weight: 600; }
-    .ov-all:active { transform: scale(.95); }
-    .ov-all.dim { opacity: .4; }
-
-    .ov-day {
-      flex-shrink: 0; display: flex; flex-direction: column;
-      align-items: center; gap: 5px;
-      width: 72px; height: 90px;
-      background: var(--card); border-radius: 16px;
-      padding: 10px 8px; cursor: pointer;
-      box-shadow: var(--shadow-s);
-      border: 2px solid transparent;
-      transition: all .2s ease;
-    }
-    .ov-day.active { box-shadow: var(--shadow-m); }
-    .ov-day.dim { opacity: .35; }
-    .ov-day:active { transform: scale(.95); }
-
-    .od-num {
-      width: 30px; height: 30px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 13px; font-weight: 800; color: #fff;
-    }
-    .od-date { font-size: 10px; color: var(--t4); font-weight: 500; }
-    .od-city { font-size: 11px; color: var(--t1); font-weight: 700; text-align: center; line-height: 1.2; }
-
-    .ov-hint {
-      text-align: center; font-size: 11px; color: var(--t5);
-      padding: 6px 0 0;
-    }
-
-    .lf-popup b { font-size: 13px; }
-    .lf-popup small { font-size: 11px; color: #666; }
   </style>
 </head>
 <body>

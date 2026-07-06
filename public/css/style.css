@@ -671,3 +671,80 @@ body {
   .tab-bar { height: calc(72px + env(safe-area-inset-bottom)); padding-bottom: env(safe-area-inset-bottom); }
   .page { padding-bottom: calc(88px + env(safe-area-inset-bottom)); }
 }
+
+/* ─── Map Base (shared by day map & overview map) ────── */
+.map-wrap { position: fixed; top: 54px; left: 0; right: 0; }
+#mapEl { width: 100%; height: 100%; }
+
+/* ─── Day Map Sheet ─────────────────────────────────── */
+.map-sheet { position: fixed; bottom: 0; left: 0; right: 0; height: 230px; background: var(--bg); border-top: 1.5px solid var(--border-l); overflow-y: auto; -webkit-overflow-scrolling: touch; z-index: 500; }
+.ms-head { padding: 10px 16px 4px; font-size: 11px; font-weight: 600; color: var(--t4); letter-spacing: 0.5px; text-transform: uppercase; }
+.ms-item { display: flex; align-items: center; gap: 10px; padding: 8px 16px; cursor: pointer; }
+.ms-item:active { background: var(--fill); }
+.ms-badge { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #fff; flex-shrink: 0; }
+.ms-no-coords { opacity: 0.35; pointer-events: none; }
+.ms-name { font-size: 13px; color: var(--t1); font-weight: 500; line-height: 1.3; }
+.ms-meta { font-size: 11px; color: var(--t4); margin-top: 1px; }
+.mp-wrap { width: 28px; height: 28px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,.3); }
+.mp-wrap span { transform: rotate(45deg); color: #fff; font-size: 12px; font-weight: 700; }
+.map-empty { padding: 40px 20px; text-align: center; color: var(--t4); font-size: 14px; }
+.dist-badge { background: rgba(255,255,255,0.93); border: 1.5px solid #6366F1; color: #6366F1; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 10px; white-space: nowrap; transform: translate(-50%, -50%); pointer-events: none; box-shadow: 0 1px 4px rgba(0,0,0,.15); }
+.ms-dist-row { display: flex; align-items: center; gap: 6px; padding: 2px 16px 2px 22px; font-size: 10px; color: #6366F1; font-weight: 600; }
+.ms-dist-row::before { content: ''; flex: 1; height: 1px; background: #e0e0ff; }
+.ms-dist-row::after  { content: ''; flex: 1; height: 1px; background: #e0e0ff; }
+
+/* ─── Overview Map Sheet ────────────────────────────── */
+.ov-sheet { position: fixed; bottom: 72px; left: 0; right: 0; height: 164px; background: var(--bg); border-top: 1.5px solid var(--border-l); z-index: 500; }
+@supports (padding: max(0px)) {
+  .ov-sheet { bottom: calc(72px + env(safe-area-inset-bottom)); }
+}
+.ov-scroll { display: flex; gap: 10px; padding: 14px 16px 0; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.ov-scroll::-webkit-scrollbar { display: none; }
+.ov-all { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; width: 62px; height: 90px; background: var(--t1); color: #fff; border-radius: 16px; cursor: pointer; transition: transform .15s ease; }
+.ov-all span { font-size: 11px; font-weight: 600; }
+.ov-all:active { transform: scale(.95); }
+.ov-all.dim { opacity: .4; }
+.ov-day { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 5px; width: 72px; height: 90px; background: var(--card); border-radius: 16px; padding: 10px 8px; cursor: pointer; box-shadow: var(--shadow-s); border: 2px solid transparent; transition: all .2s ease; }
+.ov-day.active { box-shadow: var(--shadow-m); }
+.ov-day.dim { opacity: .35; }
+.ov-day:active { transform: scale(.95); }
+.od-num { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: #fff; }
+.od-date { font-size: 10px; color: var(--t4); font-weight: 500; }
+.od-city { font-size: 11px; color: var(--t1); font-weight: 700; text-align: center; line-height: 1.2; }
+.ov-hint { text-align: center; font-size: 11px; color: var(--t5); padding: 6px 0 0; }
+.lf-popup b { font-size: 13px; }
+.lf-popup small { font-size: 11px; color: #666; }
+
+/* ─── Expenses Chart ────────────────────────────────── */
+.exp-chart-card { margin: 0 16px 16px; background: var(--card); border-radius: 16px; padding: 20px 16px 16px; border: 1px solid var(--border-l); box-shadow: var(--shadow-s); }
+.chart-wrap { position: relative; width: 180px; height: 180px; margin: 0 auto 20px; }
+.chart-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; pointer-events: none; }
+.chart-center-val { font-size: 1.25rem; font-weight: 700; color: var(--t1); line-height: 1.2; }
+.chart-center-lbl { font-size: .65rem; color: var(--t3); margin-top: 2px; }
+.legend-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; }
+.legend-row { display: flex; align-items: center; gap: 6px; font-size: .78rem; }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.legend-lbl { color: var(--t2); flex: 1; min-width: 0; white-space: nowrap; }
+.legend-val { color: var(--t1); font-weight: 600; font-size: .78rem; white-space: nowrap; }
+.exp-section-title { padding: 4px 16px 6px; font-size: .72rem; font-weight: 600; color: var(--t3); text-transform: uppercase; letter-spacing: .06em; }
+
+/* ─── Pass Table (Info page) ────────────────────────── */
+.pass-tbl { width: 100%; border-collapse: collapse; font-size: .73rem; }
+.pass-tbl th, .pass-tbl td { text-align: left; padding: 6px 7px; border-bottom: 1px solid var(--border-l); vertical-align: middle; }
+.pass-tbl thead tr { background: var(--bg); }
+.pass-tbl th { color: var(--t3); font-weight: 600; white-space: nowrap; }
+.pt-day, .pt-dc { width: 26px; min-width: 26px; white-space: nowrap; font-weight: 700; color: var(--t1); padding-left: 10px; }
+.pt-route, .pt-rc { color: var(--t1); }
+.pt-rc-mode { font-size: .65rem; color: var(--t3); margin-top: 2px; }
+.pt-tick, .pt-tc { width: 24px; min-width: 24px; text-align: center; padding: 6px 3px; font-weight: 700; }
+.pt-cost, .pt-cc { min-width: 54px; white-space: nowrap; color: var(--t2); text-align: right; padding-right: 10px; }
+.pt-H { color: #F4845F; } .pt-I { color: #5E97F6; } .pt-K { color: #66BB6A; } .pt-C { color: #B2BEC3; }
+.pt-sep td { border-top: 2px solid var(--border); }
+.pass-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; padding: 10px 12px 8px; }
+.pass-legend-item { display: flex; align-items: center; gap: 5px; font-size: .72rem; color: var(--t2); }
+.pass-legend-dot { display: inline-block; width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+.app-chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 8px 0 6px; }
+.app-chip { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 20px; background: var(--fill); border: 1px solid var(--border-l); font-size: 13px; font-weight: 500; color: var(--t1); text-decoration: none; transition: background .12s; }
+.app-chip:active { background: var(--border-l); }
+.app-chip-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.acc-sub { font-size: .72rem; color: var(--t3); line-height: 1.6; padding-top: 2px; }
