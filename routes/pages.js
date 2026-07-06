@@ -148,30 +148,26 @@ router.get('/expenses', async (req, res) => {
   } catch (e) { res.status(500).send(e.message); }
 });
 
-router.get('/info', async (req, res) => {
+router.get('/info', (req, res) => res.redirect('/'));
+
+router.get('/hotels', async (req, res) => {
   try {
-    const infoRows = await all(`SELECT * FROM trip_info WHERE category != 'system' ORDER BY sort_order`);
-    const checklist = await all('SELECT * FROM checklist ORDER BY sort_order');
-
-    // Group info by category
-    const info = {};
-    infoRows.forEach(r => {
-      if (!info[r.category]) info[r.category] = [];
-      info[r.category].push(r);
-    });
-
-    // Group checklist by category
-    const checks = {};
-    checklist.forEach(r => {
-      if (!checks[r.category]) checks[r.category] = [];
-      checks[r.category].push(r);
-    });
-
-    const total = checklist.length;
-    const done = checklist.filter(c => c.checked).length;
-
-    res.render('info', { info, checks, total, done });
+    const rows = await all(`SELECT * FROM trip_info WHERE category='住宿' ORDER BY sort_order`);
+    res.render('hotels', { info: rows });
   } catch (e) { res.status(500).send(e.message); }
+});
+
+router.get('/flights', async (req, res) => {
+  try {
+    const rows = await all(`SELECT * FROM trip_info WHERE category IN ('班機','緊急','實用') ORDER BY sort_order`);
+    const info = {};
+    rows.forEach(r => { if (!info[r.category]) info[r.category] = []; info[r.category].push(r); });
+    res.render('flights', { info });
+  } catch (e) { res.status(500).send(e.message); }
+});
+
+router.get('/restaurants', (req, res) => {
+  res.render('restaurants');
 });
 
 module.exports = router;

@@ -1,0 +1,100 @@
+<%
+const speakerSVG = () => '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>';
+%>
+<%- include('partials/header', { pageTitle: '餐廳資訊', navTitle: '餐廳資訊', navBack: '/' }) %>
+
+<div class="section">
+  <div class="card-list">
+
+    <div class="accordion">
+      <div class="acc-hd" onclick="toggleAcc(this)">
+        <span class="acc-hd-icon">📲</span>
+        <span class="acc-title">美食 App</span>
+        <svg class="acc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="acc-body">
+        <div class="app-chips">
+          <a href="https://tabelog.com/" target="_blank" rel="noopener" class="app-chip">
+            <span class="app-chip-dot" style="background:#C8353A"></span>食べログ
+          </a>
+          <a href="https://www.gnavi.co.jp/" target="_blank" rel="noopener" class="app-chip">
+            <span class="app-chip-dot" style="background:#E84A2F"></span>ぐるなび
+          </a>
+          <a href="https://www.hotpepper.jp/gourmet/" target="_blank" rel="noopener" class="app-chip">
+            <span class="app-chip-dot" style="background:#FF0033"></span>Hot Pepper
+          </a>
+        </div>
+        <div class="acc-sub">食べログ 最大評分平台　ぐるなび 線上訂位（含英文）　Hot Pepper 訂位附折扣券</div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="acc-hd" onclick="toggleAcc(this)">
+        <span class="acc-hd-icon">🙏</span>
+        <span class="acc-title">用餐禮儀</span>
+        <svg class="acc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="acc-body">
+        <div class="taxi-tip">🙏 <strong>いただきます</strong> 開動前說，<strong>ごちそうさまでした</strong> 結束後說</div>
+        <div class="taxi-tip">🍜 吃拉麵、蕎麥麵發出聲音是正常且有禮的</div>
+        <div class="taxi-tip">🧻 入座有冷/熱毛巾（おしぼり），擦手用，不擦臉</div>
+        <div class="taxi-tip">🔔 需要服務喊「すみません」或按桌邊呼叫鈕</div>
+        <div class="taxi-tip">💴 不需小費，零錢不要留在桌上</div>
+        <div class="taxi-tip">🚭 許多餐廳仍有吸煙區，可要求禁煙座（禁煙席）</div>
+        <div class="taxi-tip">🏮 門口食物模型（食品サンプル）可直接指著點餐</div>
+        <div class="taxi-tip">🎫 部分店家用自動點餐機（券売機）先買票再入座</div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="acc-hd" onclick="toggleAcc(this)">
+        <span class="acc-hd-icon">💡</span>
+        <span class="acc-title">實用小知識</span>
+        <svg class="acc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="acc-body">
+        <div class="taxi-fare-row"><span>午間套餐</span><span>比晚餐便宜 30–50%</span></div>
+        <div class="taxi-fare-row"><span>人氣店訂位</span><span>建議提前 1–2 週</span></div>
+        <div class="taxi-fare-row"><span>付款時機</span><span>用餐後結帳（先付制除外）</span></div>
+        <div class="taxi-fare-row"><span>分開結帳</span><span>說「別々に」多數餐廳配合</span></div>
+        <div class="taxi-fare-row"><span>消費稅</span><span>10%（外帶 8%），含在標示價內</span></div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="acc-hd" onclick="toggleAcc(this)">
+        <span class="acc-hd-icon">💬</span>
+        <span class="acc-title">點餐日語 <small style="font-weight:400;color:var(--t3);font-size:11px">點 🔊 聽發音</small></span>
+        <svg class="acc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="acc-body">
+        <div class="taxi-phrase"><span class="taxi-jp">すみません</span><span class="taxi-tw">不好意思（呼叫服務員）</span><button class="speak-btn" onclick="speakJP('すみません',this)"><%- speakerSVG() %></button></div>
+        <div class="taxi-phrase"><span class="taxi-jp">これをください</span><span class="taxi-tw">我要這個（指著菜單說）</span><button class="speak-btn" onclick="speakJP('これをください',this)"><%- speakerSVG() %></button></div>
+        <div class="taxi-phrase"><span class="taxi-jp">英語のメニューはありますか？</span><span class="taxi-tw">有英文菜單嗎？</span><button class="speak-btn" onclick="speakJP('英語のメニューはありますか？',this)"><%- speakerSVG() %></button></div>
+        <div class="taxi-phrase"><span class="taxi-jp">おすすめは何ですか？</span><span class="taxi-tw">你們的招牌是什麼？</span><button class="speak-btn" onclick="speakJP('おすすめは何ですか？',this)"><%- speakerSVG() %></button></div>
+        <div class="taxi-phrase"><span class="taxi-jp">お水をください</span><span class="taxi-tw">請給我水（多數餐廳免費）</span><button class="speak-btn" onclick="speakJP('お水をください',this)"><%- speakerSVG() %></button></div>
+        <div class="taxi-phrase"><span class="taxi-jp">お会計をお願いします</span><span class="taxi-tw">麻煩結帳</span><button class="speak-btn" onclick="speakJP('お会計をお願いします',this)"><%- speakerSVG() %></button></div>
+        <div class="taxi-phrase"><span class="taxi-jp">別々でお願いします</span><span class="taxi-tw">請分開結帳</span><button class="speak-btn" onclick="speakJP('別々でお願いします',this)"><%- speakerSVG() %></button></div>
+        <div class="taxi-phrase"><span class="taxi-jp">ごちそうさまでした</span><span class="taxi-tw">謝謝招待，很好吃</span><button class="speak-btn" onclick="speakJP('ごちそうさまでした',this)"><%- speakerSVG() %></button></div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="acc-hd" onclick="toggleAcc(this)">
+        <span class="acc-hd-icon">⚕️</span>
+        <span class="acc-title">過敏 / 飲食限制 <small style="font-weight:400;color:var(--t3);font-size:11px">點 🔊 聽發音</small></span>
+        <svg class="acc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="acc-body">
+        <div class="taxi-phrase"><span class="taxi-jp">アレルギーがあります</span><span class="taxi-tw">我有過敏</span><button class="speak-btn" onclick="speakJP('アレルギーがあります',this)"><%- speakerSVG() %></button></div>
+        <div class="taxi-phrase"><span class="taxi-jp">豚肉は食べられません</span><span class="taxi-tw">我不吃豬肉</span><button class="speak-btn" onclick="speakJP('豚肉は食べられません',this)"><%- speakerSVG() %></button></div>
+        <div class="taxi-phrase"><span class="taxi-jp">牛肉は食べられません</span><span class="taxi-tw">我不吃牛肉</span><button class="speak-btn" onclick="speakJP('牛肉は食べられません',this)"><%- speakerSVG() %></button></div>
+        <div class="taxi-phrase"><span class="taxi-jp">魚介類は食べられません</span><span class="taxi-tw">我不吃海鮮</span><button class="speak-btn" onclick="speakJP('魚介類は食べられません',this)"><%- speakerSVG() %></button></div>
+        <div class="taxi-phrase"><span class="taxi-jp">これに〇〇は入っていますか？</span><span class="taxi-tw">這裡面有〇〇嗎？</span><button class="speak-btn" onclick="speakJP('これに何か入っていますか？',this)"><%- speakerSVG() %></button></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<%- include('partials/footer', { activePage: 'restaurants', extraScript: '/js/info.js' }) %>

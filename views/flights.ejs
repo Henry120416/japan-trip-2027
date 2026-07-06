@@ -1,0 +1,56 @@
+<%- include('partials/header', { pageTitle: '飛機資訊', navTitle: '飛機資訊', navBack: '/' }) %>
+
+<%
+const catIcon = { '班機':'✈️', '緊急':'🆘', '實用':'💡' };
+const catLabel = { '班機':'航班資訊', '緊急':'緊急聯絡', '實用':'實用資訊' };
+const order = ['班機','緊急','實用'];
+%>
+
+<div class="section">
+  <div class="card-list">
+    <% order.forEach(cat => {
+       const items = (info[cat] || []);
+       if (!items.length) return;
+    %>
+    <div class="accordion">
+      <div class="acc-hd open" onclick="toggleAcc(this)">
+        <span class="acc-hd-icon"><%= catIcon[cat] %></span>
+        <span class="acc-title"><%= catLabel[cat] %></span>
+        <svg class="acc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="acc-body open">
+        <% items.forEach(item => { %>
+        <div class="info-row" id="info-<%= item.id %>">
+          <div class="info-row-head">
+            <div class="info-key"><%= item.key %></div>
+            <button class="info-edit-btn" onclick="editInfo(<%= item.id %>, '<%= item.key.replace(/'/g,"\\'") %>', `<%= (item.value||'').replace(/`/g,'\\`') %>`)">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+            </button>
+          </div>
+          <div class="info-val<%= item.value ? '' : ' empty' %>" id="info-val-<%= item.id %>"><%= item.value || '點擊填寫' %></div>
+        </div>
+        <% }) %>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+</div>
+
+<!-- Edit modal -->
+<div id="infoOverlay" class="overlay" onclick="if(event.target===this)closeInfoModal()">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="infoModalTitle">編輯資訊</div>
+    <input type="hidden" id="infoId">
+    <div class="fg"><textarea id="infoValue" style="height:90px" placeholder="輸入內容..."></textarea></div>
+    <div class="btn-row">
+      <button class="btn btn-sec" onclick="closeInfoModal()">取消</button>
+      <button class="btn btn-pri" onclick="saveInfo()">儲存</button>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer', { activePage: 'flights', extraScript: '/js/info.js' }) %>
