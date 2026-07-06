@@ -1,6 +1,6 @@
 <%- include('partials/header', { pageTitle: '大阪京都之旅', navTitle: '行程總覽', navBack: null }) %>
 
-<div class="hero">
+<div class="hero hero--dark">
   <div class="hero-label">2027 Spring</div>
   <div class="hero-title">大阪京都之旅</div>
   <div class="hero-sub" style="margin-top:4px">04/17 — 04/22 &nbsp;·&nbsp; 6 人同行</div>
@@ -9,7 +9,10 @@
 
 <div class="section">
   <div class="section-label">六日行程</div>
-  <% const weekMap = ['日','一','二','三','四','五','六']; %>
+  <%
+    const weekMap = ['日','一','二','三','四','五','六'];
+    const DAY_COLORS = ['#3B82F6','#10B981','#8B5CF6','#F97316','#EF4444','#EC4899'];
+  %>
   <% days.forEach((day, i) => { %>
     <%
       const d = new Date(day.date + 'T00:00:00');
@@ -17,7 +20,7 @@
       const md = `${d.getMonth()+1}/${String(d.getDate()).padStart(2,'0')}`;
     %>
     <a href="/day/<%= day.date %>" class="day-card">
-      <div class="day-num">
+      <div class="day-num" style="background:<%= DAY_COLORS[i] || '#6B7280' %>">
         <span class="day-num-n"><%= i+1 %></span>
         <span class="day-num-l">Day</span>
       </div>
