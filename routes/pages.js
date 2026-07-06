@@ -39,6 +39,13 @@ router.get('/', async (req, res) => {
       WHERE d.plan_id = ?
       GROUP BY d.id ORDER BY d.date
     `, [plan]);
+    for (const day of days) {
+      const img = await get(
+        `SELECT image_url FROM activities WHERE day_id = ? AND image_url IS NOT NULL AND image_url != '' ORDER BY sort_order, id LIMIT 1`,
+        [day.id]
+      );
+      day.heroImg = img ? img.image_url : null;
+    }
     res.render('index', { days });
   } catch (e) { res.status(500).send(e.message); }
 });

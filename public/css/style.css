@@ -4,7 +4,7 @@ html { scroll-behavior: smooth; }
 
 :root {
   --white:    #ffffff;
-  --bg:       #f5f5f7;
+  --bg:       #ffffff;
   --accent:   #5E97F6;
   --depart:   #FF9F43;
   --arrive:   #34C759;
@@ -97,31 +97,56 @@ body {
 }
 .hero-sub { font-size: var(--fs-body); color: var(--t3); }
 
-/* Dark gradient hero variant (index page) */
-.hero--dark {
-  background: linear-gradient(155deg, #0f172a 0%, #1e1b4b 55%, #2d2a8a 100%);
-  border-bottom: none;
-  padding: 40px 20px 32px;
-  position: relative; overflow: hidden;
+/* ─── Trip Homepage Header ─────────────────────────────── */
+.trip-hd {
+  padding: 20px 20px 16px;
+  background: var(--white);
+  border-bottom: 1px solid var(--border-l);
 }
-.hero--dark::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: radial-gradient(ellipse at 80% 20%, rgba(139,92,246,.25) 0%, transparent 60%),
-              radial-gradient(ellipse at 10% 90%, rgba(99,102,241,.2) 0%, transparent 50%);
-  pointer-events: none;
+.trip-hd-eyebrow {
+  font-size: 12px; font-weight: 500; letter-spacing: .1px;
+  color: var(--t3); margin-bottom: 4px;
 }
-.hero--dark .hero-label {
-  position: relative; color: rgba(255,255,255,.4);
-  letter-spacing: 1.4px; font-size: 10px;
+.trip-hd-title {
+  font-size: 32px; font-weight: 900; letter-spacing: -1.2px;
+  color: var(--t1); margin-bottom: 8px; line-height: 1.1;
 }
-.hero--dark .hero-title {
-  position: relative; color: #fff;
-  font-size: 34px; font-weight: 800; letter-spacing: -1px; margin-bottom: 8px;
+.trip-hd-sub {
+  font-size: 13px; font-weight: 500; color: var(--t3);
 }
-.hero--dark .hero-sub {
-  position: relative; color: rgba(255,255,255,.48);
-  font-size: var(--fs-meta);
+
+/* ─── Shortcut Row ─────────────────────────────── */
+.shortcut-row {
+  display: flex; padding: 18px 16px 16px;
+  background: var(--white);
+  border-bottom: 1px solid var(--border-l);
+  gap: 4px;
+}
+.shortcut-item {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; gap: 8px;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.shortcut-ico {
+  width: 60px; height: 60px; border-radius: 18px;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform .15s;
+}
+.shortcut-item:active .shortcut-ico { transform: scale(.88); }
+.shortcut-lbl {
+  font-size: 12px; font-weight: 700; letter-spacing: .1px;
+}
+
+/* Section header with "see all" row */
+.section-hd {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px; padding: 0 4px;
+}
+.section-hd .section-label { margin-bottom: 0; }
+.section-see-all {
+  font-size: 13px; font-weight: 600; color: #FF6B6B;
+  text-decoration: none;
 }
 
 /* ─── Plan Switcher ────────────────────────────────── */
@@ -171,8 +196,8 @@ body {
 /* ─── Section ──────────────────────────────────────── */
 .section { padding: 20px 16px 0; }
 .section-label {
-  font-size: 10px; font-weight: 700; text-transform: uppercase;
-  letter-spacing: .8px; color: var(--t4); margin-bottom: 10px; padding: 0 4px;
+  font-size: 20px; font-weight: 800; letter-spacing: -.3px;
+  color: var(--t1); margin-bottom: 14px; padding: 0 4px;
 }
 .section-title {
   font-size: var(--fs-body); font-weight: 600;
@@ -364,7 +389,7 @@ body {
 .tab:active { transform: scale(.9); }
 .tab svg { transition: all .2s ease; }
 .tab-lbl { font-size: 10px; font-weight: 600; letter-spacing: .1px; transition: all .2s ease; }
-.tab.active svg, .tab.active .tab-lbl { color: #6366F1; }
+.tab.active svg, .tab.active .tab-lbl { color: #FF6B6B; }
 .tab:not(.active) svg, .tab:not(.active) .tab-lbl { color: var(--t4); }
 
 /* ─── Modal Sheet ───────────────────────────────────── */
@@ -559,29 +584,46 @@ body {
 .transit-btn-nav   { color: #059669; background: #ECFDF5; border: 1px solid #A7F3D0; }
 .transit-btn-stmap { color: #B45309; background: #FFFBEB; border: 1px solid #FDE68A; }
 
-/* ─── Day Card (travel-card style) ─────────────────── */
+/* ─── Day Card (photo card style) ─────────────────── */
 .day-card {
   display: block; position: relative;
-  border-radius: 22px; overflow: hidden;
-  margin-bottom: 12px; min-height: 152px;
+  border-radius: 20px; overflow: hidden;
+  margin-bottom: 12px; height: 168px;
   text-decoration: none; color: #fff;
-  box-shadow: 0 8px 24px rgba(0,0,0,.16), 0 2px 6px rgba(0,0,0,.08);
+  background: #1e1b4b;
+  box-shadow: 0 4px 16px rgba(0,0,0,.12), 0 1px 4px rgba(0,0,0,.06);
   transition: transform .2s ease, box-shadow .2s ease;
   -webkit-tap-highlight-color: transparent;
 }
 .day-card:active { transform: scale(.97); box-shadow: 0 2px 8px rgba(0,0,0,.1); }
 
+.dc-photo {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%; object-fit: cover;
+}
+
+.dc-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,.04) 0%,
+    rgba(0,0,0,.18) 40%,
+    rgba(0,0,0,.62) 100%
+  );
+}
+
 .dc-bg { position: absolute; inset: 0; }
 .dc-bg::after {
   content: ''; position: absolute; inset: 0;
   background: radial-gradient(ellipse at 15% 35%, rgba(255,255,255,.12) 0%, transparent 65%),
-              linear-gradient(to bottom, transparent 40%, rgba(0,0,0,.22) 100%);
+              linear-gradient(to bottom, transparent 35%, rgba(0,0,0,.32) 100%);
 }
 
 .dc-inner {
   position: relative; z-index: 1;
-  padding: 16px 16px 18px; min-height: 152px;
+  padding: 14px 16px 16px; height: 168px;
   display: flex; flex-direction: column; justify-content: space-between;
+  box-sizing: border-box;
 }
 
 .dc-top { display: flex; align-items: center; justify-content: space-between; }
@@ -603,16 +645,18 @@ body {
 }
 
 .dc-city {
-  font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
-  color: rgba(255,255,255,.65); margin-bottom: 4px;
+  font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase;
+  color: rgba(255,255,255,.75); margin-bottom: 3px;
+  text-shadow: 0 1px 4px rgba(0,0,0,.5);
 }
 
 .dc-title {
-  font-size: 18px; font-weight: 700; color: #fff; line-height: 1.25;
+  font-size: 18px; font-weight: 800; color: #fff; line-height: 1.2;
   margin-bottom: 5px;
+  text-shadow: 0 1px 6px rgba(0,0,0,.4);
 }
 
-.dc-meta { font-size: 11px; color: rgba(255,255,255,.55); font-weight: 500; }
+.dc-meta { font-size: 11px; color: rgba(255,255,255,.65); font-weight: 500; }
 
 /* city-tag: used in day.ejs hero */
 .city-tag {
