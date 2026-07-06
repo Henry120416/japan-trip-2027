@@ -3,15 +3,22 @@
 <div class="hero hero--dark">
   <div class="hero-label">2027 Spring</div>
   <div class="hero-title">大阪京都之旅</div>
-  <div class="hero-sub" style="margin-top:4px">04/17 — 04/22 &nbsp;·&nbsp; 6 人同行</div>
+  <div class="hero-sub" style="margin-top:6px">04/17 — 04/22 &nbsp;·&nbsp; 6 人同行</div>
 </div>
 
-
-<div class="section">
-  <div class="section-label">六日行程</div>
+<div class="section" style="padding-top:20px;padding-bottom:24px">
+  <div class="section-label" style="margin-bottom:14px">六日行程</div>
   <%
     const weekMap = ['日','一','二','三','四','五','六'];
-    const DAY_COLORS = ['#3B82F6','#10B981','#8B5CF6','#F97316','#EF4444','#EC4899'];
+    const DAY_GRADIENTS = [
+      'linear-gradient(140deg,#5C6BC0 0%,#7E57C2 100%)',
+      'linear-gradient(140deg,#26A69A 0%,#00796B 100%)',
+      'linear-gradient(140deg,#29B6F6 0%,#0277BD 100%)',
+      'linear-gradient(140deg,#FF7043 0%,#BF360C 100%)',
+      'linear-gradient(140deg,#42A5F5 0%,#1565C0 100%)',
+      'linear-gradient(140deg,#EC407A 0%,#880E4F 100%)',
+    ];
+    const DAY_ICONS = ['⛩','🦌','🌊','🏙','⚓','✈'];
   %>
   <% days.forEach((day, i) => { %>
     <%
@@ -20,27 +27,25 @@
       const md = `${d.getMonth()+1}/${String(d.getDate()).padStart(2,'0')}`;
     %>
     <a href="/day/<%= day.date %>" class="day-card">
-      <div class="day-num" style="background:<%= DAY_COLORS[i] || '#6B7280' %>">
-        <span class="day-num-n"><%= i+1 %></span>
-        <span class="day-num-l">Day</span>
-      </div>
-      <div class="day-card-body">
-        <div class="day-card-title">
-          <%= day.title %>
-          <span class="city-tag"><%= day.city %></span>
+      <div class="dc-bg" style="background:<%= DAY_GRADIENTS[i] || 'linear-gradient(140deg,#6B7280,#374151)' %>"></div>
+      <div class="dc-inner">
+        <div class="dc-top">
+          <span class="dc-chip"><%= DAY_ICONS[i] %>&nbsp; Day <%= i+1 %></span>
+          <div class="dc-arrow">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </div>
         </div>
-        <div class="day-card-sub">
-          週<%= wd %> &nbsp;<%= md %>
-          <% if (day.activity_count > 0) { %>
-            &nbsp;·&nbsp; <%= day.activity_count %> 個行程
-          <% } else { %>
-            &nbsp;·&nbsp; 尚無行程
-          <% } %>
+        <div class="dc-bot">
+          <div class="dc-city"><%= day.city %></div>
+          <div class="dc-title"><%= day.title %></div>
+          <div class="dc-meta">
+            週<%= wd %> &nbsp;·&nbsp; <%= md %>
+            <% if (day.activity_count > 0) { %>&nbsp;·&nbsp; <%= day.activity_count %> 個行程<% } %>
+          </div>
         </div>
       </div>
-      <svg class="chevron" width="8" height="14" viewBox="0 0 8 14" fill="none">
-        <path d="M1 1l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
     </a>
   <% }) %>
 </div>
