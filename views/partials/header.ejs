@@ -13,7 +13,7 @@
 </head>
 <body>
 <div class="app">
-  <nav class="nav">
+  <nav class="nav<% if (typeof navClass !== 'undefined' && navClass) { %> <%= navClass %><% } %>">
     <% if (typeof navBack !== 'undefined' && navBack) { %>
       <a href="<%= navBack %>" class="nav-back">
         <svg width="9" height="16" viewBox="0 0 9 16" fill="none">
@@ -27,4 +27,4 @@
     <div class="nav-title"><%= typeof navTitle !== 'undefined' ? navTitle : '' %></div>
     <div class="nav-slot"></div>
   </nav>
-  <div class="page">
+  <div class="page<% if (typeof pageClass !== 'undefined' && pageClass) { %> <%= pageClass %><% } %>">
