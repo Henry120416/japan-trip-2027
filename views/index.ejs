@@ -1,16 +1,26 @@
 <%- include('partials/header', { pageTitle: '大阪京都之旅', navTitle: '', navBack: null, navClass: 'nav--home', pageClass: 'page--home' }) %>
 
+<!-- Header — matches "Hi Antenio!" pattern -->
 <div class="home-hero">
-  <div class="home-hero-eyebrow">2027 春日之旅</div>
-  <div class="home-hero-title">大阪京都之旅</div>
-  <div class="home-hero-sub">大阪 · 京都 · 神戶 &nbsp;｜&nbsp; 04/17 — 04/22</div>
-  <div class="home-hero-tags">
-    <span class="home-tag">6 人同行</span>
-    <span class="home-tag">6 天 5 夜</span>
-    <span class="home-tag">關西周遊</span>
+  <div class="home-hero-row">
+    <div>
+      <div class="home-hero-title">大阪京都之旅</div>
+      <div class="home-hero-sub">
+        行程至&nbsp;<span class="home-hero-accent">京都・大阪・神戶</span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--t4)">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </div>
+    </div>
+    <a href="/info" class="home-hero-btn" title="旅遊資訊">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+    </a>
   </div>
 </div>
 
+<!-- Category Shortcuts -->
 <div class="shortcut-row">
   <a href="/" class="shortcut-item">
     <div class="shortcut-ico" style="background:#EEF2FF">
@@ -46,55 +56,48 @@
   </a>
 </div>
 
-<div class="section" style="padding-top:24px;padding-bottom:32px">
+<!-- Day Cards — 2-column staggered grid -->
+<div class="section" style="padding-top:22px;padding-bottom:32px">
   <div class="section-hd">
     <div class="section-label">六日行程</div>
-    <span class="section-see-all">Apr 17 – 22</span>
+    <span class="section-see-all">SEE ALL</span>
   </div>
+
   <%
-    const weekMap = ['日','一','二','三','四','五','六'];
     const DAY_GRADIENTS = [
-      'linear-gradient(140deg,#5C6BC0 0%,#7E57C2 100%)',
-      'linear-gradient(140deg,#26A69A 0%,#00796B 100%)',
-      'linear-gradient(140deg,#29B6F6 0%,#0277BD 100%)',
-      'linear-gradient(140deg,#FF7043 0%,#BF360C 100%)',
-      'linear-gradient(140deg,#42A5F5 0%,#1565C0 100%)',
-      'linear-gradient(140deg,#EC407A 0%,#880E4F 100%)',
+      'linear-gradient(140deg,#5C6BC0,#7E57C2)',
+      'linear-gradient(140deg,#26A69A,#00796B)',
+      'linear-gradient(140deg,#29B6F6,#0277BD)',
+      'linear-gradient(140deg,#FF7043,#BF360C)',
+      'linear-gradient(140deg,#42A5F5,#1565C0)',
+      'linear-gradient(140deg,#EC407A,#880E4F)',
     ];
     const DAY_ICONS = ['⛩','🦌','🌊','🏙','⚓','✈'];
+    const weekMap = ['日','一','二','三','四','五','六'];
   %>
-  <% days.forEach((day, i) => { %>
-    <%
-      const d = new Date(day.date + 'T00:00:00');
-      const wd = weekMap[d.getDay()];
-      const md = `${d.getMonth()+1}/${String(d.getDate()).padStart(2,'0')}`;
-    %>
-    <a href="/day/<%= day.date %>" class="day-card">
-      <% if (day.heroImg) { %>
-        <img class="dc-photo" src="<%= day.heroImg %>" alt="" loading="lazy">
-        <div class="dc-overlay"></div>
-      <% } else { %>
-        <div class="dc-bg" style="background:<%= DAY_GRADIENTS[i] || 'linear-gradient(140deg,#6B7280,#374151)' %>"></div>
-      <% } %>
-      <div class="dc-inner">
-        <div class="dc-top">
-          <span class="dc-chip"><%= DAY_ICONS[i] %>&nbsp; Day <%= i+1 %></span>
-          <div class="dc-arrow">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
-            </svg>
-          </div>
+
+  <div class="day-grid">
+    <% days.forEach((day, i) => { %>
+      <%
+        const tall = (i % 2 === 1);
+        const d = new Date(day.date + 'T00:00:00');
+        const md = `${d.getMonth()+1}/${String(d.getDate()).padStart(2,'0')}`;
+      %>
+      <a href="/day/<%= day.date %>" class="day-card <%= tall ? 'day-card--tall' : 'day-card--short' %>">
+        <% if (day.heroImg) { %>
+          <img class="dc-photo" src="<%= day.heroImg %>" alt="" loading="lazy">
+          <div class="dc-overlay"></div>
+        <% } else { %>
+          <div class="dc-bg" style="background:<%= DAY_GRADIENTS[i] %>"></div>
+        <% } %>
+        <div class="dc-info">
+          <div class="dc-info-num"><%= DAY_ICONS[i] %> &nbsp;Day <%= i+1 %></div>
+          <div class="dc-info-city"><%= day.city %></div>
+          <div class="dc-info-title"><%= day.title %></div>
         </div>
-        <div class="dc-bot">
-          <div class="dc-city"><%= day.city %></div>
-          <div class="dc-title"><%= day.title %></div>
-          <div class="dc-meta">
-            週<%= wd %> · <%= md %><% if (day.activity_count > 0) { %> · <%= day.activity_count %> 個行程<% } %>
-          </div>
-        </div>
-      </div>
-    </a>
-  <% }) %>
+      </a>
+    <% }) %>
+  </div>
 </div>
 
 <%- include('partials/footer', { activePage: 'home' }) %>
