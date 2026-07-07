@@ -403,27 +403,27 @@ body {
 }
 .tab {
   flex: 1; display: flex; flex-direction: column; align-items: center;
-  gap: 3px; text-decoration: none; padding: 4px 0;
+  gap: 4px; text-decoration: none; padding: 6px 0 4px;
   transition: transform .15s ease; position: relative;
 }
 .tab:active { transform: scale(.9); }
 .tab svg { transition: stroke .2s ease; }
 .tab-lbl {
-  font-size: 10px; font-weight: 600; letter-spacing: .1px;
-  transition: all .2s ease; line-height: 1;
+  font-size: 10.5px; font-weight: 500; letter-spacing: .3px;
+  transition: color .2s ease; line-height: 1;
 }
 /* Active: coral icon + label */
 .tab.active svg { stroke: #F97066; }
-.tab.active .tab-lbl { color: #F97066; }
+.tab.active .tab-lbl { color: #F97066; font-weight: 600; }
 /* Active dot indicator below label */
 .tab.active::after {
   content: ''; display: block;
   width: 4px; height: 4px; border-radius: 50%;
   background: #F97066; margin: 2px auto 0;
 }
-/* Inactive: gray icon only, label invisible but keeps height */
-.tab:not(.active) svg { stroke: var(--t4); }
-.tab:not(.active) .tab-lbl { visibility: hidden; }
+/* Inactive: gray icon + label always visible */
+.tab:not(.active) svg { stroke: #C0C0C8; }
+.tab:not(.active) .tab-lbl { color: #C0C0C8; }
 
 /* ─── Modal Sheet ───────────────────────────────────── */
 .overlay {
