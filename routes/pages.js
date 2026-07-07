@@ -41,7 +41,7 @@ router.get('/', async (req, res) => {
     `, [plan]);
     for (const day of days) {
       const img = await get(
-        `SELECT image_url FROM activities WHERE day_id = ? AND image_url IS NOT NULL AND image_url != '' ORDER BY sort_order, id LIMIT 1`,
+        `SELECT image_url FROM activities WHERE day_id = ? AND image_url IS NOT NULL AND image_url != '' AND category NOT IN ('transport','hotel') ORDER BY sort_order, id LIMIT 1`,
         [day.id]
       );
       day.heroImg = img ? img.image_url : null;
