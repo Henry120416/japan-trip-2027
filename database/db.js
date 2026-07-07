@@ -614,8 +614,12 @@ if (USE_PG) {
     }
 
     // ── 行程大改版 v6（2026-07 PDF 555 最終版）完整重建方案一活動 ─────────
+    // 偵測 D5 是否仍為神戶舊資料，若是則強制重建
+    const _d5chk = await pool.query(`SELECT title FROM days WHERE date='2027-04-21' AND plan_id=1`);
+    const _d5HasKobe = !!(_d5chk.rows[0]?.title?.includes('神戶'));
+
     const itin_v6 = await pool.query(`SELECT 1 FROM trip_info WHERE category='system' AND key='itinerary_v6'`);
-    if (!itin_v6.rows.length) {
+    if (!itin_v6.rows.length || _d5HasKobe) {
       await pool.query(`DELETE FROM activities WHERE day_id IN (SELECT id FROM days WHERE plan_id=1)`);
 
       const V6_DAYS = [
@@ -770,7 +774,7 @@ if (USE_PG) {
 
     // ── 行程 v7（加入天氣・時長・備案・餐廳資料，幂等）────────────────────────
     const itin_v7 = await pool.query(`SELECT 1 FROM trip_info WHERE category='system' AND key='itinerary_v7'`);
-    if (!itin_v7.rows.length) {
+    if (!itin_v7.rows.length || _d5HasKobe) {
       // 更新 days sort_order
       const V7_DAYS_SORT = [
         ['2027-04-17', 1], ['2027-04-18', 2], ['2027-04-19', 3],
