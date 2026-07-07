@@ -1,0 +1,106 @@
+<%- include('partials/header', { pageTitle: '行李清單', navTitle: '行李清單', navBack: null }) %>
+
+<div class="lug-progress-wrap">
+  <div class="lug-progress-bar"><div class="lug-progress-fill" id="progressFill"></div></div>
+  <div class="lug-progress-txt"><span id="checkedCount">0</span> / <span id="totalCount">0</span> 已確認</div>
+</div>
+
+<%
+const CATEGORIES = [
+  {
+    id: 'docs', label: '證件文件', icon: '🪪',
+    items: ['護照（有效期 6 個月以上）','電子機票（列印或截圖）','旅遊保險單','緊急聯絡資訊卡','信用卡（VISA / 萬事達）','現金日圓（足夠前三天）']
+  },
+  {
+    id: 'tech', label: '電子設備', icon: '🔌',
+    items: ['手機 + 充電線','行動電源（10000mAh 以上）','轉接插頭（日本 A 型 110V）','相機 + 充電器 + 記憶卡','日本網路卡 / eSIM','藍牙耳機']
+  },
+  {
+    id: 'clothes', label: '衣物', icon: '👕',
+    items: ['換洗衣物（6 天份）','輕薄外套（早晚涼）','舒適步行鞋','拖鞋','雨傘或折疊雨衣','運動服（若有行程）']
+  },
+  {
+    id: 'toiletry', label: '盥洗用品', icon: '🧴',
+    items: ['牙刷 + 牙膏','洗髮精 / 沐浴乳（小瓶）','防曬乳 SPF50+','保養品（化妝水、乳液）','濕紙巾','面膜（飛機用）']
+  },
+  {
+    id: 'medicine', label: '藥品', icon: '💊',
+    items: ['感冒藥','腸胃藥（正露丸）','暈車藥','消炎止痛藥','創可貼 + 小剪刀（托運）','個人處方藥']
+  },
+  {
+    id: 'misc', label: '其他雜項', icon: '🎒',
+    items: ['摺疊購物袋（3 個）','行李秤','頸枕（長途用）','零食（機上備用）','小筆記本 + 筆','洗衣袋']
+  }
+];
+%>
+
+<% CATEGORIES.forEach(cat => { %>
+<div class="section" style="padding-top:16px">
+  <div class="lug-cat-hd">
+    <span class="lug-cat-ico"><%= cat.icon %></span>
+    <span class="lug-cat-name"><%= cat.label %></span>
+  </div>
+  <div class="card-list">
+    <% cat.items.forEach((item, idx) => { %>
+    <div class="lug-item" id="item-<%= cat.id %>-<%= idx %>" onclick="toggleItem('<%= cat.id %>-<%= idx %>', this)">
+      <div class="lug-check" id="check-<%= cat.id %>-<%= idx %>">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+      <span class="lug-item-lbl"><%= item %></span>
+    </div>
+    <% }) %>
+  </div>
+</div>
+<% }) %>
+
+<div style="padding:24px 16px 8px;text-align:center">
+  <button class="lug-reset-btn" onclick="resetAll()">重置所有勾選</button>
+</div>
+
+<%- include('partials/footer', { activePage: 'luggage' }) %>
+
+<script>
+const STORAGE_KEY = 'luggage_checked_v1';
+let checked = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+
+function updateProgress() {
+  const all = document.querySelectorAll('.lug-item');
+  const done = document.querySelectorAll('.lug-item.done');
+  const total = all.length;
+  const count = done.length;
+  document.getElementById('checkedCount').textContent = count;
+  document.getElementById('totalCount').textContent = total;
+  const pct = total ? (count / total * 100) : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+}
+
+function toggleItem(key, el) {
+  if (checked[key]) {
+    delete checked[key];
+    el.classList.remove('done');
+  } else {
+    checked[key] = true;
+    el.classList.add('done');
+  }
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(checked));
+  updateProgress();
+}
+
+function resetAll() {
+  checked = {};
+  localStorage.removeItem(STORAGE_KEY);
+  document.querySelectorAll('.lug-item.done').forEach(el => el.classList.remove('done'));
+  updateProgress();
+}
+
+// Restore state on load
+document.addEventListener('DOMContentLoaded', () => {
+  Object.keys(checked).forEach(key => {
+    const el = document.getElementById('item-' + key);
+    if (el) el.classList.add('done');
+  });
+  updateProgress();
+});
+</script>

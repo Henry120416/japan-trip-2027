@@ -303,6 +303,13 @@ if (USE_PG) {
     await pool.query("ALTER TABLE activities ADD COLUMN IF NOT EXISTS lat REAL").catch(() => {});
     await pool.query("ALTER TABLE activities ADD COLUMN IF NOT EXISTS lng REAL").catch(() => {});
     await pool.query("ALTER TABLE activities ADD COLUMN IF NOT EXISTS mapcode TEXT DEFAULT ''").catch(() => {});
+    await pool.query("ALTER TABLE activities ADD COLUMN IF NOT EXISTS weather_temp INTEGER").catch(() => {});
+    await pool.query("ALTER TABLE activities ADD COLUMN IF NOT EXISTS weather_rain INTEGER").catch(() => {});
+    await pool.query("ALTER TABLE activities ADD COLUMN IF NOT EXISTS weather_sun INTEGER").catch(() => {});
+    await pool.query("ALTER TABLE activities ADD COLUMN IF NOT EXISTS duration INTEGER").catch(() => {});
+    await pool.query("ALTER TABLE activities ADD COLUMN IF NOT EXISTS alt_plan TEXT DEFAULT ''").catch(() => {});
+    await pool.query("ALTER TABLE activities ADD COLUMN IF NOT EXISTS restaurant TEXT DEFAULT ''").catch(() => {});
+    await pool.query("ALTER TABLE days ADD COLUMN IF NOT EXISTS sort_order INTEGER DEFAULT 0").catch(() => {});
 
     // ── 雙方案支援遷移 ───────────────────────────────────────
     await pool.query(`CREATE TABLE IF NOT EXISTS plans (
@@ -759,6 +766,94 @@ if (USE_PG) {
         );
       }
       await pool.query(`INSERT INTO trip_info (category,key,value,sort_order) VALUES ('system','itinerary_v6','1',9999) ON CONFLICT DO NOTHING`);
+    }
+
+    // ── 行程 v7（加入天氣・時長・備案・餐廳資料，幂等）────────────────────────
+    const itin_v7 = await pool.query(`SELECT 1 FROM trip_info WHERE category='system' AND key='itinerary_v7'`);
+    if (!itin_v7.rows.length) {
+      // 更新 days sort_order
+      const V7_DAYS_SORT = [
+        ['2027-04-17', 1], ['2027-04-18', 2], ['2027-04-19', 3],
+        ['2027-04-20', 4], ['2027-04-21', 5], ['2027-04-22', 6],
+      ];
+      for (const [date, sort_order] of V7_DAYS_SORT) {
+        await pool.query(`UPDATE days SET sort_order=$1 WHERE date=$2 AND plan_id=1`, [sort_order, date]);
+      }
+      // 以 (date, time) 更新活動天氣及補充資料
+      // [date, time, weather_temp, weather_rain, weather_sun, duration, alt_plan, restaurant]
+      const V7_WEATHER = [
+        // D1 2027-04-17
+        ['2027-04-17','12:15', 19,30,70, 70, null, null],
+        ['2027-04-17','13:30', 19,30,70, 75, null, null],
+        ['2027-04-17','14:50', 19,30,70, 15, null, null],
+        ['2027-04-17','15:10', 19,30,70, 60, null, null],
+        ['2027-04-17','16:20', 19,30,70, 70, null, null],
+        ['2027-04-17','17:30', 19,30,70, 30, null, null],
+        ['2027-04-17','18:00', 13,25,75, 90, null, '燒肉弘 四條木屋町店'],
+        ['2027-04-17','19:30', 13,25,75, 60, null, null],
+        ['2027-04-17','20:30', 13,25,75,  0, null, null],
+        // D2 2027-04-18
+        ['2027-04-18','08:00', 12,40,60, 15, '雨天改去宇治', null],
+        ['2027-04-18','08:15', 12,40,60, 85, null, null],
+        ['2027-04-18','09:40', 12,40,60, 80, '宇治平等院（鳳翔館室內）', null],
+        ['2027-04-18','11:00', 12,40,60, 80, '中村藤吉本店（茶道體驗）', null],
+        ['2027-04-18','12:20', 18,35,65, 70, null, '江戶川 奈良町店'],
+        ['2027-04-18','13:30', 18,35,65, 60, null, null],
+        ['2027-04-18','14:40', 18,35,65, 80, null, null],
+        ['2027-04-18','16:00', 18,35,65, 60, null, null],
+        ['2027-04-18','17:00', 18,35,65, 90, null, null],
+        ['2027-04-18','18:30', 12,25,75, 90, null, '京都勝牛 河原町店'],
+        ['2027-04-18','20:20', 12,25,75,  0, null, null],
+        // D3 2027-04-19
+        ['2027-04-19','07:50', 10,20,80, 15, null, null],
+        ['2027-04-19','08:05', 10,20,80, 65, null, null],
+        ['2027-04-19','09:20', 10,20,80,100, null, null],
+        ['2027-04-19','11:00', 10,20,80, 60, null, null],
+        ['2027-04-19','12:00', 22,15,85, 80, null, '貴船茶屋'],
+        ['2027-04-19','13:20', 22,15,85, 65, null, null],
+        ['2027-04-19','14:40', 22,15,85, 90, '河原町商圈逛街', null],
+        ['2027-04-19','16:10', 22,15,85,130, null, null],
+        ['2027-04-19','18:40', 14,20,80, 90, null, '祇園 牛禪'],
+        ['2027-04-19','20:30', 14,20,80,  0, null, null],
+        // D4 2027-04-20
+        ['2027-04-20','05:30', 12,30,70,  0, null, null],
+        ['2027-04-20','05:50', 12,30,70, 15, null, null],
+        ['2027-04-20','06:05', 12,30,70, 65, '提早前往大阪搭JR新快速', null],
+        ['2027-04-20','07:10', 12,30,70, 20, null, null],
+        ['2027-04-20','07:30', 12,30,70, 70, null, null],
+        ['2027-04-20','08:40', 14,25,75, 60, null, null],
+        ['2027-04-20','09:45', 14,25,75, 90, null, '阿古屋茶屋'],
+        ['2027-04-20','11:15', 21,30,70, 20, null, null],
+        ['2027-04-20','12:20', 22,30,70, 30, null, null],
+        ['2027-04-20','13:20', 22,30,70, 60, null, null],
+        ['2027-04-20','16:30', 22,30,70,180, null, null],
+        ['2027-04-20','19:30', 16,35,65, 90, null, '北極星 心齋橋本店'],
+        // D5 2027-04-21
+        ['2027-04-21','09:20', 13,20,80, 60, null, '黑門三平・石橋關東煮・黑銀鮪魚'],
+        ['2027-04-21','10:30', 13,20,80,100, null, null],
+        ['2027-04-21','12:00', 24,15,85, 30, null, null],
+        ['2027-04-21','12:30', 24,15,85, 20, null, null],
+        ['2027-04-21','12:50', 24,15,85,250, '梅田地下街（Whity梅田）→百貨', null],
+        ['2027-04-21','17:00', 24,15,85, 60, null, null],
+        ['2027-04-21','18:15', 17,20,80, 90, null, '和牛燒肉M 法善寺橫丁店'],
+        ['2027-04-21','19:45', 17,20,80, 90, null, null],
+        ['2027-04-21','21:15', 17,20,80,  0, null, null],
+        // D6 2027-04-22
+        ['2027-04-22','08:30', 15,40,60,  0, null, null],
+        ['2027-04-22','09:00', 15,40,60,150, '臨空城Outlet室內大進擊', null],
+        ['2027-04-22','11:30', 21,45,55, 60, null, '金子半之助 臨空城店'],
+        ['2027-04-22','12:35', 21,45,55, 10, null, null],
+        ['2027-04-22','12:45', 21,45,55,  0, null, null],
+        ['2027-04-22','13:10', 21,45,55,120, null, null],
+        ['2027-04-22','15:10', 16,35,65,  0, null, null],
+      ];
+      for (const [date, time, wt, wr, ws, dur, alt, rest] of V7_WEATHER) {
+        await pool.query(`
+          UPDATE activities SET weather_temp=$1, weather_rain=$2, weather_sun=$3, duration=$4, alt_plan=$5, restaurant=$6
+          WHERE day_id=(SELECT id FROM days WHERE date=$7 AND plan_id=1) AND time=$8
+        `, [wt, wr, ws, dur, alt, rest, date, time]);
+      }
+      await pool.query(`INSERT INTO trip_info (category,key,value,sort_order) VALUES ('system','itinerary_v7','1',9999) ON CONFLICT DO NOTHING`);
     }
 
     // ── 方案一活動圖片（Wikipedia/Wikimedia Commons 核實 URL，幂等）────

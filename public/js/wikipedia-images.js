@@ -1,7 +1,4 @@
 (async () => {
-  const els = [...document.querySelectorAll('.act-wiki-img')];
-  if (!els.length) return;
-
   const TC2JP = [
     ['稻荷','稲荷'],['稻','稲'],['黑','黒'],['國','国'],['關','関'],
     ['兩','両'],['來','来'],['會','会'],['萬','万'],['鐵','鉄'],
@@ -33,15 +30,23 @@
     } catch { return null; }
   }
 
+  // Handle classic .act-wiki-img (old timeline view)
+  const oldEls = [...document.querySelectorAll('.act-wiki-img')];
+  // Handle new .act-wiki-thumb (new card list view)
+  const newEls = [...document.querySelectorAll('.act-wiki-thumb')];
+  const allEls = [...oldEls, ...newEls];
+  if (!allEls.length) return;
+
   const termSet = new Set();
-  els.forEach(el => {
+  allEls.forEach(el => {
     ['wiki','loc','loc2'].forEach(k => { if (el.dataset[k]) termSet.add(el.dataset[k]); });
   });
   const cache = {};
   await Promise.all([...termSet].map(async t => { cache[t] = await wikiImg(t); }));
 
   const cachedPairs = Object.entries(cache).filter(([,v]) => v);
-  els.forEach(el => {
+
+  function resolveUrl(el) {
     const keys = ['wiki','loc','loc2'].map(k => el.dataset[k] || '').filter(Boolean);
     let url = null;
     for (const k of keys) { if (cache[k]) { url = cache[k]; break; } }
@@ -53,6 +58,12 @@
         if (hit) { url = hit[1]; break; }
       }
     }
+    return url;
+  }
+
+  // ── Old els: replace element with <img class="act-img"> ──────────────────
+  oldEls.forEach(el => {
+    const url = resolveUrl(el);
     if (url) {
       const img = document.createElement('img');
       img.src = url; img.className = 'act-img'; img.loading = 'lazy';
@@ -60,6 +71,25 @@
       el.replaceWith(img);
     } else {
       el.remove();
+    }
+  });
+
+  // ── New els: render as background image inside thumb ──────────────────────
+  newEls.forEach(el => {
+    const url = resolveUrl(el);
+    if (url) {
+      const img = document.createElement('img');
+      img.src = url;
+      img.loading = 'lazy';
+      img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block';
+      img.onerror = () => img.remove();
+      // Clear placeholder emoji, insert image
+      el.textContent = '';
+      el.style.display = 'block';
+      el.style.padding = '0';
+      el.appendChild(img);
+      // Also store for detail modal
+      el.dataset.resolvedImg = url;
     }
   });
 })();

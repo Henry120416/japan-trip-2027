@@ -4,12 +4,10 @@
   <nav class="tab-bar">
     <a href="/" class="tab <%= typeof activePage !== 'undefined' && activePage === 'home' ? 'active' : '' %>">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="4" width="18" height="18" rx="3"/>
-        <line x1="3" y1="9" x2="21" y2="9"/>
-        <line x1="8" y1="2" x2="8" y2="6"/>
-        <line x1="16" y1="2" x2="16" y2="6"/>
+        <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/>
+        <path d="M9 21V12h6v9"/>
       </svg>
-      <span class="tab-lbl">行程</span>
+      <span class="tab-lbl">首頁</span>
     </a>
     <a href="/overview-map" class="tab <%= typeof activePage !== 'undefined' && activePage === 'map' ? 'active' : '' %>">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -26,6 +24,15 @@
         <circle cx="16" cy="15" r="1.5" fill="currentColor" stroke="none"/>
       </svg>
       <span class="tab-lbl">費用</span>
+    </a>
+    <a href="/luggage" class="tab <%= typeof activePage !== 'undefined' && activePage === 'luggage' ? 'active' : '' %>">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="7" width="20" height="14" rx="2"/>
+        <path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"/>
+        <line x1="12" y1="11" x2="12" y2="17"/>
+        <line x1="9" y1="14" x2="15" y2="14"/>
+      </svg>
+      <span class="tab-lbl">行李</span>
     </a>
   </nav>
 </div><!-- .app -->

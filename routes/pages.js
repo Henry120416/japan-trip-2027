@@ -170,4 +170,8 @@ router.get('/restaurants', (req, res) => {
   res.render('restaurants');
 });
 
+router.get('/luggage', (req, res) => {
+  res.render('luggage');
+});
+
 module.exports = router;

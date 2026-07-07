@@ -3,11 +3,11 @@
   const d = new Date(day.date + 'T00:00:00');
   const wd = weekMap[d.getDay()];
   const catMap = {
-    transport: { ico: '✈', lbl: '交通' },
-    food:      { ico: '🍜', lbl: '餐廳' },
-    attraction:{ ico: '🏛', lbl: '景點' },
-    hotel:     { ico: '🏨', lbl: '住宿' },
-    other:     { ico: '📌', lbl: '其他' },
+    transport: { ico: '✈', lbl: '交通', color: '#5E97F6', bg: '#EEF4FF' },
+    food:      { ico: '🍜', lbl: '餐廳', color: '#F97066', bg: '#FFF0EF' },
+    attraction:{ ico: '🏛', lbl: '景點', color: '#34C759', bg: '#EDFFF2' },
+    hotel:     { ico: '🏨', lbl: '住宿', color: '#FF9F43', bg: '#FFF6EB' },
+    other:     { ico: '📌', lbl: '其他', color: '#8E8E93', bg: '#F2F2F7' },
   };
   const stationMapDB = [
     { keys: ['KIX','関西空港','關西空港','Haruka','はるか','登機','Check-out'], url: 'https://www.kansai-airport.or.jp/en/map/' },
@@ -18,6 +18,16 @@
     { keys: ['伏見稲荷','伏見稻荷'], url: 'https://www.keihan.co.jp/traffic/station/151/info.html' },
     { keys: ['USJ','ユニバーサル','Universal'], url: 'https://eki.jr-odekake.net/premises?id=0612204' },
   ];
+  // Compute average weather for day header
+  const actsWithWeather = activities.filter(a => a.weather_temp != null);
+  const avgTemp = actsWithWeather.length ? Math.round(actsWithWeather.reduce((s,a)=>s+a.weather_temp,0)/actsWithWeather.length) : null;
+  const avgRain = actsWithWeather.length ? Math.round(actsWithWeather.reduce((s,a)=>s+(a.weather_rain||0),0)/actsWithWeather.length) : null;
+  const avgSun  = actsWithWeather.length ? Math.round(actsWithWeather.reduce((s,a)=>s+(a.weather_sun||0),0)/actsWithWeather.length) : null;
+  // Parse budget from notes (looks for ¥X,XXX/人)
+  const budgetMatch = (day.notes||'').match(/¥([\d,]+)\/人/);
+  const budgetStr = budgetMatch ? '¥' + budgetMatch[1] + '/人' : null;
+  const stepsMatch = (day.notes||'').match(/約([\d,]+)步/);
+  const stepsStr = stepsMatch ? '約' + stepsMatch[1] + '步' : null;
 %>
 <%- include('partials/header', {
   pageTitle: day.title,
@@ -25,9 +35,13 @@
   navBack: '/'
 }) %>
 
-<div class="hero" style="padding:20px 20px 16px">
-  <div class="hero-sub" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px">
-    <span>週<%= wd %> · <%= day.date.replace(/-/g,'/') %> · <span class="city-tag" style="vertical-align:middle"><%= day.city %></span></span>
+<!-- ── Day Hero ─────────────────────────────────────────────────── -->
+<div class="day-hero">
+  <div class="day-hero-top">
+    <div class="day-hero-left">
+      <div class="day-hero-date">週<%= wd %> · <%= day.date.replace(/-/g,'/') %></div>
+      <div class="day-hero-city"><span class="city-tag"><%= day.city %></span></div>
+    </div>
     <a href="/day/<%= day.date %>/map" class="map-route-link">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/>
@@ -36,12 +50,48 @@
       路線地圖
     </a>
   </div>
-  <% if (day.notes) { %>
-    <div style="font-size:var(--fs-body);color:var(--t3);margin-top:8px;line-height:1.5"><%= day.notes %></div>
+
+  <% if (avgTemp !== null || budgetStr || stepsStr) { %>
+  <div class="day-meta-strip">
+    <% if (avgTemp !== null) { %>
+    <div class="day-meta-chip">
+      <span class="dmc-ico">🌡</span>
+      <span class="dmc-val"><%= avgTemp %>°C</span>
+    </div>
+    <% } %>
+    <% if (avgRain !== null) { %>
+    <div class="day-meta-chip">
+      <span class="dmc-ico">🌧</span>
+      <span class="dmc-val"><%= avgRain %>%</span>
+    </div>
+    <% } %>
+    <% if (stepsStr) { %>
+    <div class="day-meta-chip">
+      <span class="dmc-ico">👟</span>
+      <span class="dmc-val"><%= stepsStr %></span>
+    </div>
+    <% } %>
+    <% if (budgetStr) { %>
+    <div class="day-meta-chip">
+      <span class="dmc-ico">💴</span>
+      <span class="dmc-val"><%= budgetStr %></span>
+    </div>
+    <% } %>
+  </div>
+  <% } %>
+
+  <% if (day.notes) {
+    // Strip the parts we already show as chips
+    const notesClean = day.notes.replace(/步數[^・]*・/,'').replace(/¥[\d,]+\/人/,'').replace(/^[。，、・\s]+|[。，、・\s]+$/g,'').trim();
+  %>
+    <% if (notesClean) { %>
+    <div class="day-hero-notes"><%= notesClean %></div>
+    <% } %>
   <% } %>
 </div>
 
-<div class="timeline">
+<!-- ── Activity List ──────────────────────────────────────────────── -->
+<div class="act-list-wrap">
   <% if (activities.length === 0) { %>
     <div class="empty">
       <div class="empty-icon">🗓</div>
@@ -50,149 +100,368 @@
     </div>
   <% } else { %>
     <% activities.forEach((a, idx) => {
-      const _next = activities[idx + 1];
-      let _stay = '';
-      if (a.time && _next && _next.time) {
-        const _toMin = t => { const [h,m] = t.split(':').map(Number); return h*60+m; };
-        const _diff = _toMin(_next.time) - _toMin(a.time);
-        if (_diff > 0 && _diff < 720) {
-          const _h = Math.floor(_diff/60), _m = _diff%60;
-          _stay = _h > 0 ? (_h+'h'+(_m>0?_m+'m':'')) : (_m+'m');
-        }
-      }
+      const cat = catMap[a.category] || catMap.other;
       const _isTransport = a.category === 'transport';
-      const _isHotel = a.category === 'hotel';
+      // Wikipedia image data attrs
+      const _c = s => (s||'').replace(/（[^）]*）/g,'').replace(/\([^\)]*\)/g,'').trim();
+      const _strip = s => s.replace(/(散步|夕陽|夕景|夜景|晚餐|午餐|早餐|購物|散策|體驗|花見|遊覽|參觀|慢活|小歇|清晨|夕照|夜遊|野餐)+$/,'').trim();
+      const _paren = ((a.location||'').match(/（([^）]+)）/)||[])[1];
+      const _titleQ = _strip(_c(a.title)).split(/[・→\s]+/)[0].trim();
+      const _locQ   = _c(a.location||'').split(/[・→\s]+/)[0].trim();
+      const _loc2Q  = _paren ? _paren.replace(/(周邊|附近|境內|沿岸|周辺|付近)$/,'').split(/[・→\s]+/)[0].trim() : '';
+      const useWikiImg = ['attraction','food'].includes(a.category) && !a.image_url;
+      // Duration label
+      let durLabel = '';
+      if (a.duration > 0) {
+        const h = Math.floor(a.duration/60), m = a.duration%60;
+        durLabel = h>0 ? (h+'h'+(m>0?m+'m':'')) : (m+'m');
+      }
     %>
-      <div class="tl-item">
-        <div class="tl-time">
-          <%= a.time || '—' %>
+    <div class="act-card" onclick="openActDetail(<%= a.id %>)" data-id="<%= a.id %>">
+      <!-- Left: image thumbnail -->
+      <div class="act-card-thumb" style="background:<%- cat.bg %>">
+        <% if (a.image_url) { %>
+          <img src="<%= a.image_url %>" alt="<%= a.title %>" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <span class="act-card-thumb-ico" style="display:none"><%= cat.ico %></span>
+        <% } else if (useWikiImg) { %>
+          <div class="act-wiki-thumb" data-wiki="<%= _titleQ %>" data-loc="<%= _locQ %>"<% if (_loc2Q && _loc2Q !== _locQ) { %> data-loc2="<%= _loc2Q %>"<% } %> style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:28px"><%= cat.ico %></div>
+        <% } else { %>
+          <span class="act-card-thumb-ico"><%= cat.ico %></span>
+        <% } %>
+      </div>
+
+      <!-- Middle: info -->
+      <div class="act-card-body">
+        <div class="act-card-cat" style="color:<%- cat.color %>"><%= cat.lbl %></div>
+        <div class="act-card-title"><%= a.title %></div>
+        <div class="act-card-chips">
           <% if (a.time) { %>
-            <div class="tl-time-lbl <%= _isTransport ? 'depart' : 'arrive' %>">
-              <%= _isTransport ? '出發' : '抵達' %>
-            </div>
+          <span class="act-chip act-chip-time">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+            <%= a.time %>
+          </span>
           <% } %>
-          <% if (_stay) { %>
-            <div class="tl-stay"><%= _stay %></div>
-            <div class="tl-stay-lbl"><%= _isTransport ? '車程' : '停留' %></div>
+          <% if (a.weather_temp != null) { %>
+          <span class="act-chip act-chip-weather">
+            <% if ((a.weather_rain||0) >= 40) { %>🌧<% } else if ((a.weather_sun||0) >= 70) { %>☀<% } else { %>⛅<% } %>
+            <%= a.weather_temp %>°<% if (a.weather_rain) { %> · 雨<%= a.weather_rain %>%<% } %>
+          </span>
           <% } %>
-        </div>
-        <div class="tl-track">
-          <div class="tl-dot<%= _isHotel ? ' tl-dot-hotel' : '' %>"><%= idx + 1 %></div>
-          <div class="tl-line"></div>
-        </div>
-        <div class="tl-card">
-          <div class="tl-card-head">
-            <div class="act-title"><%= a.title %></div>
-            <div class="act-actions">
-              <button class="act-btn" onclick='openEditActivity(<%- JSON.stringify(a) %>)' title="編輯">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                </svg>
-              </button>
-              <button class="act-btn del" onclick="deleteActivity(<%= a.id %>)" title="刪除">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="3 6 5 6 21 6"/>
-                  <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                  <path d="M10 11v6M14 11v6"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-          <% if (a.location) { %>
-            <div class="act-loc">
-              <svg width="11" height="13" viewBox="0 0 24 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-                <circle cx="12" cy="9" r="2.5"/>
-              </svg>
-              <%= a.location %>
-            </div>
-          <% } %>
-          <% if (a.image_url) { %>
-            <img src="<%= a.image_url %>" alt="<%= a.title %>" class="act-img" loading="lazy" onerror="this.style.display='none'">
-          <% } else if (['attraction','food'].includes(a.category)) {
-               const _c     = s => (s||'').replace(/（[^）]*）/g,'').replace(/\([^\)]*\)/g,'').trim();
-               const _strip = s => s.replace(/(散步|夕陽|夕景|夜景|晚餐|午餐|早餐|購物|散策|體驗|花見|遊覽|參觀|慢活|小歇|清晨|夕照|夜遊|野餐)+$/,'').trim();
-               const _paren = ((a.location||'').match(/（([^）]+)）/)||[])[1];
-               const _titleQ = _strip(_c(a.title)).split(/[・→\s]+/)[0].trim();
-               const _locQ   = _c(a.location).split(/[・→\s]+/)[0].trim();
-               const _loc2Q  = _paren ? _paren.replace(/(周邊|附近|境內|沿岸|周辺|付近)$/,'').split(/[・→\s]+/)[0].trim() : '';
-          %>
-            <div class="act-wiki-img" data-wiki="<%= _titleQ %>" data-loc="<%= _locQ %>"<% if (_loc2Q && _loc2Q !== _locQ) { %> data-loc2="<%= _loc2Q %>"<% } %>></div>
-          <% } %>
-          <% if (a.description) { %>
-            <div class="act-desc"><%= a.description %></div>
-          <% } %>
-          <% if (a.mapcode) { %>
-          <div class="mapcode-row">
-            <span class="mapcode-lbl">MAPCODE</span>
-            <span class="mapcode-val" id="mc-<%= a.id %>"><%= a.mapcode %></span>
-            <button class="mapcode-copy" onclick="copyMC('<%= a.mapcode %>',this)" title="複製">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-              </svg>
-            </button>
-          </div>
-          <% } %>
-          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-            <span class="cat-pill">
-              <%= catMap[a.category] ? catMap[a.category].ico : '📌' %>
-              <%= catMap[a.category] ? catMap[a.category].lbl : a.category %>
-            </span>
-            <% const mapLink = a.map_url || (a.location ? 'https://maps.google.com/?q=' + encodeURIComponent(a.location + '，日本') : ''); %>
-            <% if (mapLink) { %>
-              <a href="<%= mapLink %>" target="_blank" rel="noopener" class="act-map">
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                  <polyline points="15 3 21 3 21 9"/>
-                  <line x1="10" y1="14" x2="21" y2="3"/>
-                </svg>
-                導航
-              </a>
-            <% } %>
-          </div>
-          <% if (a.category === 'transport') { %>
-          <%
-            const actStr = a.title + ' ' + (a.location || '');
-            const stationEntry = stationMapDB.find(e => e.keys.some(k => actStr.includes(k)));
-            const stationMapUrl = stationEntry ? stationEntry.url : null;
-            const gmTransit = a.lat && a.lng
-              ? 'https://www.google.com/maps/dir/?api=1&destination=' + a.lat + ',' + a.lng + '&travelmode=transit'
-              : 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent((a.location||a.title)+'，日本') + '&travelmode=transit';
-            const yahooQ = encodeURIComponent(a.location || a.title);
-          %>
-          <div class="transit-links">
-            <a href="<%= gmTransit %>" target="_blank" rel="noopener" class="transit-btn transit-btn-map">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-              乘車路線
-            </a>
-            <a href="https://transit.yahoo.co.jp/search/result?to=<%= yahooQ %>&timeType=departure&useJR=1&usePrivate=1&useSubway=1&useBus=1" target="_blank" rel="noopener" class="transit-btn transit-btn-time">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              時刻表
-            </a>
-            <a href="https://www.navitime.co.jp/transfer/searchlist?orvStationName=<%= yahooQ %>" target="_blank" rel="noopener" class="transit-btn transit-btn-nav">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
-              NAVITIME
-            </a>
-            <% if (stationMapUrl) { %>
-            <a href="<%= stationMapUrl %>" target="_blank" rel="noopener" class="transit-btn transit-btn-stmap">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-              站內地圖
-            </a>
-            <% } %>
-          </div>
+          <% if (durLabel) { %>
+          <span class="act-chip act-chip-dur"><%= durLabel %></span>
           <% } %>
         </div>
       </div>
+
+      <!-- Right: three-dot menu -->
+      <button class="act-card-menu" onclick="event.stopPropagation();showActMenu(<%= a.id %>, this)" aria-label="選項">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
+        </svg>
+      </button>
+    </div>
     <% }) %>
   <% } %>
 
-  <button class="add-btn" onclick="openAddActivity(<%= day.id %>)">
+  <button class="add-btn" onclick="openAddActivity(<%= day.id %>)" style="margin:8px 0 0">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
       <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
     </svg>
     新增行程
   </button>
 </div>
+
+<!-- ── Activity Detail Modal ──────────────────────────────────────── -->
+<div id="actDetailOverlay" class="overlay" onclick="if(event.target===this)closeActDetail()">
+  <div class="detail-sheet" id="actDetailSheet">
+    <div class="detail-img-wrap" id="detailImgWrap">
+      <div class="detail-img-placeholder" id="detailImgPlaceholder">
+        <span id="detailImgIco" style="font-size:52px"></span>
+      </div>
+      <img id="detailImg" src="" alt="" style="display:none" onerror="this.style.display='none';document.getElementById('detailImgPlaceholder').style.display='flex'">
+      <button class="detail-heart" id="detailHeart" onclick="toggleHeart(this)" aria-label="收藏">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="detail-body">
+      <div class="sheet-handle"></div>
+      <div class="detail-cat-row">
+        <span class="detail-cat-pill" id="detailCatPill"></span>
+      </div>
+      <h2 class="detail-title" id="detailTitle"></h2>
+
+      <!-- Time + Duration chips -->
+      <div class="detail-chips" id="detailChips"></div>
+
+      <!-- Weather row -->
+      <div class="detail-weather-row" id="detailWeatherRow" style="display:none">
+        <div class="detail-weather-item" id="detailTemp"></div>
+        <div class="detail-weather-item" id="detailSun"></div>
+        <div class="detail-weather-item" id="detailRain"></div>
+      </div>
+
+      <!-- Location -->
+      <div class="detail-loc-row" id="detailLocRow" style="display:none">
+        <svg width="13" height="15" viewBox="0 0 24 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+          <circle cx="12" cy="9" r="2.5"/>
+        </svg>
+        <a id="detailLocLink" href="#" target="_blank" rel="noopener" class="detail-loc-txt"></a>
+      </div>
+
+      <!-- Description -->
+      <div class="detail-desc" id="detailDesc" style="display:none"></div>
+
+      <!-- Rain day alternative -->
+      <div class="detail-alt-block" id="detailAltBlock" style="display:none">
+        <div class="detail-block-label">雨天備案</div>
+        <div class="detail-block-txt" id="detailAlt"></div>
+      </div>
+
+      <!-- Restaurant -->
+      <div class="detail-rest-block" id="detailRestBlock" style="display:none">
+        <div class="detail-block-label">推薦餐廳</div>
+        <div class="detail-block-txt" id="detailRest"></div>
+      </div>
+
+      <!-- MAPCODE -->
+      <div class="detail-mapcode-block" id="detailMapcodeBlock" style="display:none">
+        <div class="mapcode-row" style="margin-top:0">
+          <span class="mapcode-lbl">MAPCODE</span>
+          <span class="mapcode-val" id="detailMapcodeVal"></span>
+          <button class="mapcode-copy" id="detailMapcodeCopyBtn" title="複製">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Transport links -->
+      <div class="transit-links" id="detailTransitLinks" style="display:none"></div>
+
+      <!-- Action buttons -->
+      <div class="detail-actions" id="detailActions">
+        <button class="btn btn-sec" style="flex:1" id="detailEditBtn" onclick="">編輯</button>
+        <button class="btn" style="flex:1;background:#fff0ef;color:#ff3b30" id="detailDelBtn" onclick="">刪除</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Activity Context Menu ──────────────────────────────────────── -->
+<div id="actMenuOverlay" class="overlay act-menu-overlay" onclick="closeActMenu()">
+  <div class="act-menu-sheet">
+    <button class="act-menu-btn" id="actMenuEdit">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+      </svg>
+      編輯行程
+    </button>
+    <button class="act-menu-btn act-menu-btn-del" id="actMenuDel">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+        <polyline points="3 6 5 6 21 6"/>
+        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+        <path d="M10 11v6M14 11v6"/>
+      </svg>
+      刪除行程
+    </button>
+  </div>
+</div>
+
+<!-- ── Inline activity data (used by detail modal JS) ────────────── -->
+<script>
+const ACTIVITIES_DATA = <%- JSON.stringify(activities) %>;
+const CAT_MAP_JS = {
+  transport: { ico: '✈', lbl: '交通', color: '#5E97F6', bg: '#EEF4FF' },
+  food:      { ico: '🍜', lbl: '餐廳', color: '#F97066', bg: '#FFF0EF' },
+  attraction:{ ico: '🏛', lbl: '景點', color: '#34C759', bg: '#EDFFF2' },
+  hotel:     { ico: '🏨', lbl: '住宿', color: '#FF9F43', bg: '#FFF6EB' },
+  other:     { ico: '📌', lbl: '其他', color: '#8E8E93', bg: '#F2F2F7' },
+};
+const STATION_MAP = <%- JSON.stringify(stationMapDB) %>;
+
+let _currentMenuActId = null;
+
+// ── Open / close detail modal ────────────────────────────────────
+function openActDetail(id) {
+  const a = ACTIVITIES_DATA.find(x => x.id === id);
+  if (!a) return;
+  const cat = CAT_MAP_JS[a.category] || CAT_MAP_JS.other;
+
+  // Image
+  const imgEl = document.getElementById('detailImg');
+  const phEl  = document.getElementById('detailImgPlaceholder');
+  const icoEl = document.getElementById('detailImgIco');
+  icoEl.textContent = cat.ico;
+  phEl.style.background = cat.bg;
+  if (a.image_url) {
+    imgEl.src = a.image_url;
+    imgEl.style.display = 'block';
+    phEl.style.display = 'none';
+  } else {
+    const wikiEl = document.querySelector(`.act-card[data-id="${id}"] .act-wiki-thumb`);
+    const wikiImg = wikiEl ? wikiEl.querySelector('img') : null;
+    if (wikiImg && wikiImg.src) {
+      imgEl.src = wikiImg.src;
+      imgEl.style.display = 'block';
+      phEl.style.display = 'none';
+    } else {
+      imgEl.style.display = 'none';
+      phEl.style.display = 'flex';
+    }
+  }
+
+  // Category
+  const cpill = document.getElementById('detailCatPill');
+  cpill.textContent = cat.ico + ' ' + cat.lbl;
+  cpill.style.color = cat.color;
+  cpill.style.background = cat.bg;
+
+  // Title
+  document.getElementById('detailTitle').textContent = a.title;
+
+  // Chips: time + duration
+  const chipsEl = document.getElementById('detailChips');
+  chipsEl.innerHTML = '';
+  if (a.time) {
+    const c = document.createElement('span');
+    c.className = 'detail-chip';
+    c.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ${a.time}`;
+    chipsEl.appendChild(c);
+  }
+  if (a.duration > 0) {
+    const h = Math.floor(a.duration/60), m = a.duration%60;
+    const durStr = h>0 ? (h+'h'+(m>0?m+'m':'')) : (m+'m');
+    const c = document.createElement('span');
+    c.className = 'detail-chip';
+    c.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M17 3a2 2 0 0 1 0 4H7a2 2 0 0 1 0-4h10z"/><rect x="3" y="11" width="18" height="11" rx="2"/></svg> ${durStr}`;
+    chipsEl.appendChild(c);
+  }
+
+  // Weather
+  const wRow = document.getElementById('detailWeatherRow');
+  if (a.weather_temp != null) {
+    document.getElementById('detailTemp').innerHTML = `<span class="dw-ico">🌡</span><span class="dw-val">${a.weather_temp}°C</span><span class="dw-lbl">溫度</span>`;
+    document.getElementById('detailSun').innerHTML  = `<span class="dw-ico">☀</span><span class="dw-val">${a.weather_sun??'—'}%</span><span class="dw-lbl">晴天率</span>`;
+    document.getElementById('detailRain').innerHTML = `<span class="dw-ico">🌧</span><span class="dw-val">${a.weather_rain??'—'}%</span><span class="dw-lbl">降雨率</span>`;
+    wRow.style.display = 'flex';
+  } else {
+    wRow.style.display = 'none';
+  }
+
+  // Location
+  const locRow = document.getElementById('detailLocRow');
+  const locLink = document.getElementById('detailLocLink');
+  if (a.location) {
+    locLink.textContent = a.location;
+    const mapLink = a.map_url || `https://maps.google.com/?q=${encodeURIComponent(a.location+'，日本')}`;
+    locLink.href = mapLink;
+    locRow.style.display = 'flex';
+  } else {
+    locRow.style.display = 'none';
+  }
+
+  // Description
+  const descEl = document.getElementById('detailDesc');
+  if (a.description) {
+    descEl.textContent = a.description;
+    descEl.style.display = 'block';
+  } else {
+    descEl.style.display = 'none';
+  }
+
+  // Alt plan
+  const altBlock = document.getElementById('detailAltBlock');
+  if (a.alt_plan) {
+    document.getElementById('detailAlt').textContent = a.alt_plan;
+    altBlock.style.display = 'block';
+  } else {
+    altBlock.style.display = 'none';
+  }
+
+  // Restaurant
+  const restBlock = document.getElementById('detailRestBlock');
+  if (a.restaurant) {
+    document.getElementById('detailRest').textContent = a.restaurant;
+    restBlock.style.display = 'block';
+  } else {
+    restBlock.style.display = 'none';
+  }
+
+  // Mapcode
+  const mcBlock = document.getElementById('detailMapcodeBlock');
+  if (a.mapcode) {
+    document.getElementById('detailMapcodeVal').textContent = a.mapcode;
+    document.getElementById('detailMapcodeCopyBtn').onclick = () => copyMC(a.mapcode, document.getElementById('detailMapcodeCopyBtn'));
+    mcBlock.style.display = 'block';
+  } else {
+    mcBlock.style.display = 'none';
+  }
+
+  // Transport links
+  const transitEl = document.getElementById('detailTransitLinks');
+  if (a.category === 'transport') {
+    const actStr = (a.title||'') + ' ' + (a.location||'');
+    const stEntry = STATION_MAP.find(e => e.keys.some(k => actStr.includes(k)));
+    const stUrl = stEntry ? stEntry.url : null;
+    const gmTransit = a.lat && a.lng
+      ? `https://www.google.com/maps/dir/?api=1&destination=${a.lat},${a.lng}&travelmode=transit`
+      : `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent((a.location||a.title)+'，日本')}&travelmode=transit`;
+    const yahooQ = encodeURIComponent(a.location||a.title);
+    transitEl.innerHTML = `
+      <a href="${gmTransit}" target="_blank" rel="noopener" class="transit-btn transit-btn-map">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>乘車路線</a>
+      <a href="https://transit.yahoo.co.jp/search/result?to=${yahooQ}&timeType=departure&useJR=1&usePrivate=1&useSubway=1&useBus=1" target="_blank" rel="noopener" class="transit-btn transit-btn-time">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>時刻表</a>
+      <a href="https://www.navitime.co.jp/transfer/searchlist?orvStationName=${yahooQ}" target="_blank" rel="noopener" class="transit-btn transit-btn-nav">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>NAVITIME</a>
+      ${stUrl ? `<a href="${stUrl}" target="_blank" rel="noopener" class="transit-btn transit-btn-stmap"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>站內地圖</a>` : ''}
+    `;
+    transitEl.style.display = 'flex';
+  } else {
+    transitEl.style.display = 'none';
+  }
+
+  // Edit / Delete buttons
+  document.getElementById('detailEditBtn').onclick = () => {
+    closeActDetail();
+    openEditActivity(a);
+  };
+  document.getElementById('detailDelBtn').onclick = () => {
+    closeActDetail();
+    deleteActivity(a.id);
+  };
+
+  document.getElementById('actDetailOverlay').classList.add('open');
+}
+
+function closeActDetail() {
+  document.getElementById('actDetailOverlay').classList.remove('open');
+}
+
+// ── Three-dot context menu ───────────────────────────────────────
+function showActMenu(id, btn) {
+  _currentMenuActId = id;
+  const a = ACTIVITIES_DATA.find(x => x.id === id);
+  document.getElementById('actMenuEdit').onclick = () => { closeActMenu(); openEditActivity(a); };
+  document.getElementById('actMenuDel').onclick  = () => { closeActMenu(); deleteActivity(id); };
+  document.getElementById('actMenuOverlay').classList.add('open');
+}
+function closeActMenu() {
+  document.getElementById('actMenuOverlay').classList.remove('open');
+}
+
+// ── Heart toggle (decorative) ────────────────────────────────────
+function toggleHeart(btn) {
+  btn.classList.toggle('hearted');
+}
+</script>
 
 <%- include('partials/footer', { activePage: 'home', extraScript: '/js/wikipedia-images.js' }) %>
