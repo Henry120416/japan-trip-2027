@@ -1112,6 +1112,64 @@ if (USE_PG) {
       await pool.query(`INSERT INTO trip_info (category, key, value, sort_order) VALUES ('system', 'expenses_cleared_v3', '1', 9999)`);
     }
 
+    // ── 費用預估種子（6人行，匯率 1TWD≈4.8JPY）────────────────
+    const expSeed = await pool.query(`SELECT 1 FROM trip_info WHERE category='system' AND key='expenses_v1'`);
+    if (!expSeed.rows.length) {
+      const dayId = async d => {
+        const r = await pool.query(`SELECT id FROM days WHERE date=$1 AND plan_id=1`, [d]);
+        return r.rows[0]?.id || null;
+      };
+      const addExp = async (date, title, jpy, twd, notes='') => {
+        const did = date ? await dayId(date) : null;
+        await pool.query(
+          `INSERT INTO expenses (day_id,title,amount_jpy,amount_twd,notes) VALUES ($1,$2,$3,$4,$5)`,
+          [did, title, jpy, twd, notes]
+        );
+      };
+      // ── 機票（無日期）
+      await addExp(null, '機票（去回，6人）',          0,      78000, '星宇航空 KIX，6人×NT$13,000（含稅預估）');
+      // ── D1 2027-04-17
+      await addExp('2027-04-17', '住宿 MIMARU 京都五條（3晚）', 135000, 28125, '6人公寓式，¥45,000/晚×3');
+      await addExp('2027-04-17', 'HARUKA特急（6人×¥2,200）',    13200,  2750,  '外國人優惠票，含指定席');
+      await addExp('2027-04-17', 'ICOCA儲值（6人×¥3,000）',     18000,  3750,  '含押金¥500，可退款');
+      await addExp('2027-04-17', '計程車 京都站→飯店（2台）',    2400,   500,   '攜帶大件行李建議計程車');
+      await addExp('2027-04-17', '晚餐 燒肉弘（6人）',           19800,  4125,  '極熱門，需提前30天預約');
+      // ── D2 2027-04-18
+      await addExp('2027-04-18', '電車 往返奈良（6人×¥1,060×2）', 12720, 2650, '京阪+近鐵丹波橋換乘');
+      await addExp('2027-04-18', '入場費 東大寺（6人×¥800）',     4800,  1000, '世界最大木造建築');
+      await addExp('2027-04-18', '午餐 江戶川鰻魚飯（6人）',      13800, 2875, '近鐵奈良站，無需預約');
+      await addExp('2027-04-18', '錦市場小吃（6人）',              3600,  750,  '邊走邊吃');
+      await addExp('2027-04-18', '晚餐 京都勝牛（6人）',           16800, 3500, '河原町店，現場排隊');
+      // ── D3 2027-04-19
+      await addExp('2027-04-19', '電車 叡山電鐵往返貴船口（6人）', 5160,  1075, '出町柳↔貴船口');
+      await addExp('2027-04-19', '接駁公車 往返貴船神社（6人）',   2040,   425, '¥170×2×6');
+      await addExp('2027-04-19', '門票 貴船神社水占卜（6人×¥300）', 1800,  375, '特殊體驗，放入水中顯字');
+      await addExp('2027-04-19', '午餐 貴船茶屋（6人）',           19800, 4125, '山中定食，無需預約');
+      await addExp('2027-04-19', '晚餐 祇園牛禪壽喜燒（6人）',     27600, 5750, '建議7天前預約');
+      // ── D4 2027-04-20
+      await addExp('2027-04-20', '住宿 MIMARU 大阪難波（3晚）',   120000, 25000, '6人公寓式，¥40,000/晚×3');
+      await addExp('2027-04-20', '計程車 飯店→伏見稻荷（2台）',    3600,   750, '清晨5:50出發');
+      await addExp('2027-04-20', '計程車 伏見稻荷→清水寺（2台）',  3000,   625, '清晨光線最美時段移動');
+      await addExp('2027-04-20', '入場費 清水寺（6人×¥500）',      3000,   625, '6:00開門，晨光最佳');
+      await addExp('2027-04-20', '早餐 阿古屋茶屋（6人）',         15600,  3250, '09:45前先現場登記');
+      await addExp('2027-04-20', '計程車 飯店→京都站（2台）',       2400,   500, '退房攜大件行李');
+      await addExp('2027-04-20', 'JR新快速 京都→大阪（6人×¥570）', 3420,   713, '不需預約，每10分一班');
+      await addExp('2027-04-20', '晚餐 北極星大阪燒（6人）',        18000,  3750, '心齋橋本店，無需預約');
+      // ── D5 2027-04-21
+      await addExp('2027-04-21', '黑門市場海鮮（6人）',              9000,  1875, '黑門三平+石橋關東煮+黑銀');
+      await addExp('2027-04-21', '地鐵 難波↔梅田往返（6人）',        2160,   450, '御堂筋線¥180×2×6');
+      await addExp('2027-04-21', '晚餐 和牛燒肉M法善寺（6人）',     37200,  7750, '極穩極推，2週前官網預約');
+      await addExp('2027-04-21', '門票 梅田空中庭園（6人×¥2,000）', 12000,  2500, '高173m俯瞰百萬夜景');
+      await addExp('2027-04-21', '購物 心齋橋・梅田（6人預算）',     30000,  6250, '藥妝・伴手禮・百貨');
+      // ── D6 2027-04-22
+      await addExp('2027-04-22', '電車 南海 難波→臨空城+KIX（6人）', 6240,  1300, '¥920→臨空城，¥120→KIX');
+      await addExp('2027-04-22', '午餐 金子半之助天丼（6人）',        9000,  1875, 'Outlet美食街，無需預約');
+      await addExp('2027-04-22', '購物 臨空城Outlet（6人預算）',      30000,  6250, '210+品牌，回台前最後血拼');
+      await addExp('2027-04-22', '機場伴手禮・免稅店（6人）',          6000,  1250, 'KIX出境後免稅店');
+
+      await pool.query(`INSERT INTO trip_info (category,key,value,sort_order) VALUES ('system','expenses_v1','1',9999) ON CONFLICT DO NOTHING`);
+    }
+
     const cl = await pool.query('SELECT COUNT(*) as c FROM checklist');
     if (parseInt(cl.rows[0].c) === 0) {
       for (let i = 0; i < DEFAULT_CHECKLIST.length; i++) {
