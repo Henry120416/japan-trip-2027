@@ -1113,8 +1113,10 @@ if (USE_PG) {
     }
 
     // ── 費用預估種子（6人行，匯率 1TWD≈4.8JPY）────────────────
-    const expSeed = await pool.query(`SELECT 1 FROM trip_info WHERE category='system' AND key='expenses_v1'`);
+    const expSeed = await pool.query(`SELECT 1 FROM trip_info WHERE category='system' AND key='expenses_v2'`);
     if (!expSeed.rows.length) {
+      await pool.query(`DELETE FROM expenses`);
+      await pool.query(`DELETE FROM trip_info WHERE category='system' AND key='expenses_v1'`);
       const dayId = async d => {
         const r = await pool.query(`SELECT id FROM days WHERE date=$1 AND plan_id=1`, [d]);
         return r.rows[0]?.id || null;
@@ -1127,7 +1129,7 @@ if (USE_PG) {
         );
       };
       // ── 機票（無日期）
-      await addExp(null, '機票（去回，6人）',          0,      78000, '星宇航空 KIX，6人×NT$13,000（含稅預估）');
+      await addExp(null, '機票（去回，6人）',          0,      97842, '星宇航空 KIX，6人×NT$16,307');
       // ── D1 2027-04-17
       await addExp('2027-04-17', '住宿 MIMARU 京都五條（3晚）', 135000, 28125, '6人公寓式，¥45,000/晚×3');
       await addExp('2027-04-17', 'HARUKA特急（6人×¥2,200）',    13200,  2750,  '外國人優惠票，含指定席');
@@ -1167,7 +1169,7 @@ if (USE_PG) {
       await addExp('2027-04-22', '購物 臨空城Outlet（6人預算）',      30000,  6250, '210+品牌，回台前最後血拼');
       await addExp('2027-04-22', '機場伴手禮・免稅店（6人）',          6000,  1250, 'KIX出境後免稅店');
 
-      await pool.query(`INSERT INTO trip_info (category,key,value,sort_order) VALUES ('system','expenses_v1','1',9999) ON CONFLICT DO NOTHING`);
+      await pool.query(`INSERT INTO trip_info (category,key,value,sort_order) VALUES ('system','expenses_v2','1',9999) ON CONFLICT DO NOTHING`);
     }
 
     const cl = await pool.query('SELECT COUNT(*) as c FROM checklist');
