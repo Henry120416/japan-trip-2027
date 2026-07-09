@@ -1113,10 +1113,10 @@ if (USE_PG) {
     }
 
     // ── 費用預估種子（6人行，匯率 1TWD≈4.8JPY）────────────────
-    const expSeed = await pool.query(`SELECT 1 FROM trip_info WHERE category='system' AND key='expenses_v2'`);
+    const expSeed = await pool.query(`SELECT 1 FROM trip_info WHERE category='system' AND key='expenses_v3'`);
     if (!expSeed.rows.length) {
       await pool.query(`DELETE FROM expenses`);
-      await pool.query(`DELETE FROM trip_info WHERE category='system' AND key='expenses_v1'`);
+      await pool.query(`DELETE FROM trip_info WHERE category='system' AND key IN ('expenses_v1','expenses_v2')`);
       const dayId = async d => {
         const r = await pool.query(`SELECT id FROM days WHERE date=$1 AND plan_id=1`, [d]);
         return r.rows[0]?.id || null;
@@ -1149,7 +1149,7 @@ if (USE_PG) {
       await addExp('2027-04-19', '午餐 貴船茶屋（6人）',           19800, 4125, '山中定食，無需預約');
       await addExp('2027-04-19', '晚餐 祇園牛禪壽喜燒（6人）',     27600, 5750, '建議7天前預約');
       // ── D4 2027-04-20
-      await addExp('2027-04-20', '住宿 MIMARU 大阪難波（3晚）',   120000, 25000, '6人公寓式，¥40,000/晚×3');
+      await addExp('2027-04-20', '住宿 MIMARU 大阪難波（2晚）',        0, 29025, '6人，2晚合計 NT$29,025.46');
       await addExp('2027-04-20', '計程車 飯店→伏見稻荷（2台）',    3600,   750, '清晨5:50出發');
       await addExp('2027-04-20', '計程車 伏見稻荷→清水寺（2台）',  3000,   625, '清晨光線最美時段移動');
       await addExp('2027-04-20', '入場費 清水寺（6人×¥500）',      3000,   625, '6:00開門，晨光最佳');
@@ -1169,7 +1169,7 @@ if (USE_PG) {
       await addExp('2027-04-22', '購物 臨空城Outlet（6人預算）',      30000,  6250, '210+品牌，回台前最後血拼');
       await addExp('2027-04-22', '機場伴手禮・免稅店（6人）',          6000,  1250, 'KIX出境後免稅店');
 
-      await pool.query(`INSERT INTO trip_info (category,key,value,sort_order) VALUES ('system','expenses_v2','1',9999) ON CONFLICT DO NOTHING`);
+      await pool.query(`INSERT INTO trip_info (category,key,value,sort_order) VALUES ('system','expenses_v3','1',9999) ON CONFLICT DO NOTHING`);
     }
 
     const cl = await pool.query('SELECT COUNT(*) as c FROM checklist');
