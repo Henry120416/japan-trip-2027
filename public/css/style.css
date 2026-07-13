@@ -862,6 +862,15 @@ body {
 .legend-lbl { color: var(--t2); flex: 1; min-width: 0; white-space: nowrap; }
 .legend-val { color: var(--t1); font-weight: 600; font-size: .78rem; white-space: nowrap; }
 .exp-section-title { padding: 4px 16px 6px; font-size: .72rem; font-weight: 600; color: var(--t3); text-transform: uppercase; letter-spacing: .06em; }
+.fund-card { margin: 0 16px 16px; background: var(--card); border-radius: 16px; padding: 20px 16px 16px; border: 1px solid var(--border-l); box-shadow: var(--shadow-s); }
+.fund-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; }
+.fund-row-lbl { font-size: 14px; color: var(--t3); }
+.fund-row-val { font-size: 14px; font-weight: 600; color: var(--t1); }
+.fund-divider { border: none; border-top: 1px solid var(--border-l); margin: 8px 0; }
+.fund-highlight { background: var(--fill); border-radius: 12px; padding: 16px; text-align: center; margin-top: 4px; }
+.fund-hl-lbl { font-size: 12px; color: var(--t4); margin-bottom: 4px; }
+.fund-hl-val { font-size: 1.75rem; font-weight: 800; color: #F97066; letter-spacing: -.5px; line-height: 1.1; }
+.fund-hl-hint { font-size: 11px; color: var(--t5); margin-top: 6px; }
 
 /* ─── Pass Table (Info page) ────────────────────────── */
 .pass-tbl { width: 100%; border-collapse: collapse; font-size: .73rem; }

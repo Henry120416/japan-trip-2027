@@ -134,6 +134,14 @@ router.get('/expenses', async (req, res) => {
       grouped[key].items.push(e);
     });
 
+    const FUND_INITIAL = 60000;
+    const flightTwd = expenses
+      .filter(e => expCat(e.title) === '機票')
+      .reduce((s, e) => s + (e.amount_twd || 0), 0);
+    const fundTotal     = (stats.total_twd || 0) - flightTwd;
+    const fundShortfall = Math.max(0, fundTotal - FUND_INITIAL);
+    const fundPerExtra  = Math.ceil(fundShortfall / PERSONS);
+
     res.render('expenses', {
       days,
       expenses,
@@ -144,6 +152,11 @@ router.get('/expenses', async (req, res) => {
       total_jpy: stats.total_jpy || 0,
       total_twd: stats.total_twd || 0,
       per_person: Math.ceil((stats.total_twd || 0) / PERSONS),
+      flight_twd:   flightTwd,
+      fund_total:   fundTotal,
+      fund_current: FUND_INITIAL,
+      fund_shortfall: fundShortfall,
+      fund_per_extra: fundPerExtra,
     });
   } catch (e) { res.status(500).send(e.message); }
 });

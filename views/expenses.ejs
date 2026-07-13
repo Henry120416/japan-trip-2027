@@ -39,6 +39,29 @@
 </div>
 <% } %>
 
+<!-- 公款試算 -->
+<div class="fund-card">
+  <div class="section-label" style="margin-bottom:16px">公款試算</div>
+  <div class="fund-row">
+    <span class="fund-row-lbl">旅費合計（除機票）</span>
+    <span class="fund-row-val">NT$<%= fund_total.toLocaleString() %></span>
+  </div>
+  <div class="fund-row">
+    <span class="fund-row-lbl">目前公款</span>
+    <span class="fund-row-val">NT$<%= fund_current.toLocaleString() %></span>
+  </div>
+  <div class="fund-divider"></div>
+  <div class="fund-row" style="margin-bottom:16px">
+    <span class="fund-row-lbl">缺口</span>
+    <span class="fund-row-val" style="color:#F97066;font-weight:700">NT$<%= fund_shortfall.toLocaleString() %></span>
+  </div>
+  <div class="fund-highlight">
+    <div class="fund-hl-lbl">每人建議補繳</div>
+    <div class="fund-hl-val">NT$<%= fund_per_extra.toLocaleString() %></div>
+    <div class="fund-hl-hint">機票已各自支付，不計入公款</div>
+  </div>
+</div>
+
 <!-- 明細 -->
 <div class="section">
   <% if (expenses.length === 0) { %>
