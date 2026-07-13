@@ -1113,10 +1113,10 @@ if (USE_PG) {
     }
 
     // ── 費用預估種子（6人行，匯率 1TWD≈4.8JPY）────────────────
-    const expSeed = await pool.query(`SELECT 1 FROM trip_info WHERE category='system' AND key='expenses_v5'`);
+    const expSeed = await pool.query(`SELECT 1 FROM trip_info WHERE category='system' AND key='expenses_v6'`);
     if (!expSeed.rows.length) {
       await pool.query(`DELETE FROM expenses`);
-      await pool.query(`DELETE FROM trip_info WHERE category='system' AND key IN ('expenses_v1','expenses_v2','expenses_v3','expenses_v4')`);
+      await pool.query(`DELETE FROM trip_info WHERE category='system' AND key IN ('expenses_v1','expenses_v2','expenses_v3','expenses_v4','expenses_v5')`);
       const dayId = async d => {
         const r = await pool.query(`SELECT id FROM days WHERE date=$1 AND plan_id=1`, [d]);
         return r.rows[0]?.id || null;
@@ -1169,16 +1169,13 @@ if (USE_PG) {
       await addExp('2027-04-21', '地鐵 難波↔梅田往返（6人）',          2160,   450, '御堂筋線¥180×2×6');
       await addExp('2027-04-21', '晚餐 和牛燒肉M法善寺（6人）',        72000, 15000, '¥12,000/人，極穩極推，2週前官網預約');
       await addExp('2027-04-21', '門票 梅田空中庭園（6人×¥2,000）',   12000,  2500, '高173m俯瞰百萬夜景');
-      await addExp('2027-04-21', '購物 心齋橋・梅田（6人預算）',        30000,  6250, '藥妝・伴手禮・百貨');
       await addExp('2027-04-21', '飲料・零食・便利商店',                6000,  1250, '¥1,000/人');
       // ── D6 2027-04-22
       await addExp('2027-04-22', '電車 南海 難波→臨空城+KIX（6人）',  6240,  1300, '¥920→臨空城，¥120→KIX');
       await addExp('2027-04-22', '午餐 金子半之助天丼（6人）',          9000,  1875, 'Outlet美食街，¥1,500/人，無需預約');
-      await addExp('2027-04-22', '購物 臨空城Outlet（6人預算）',        30000,  6250, '210+品牌，回台前最後血拼');
-      await addExp('2027-04-22', '機場伴手禮・免稅店（6人）',            6000,  1250, 'KIX出境後免稅店');
       await addExp('2027-04-22', '飲料・零食・便利商店',                 3000,   625, '¥500/人，半天');
 
-      await pool.query(`INSERT INTO trip_info (category,key,value,sort_order) VALUES ('system','expenses_v5','1',9999) ON CONFLICT DO NOTHING`);
+      await pool.query(`INSERT INTO trip_info (category,key,value,sort_order) VALUES ('system','expenses_v6','1',9999) ON CONFLICT DO NOTHING`);
     }
 
     const cl = await pool.query('SELECT COUNT(*) as c FROM checklist');
