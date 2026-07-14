@@ -112,14 +112,14 @@ const PLAN1_ACTS = [
    '建議出發前3小時抵達，完成免稅退稅、關空免稅店最後掃貨，帶著6天滿滿回憶返台！'],
 ];
 
-// ── 方案二行程資料（京都出發・神戶一日遊）─────────────
+// ── 方案二行程資料（京都・奈良・貴船・大阪）─────────────
 const PLAN2_DAYS = [
-  { date:'2027-04-17', title:'京都慢慢開始',             city:'京都',      notes:'從關西機場搭 HARUKA 抵達，入住 MIMARU 京都五條，漫步鴨川，燒肉弘晚餐。[t6]' },
-  { date:'2027-04-18', title:'奈良早攻',                 city:'奈良・京都', notes:'早攻東大寺・奈良公園，下午返京都錦市場，京都勝牛晚餐。' },
-  { date:'2027-04-19', title:'貴船慢活',                 city:'京都・貴船', notes:'叡山電鐵前往貴船，神社・水占卜・川床，祇園牛禪壽喜燒晚餐。' },
-  { date:'2027-04-20', title:'京都黃金時段→移大阪',     city:'京都・大阪', notes:'清晨伏見稻荷・清水寺無人時段，午後移往大阪，北極星大阪燒晚餐。' },
-  { date:'2027-04-21', title:'大阪市區探索',             city:'大阪',      notes:'黑門市場・心齋橋・梅田空中庭園・和牛燒肉M晚餐。' },
-  { date:'2027-04-22', title:'臨空城 Outlet・返程',      city:'大阪・關西', notes:'南海電車前往臨空城 Outlet，再一站至關西機場返台。' },
+  { date:'2027-04-17', title:'京都慢慢開始',               city:'京都',      notes:'從關西機場搭 HARUKA 抵達，入住 MIMARU 京都五條，漫步鴨川，燒肉弘晚餐。[t6]' },
+  { date:'2027-04-18', title:'奈良早攻',                   city:'奈良・京都', notes:'早攻東大寺・奈良公園，下午返京都錦市場，京都勝牛晚餐。' },
+  { date:'2027-04-19', title:'伏見稻荷清晨→貴船秘境散策', city:'京都・貴船', notes:'06:00清晨先攻伏見稻荷無人鳥居，再搭叡電前往貴船神社・水占卜・茶屋午餐，祇園牛禪壽喜燒晚餐。' },
+  { date:'2027-04-20', title:'清水寺東山散策→移防大阪',   city:'京都・大阪', notes:'07:00清水寺清晨無人時段，東山散策・阿古屋茶屋，午後移往大阪，北極星大阪燒晚餐。' },
+  { date:'2027-04-21', title:'大阪市區探索',               city:'大阪',      notes:'黑門市場・心齋橋・梅田空中庭園・和牛燒肉M晚餐。' },
+  { date:'2027-04-22', title:'臨空城 Outlet・返程',        city:'大阪・關西', notes:'南海電車前往臨空城 Outlet，再一站至關西機場返台。' },
 ];
 
 const PLAN2_ACTS_OLD_UNUSED = [
@@ -340,7 +340,7 @@ const PLAN2_ACTS = [
    '辦理行李托運→免稅退稅→入境審查→登機門。關空免稅店最後掃貨！'],
 ];
 
-// 方案一 = 京都出發・神戶（PLAN2_DAYS/ACTS 的內容）
+// 方案一 = 京都・奈良・貴船・大阪（PLAN2_DAYS/ACTS 的內容）
 // 方案二 = 大阪出發・環球影城（PLAN1_DAYS/ACTS 的內容）
 const P1_DAYS = PLAN2_DAYS;
 const P1_ACTS = PLAN2_ACTS;
@@ -408,7 +408,7 @@ if (USE_PG) {
     await pool.query(`CREATE TABLE IF NOT EXISTS plans (
       id INTEGER PRIMARY KEY, name TEXT NOT NULL, subtitle TEXT
     )`);
-    await pool.query(`INSERT INTO plans (id,name,subtitle) VALUES (1,'方案一','京都出發・神戶一日遊') ON CONFLICT (id) DO UPDATE SET name=EXCLUDED.name, subtitle=EXCLUDED.subtitle`);
+    await pool.query(`INSERT INTO plans (id,name,subtitle) VALUES (1,'方案一','京都・奈良・貴船・大阪') ON CONFLICT (id) DO UPDATE SET name=EXCLUDED.name, subtitle=EXCLUDED.subtitle`);
     await pool.query(`INSERT INTO plans (id,name,subtitle) VALUES (2,'方案二','大阪出發・環球影城') ON CONFLICT (id) DO UPDATE SET name=EXCLUDED.name, subtitle=EXCLUDED.subtitle`);
     await pool.query(`ALTER TABLE days ADD COLUMN IF NOT EXISTS plan_id INTEGER DEFAULT 2`);
     // 移除舊的 date 單欄唯一約束，改為 (date, plan_id) 聯合唯一
@@ -1450,7 +1450,7 @@ if (USE_PG) {
         category TEXT NOT NULL, key TEXT NOT NULL,
         value TEXT DEFAULT '', sort_order INTEGER DEFAULT 0)`);
       db.run(`CREATE TABLE IF NOT EXISTS plans (id INTEGER PRIMARY KEY, name TEXT NOT NULL, subtitle TEXT)`);
-      db.run(`INSERT OR REPLACE INTO plans VALUES (1,'方案一','京都出發・神戶一日遊')`);
+      db.run(`INSERT OR REPLACE INTO plans VALUES (1,'方案一','京都・奈良・貴船・大阪')`);
       db.run(`INSERT OR REPLACE INTO plans VALUES (2,'方案二','大阪出發・環球影城')`);
       db.run(`ALTER TABLE days ADD COLUMN plan_id INTEGER DEFAULT 1`, () => {});
 
