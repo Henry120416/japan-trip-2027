@@ -953,6 +953,126 @@ if (USE_PG) {
       await pool.query(`INSERT INTO trip_info (category,key,value,sort_order) VALUES ('system','itinerary_v7','1',9999) ON CONFLICT DO NOTHING`);
     }
 
+    // ── 行程 v8（伏見稻荷移至D3清晨，D4輕鬆從清水寺開始）────────────────
+    const itin_v8 = await pool.query(`SELECT 1 FROM trip_info WHERE category='system' AND key='itinerary_v8'`);
+    if (!itin_v8.rows.length) {
+      await pool.query(`UPDATE days SET title=$1, notes=$2 WHERE date='2027-04-19' AND plan_id=1`, [
+        '伏見稻荷清晨→貴船秘境散策',
+        '步數約17,000步(約11km)｜建議現金¥6,000/人｜基本花費約¥9,500/人。⚠️06:00清晨出發先攻伏見稻荷！必吃：貴船茶屋烤魚、牛禪壽喜燒。清晨氣溫僅10°C，出門必須穿著洋蔥式洋裝。乾淨廁所：伏見稻荷周邊、貴船餐廳內。',
+      ]);
+      await pool.query(`UPDATE days SET title=$1, notes=$2 WHERE date='2027-04-20' AND plan_id=1`, [
+        '清水寺東山散策→移防大阪',
+        '步數約13,000步(約8km)｜建議現金¥6,000/人｜基本花費約¥7,500/人。必吃：阿古屋茶屋茶泡飯。⚠️07:00出門！阿古屋茶屋09:45前到登記！無需05:30起床，輕鬆多了。乾淨廁所：清水寺內、京都車站、大阪難波地鐵站。',
+      ]);
+
+      for (const date of ['2027-04-19', '2027-04-20']) {
+        const dr8 = await pool.query(`SELECT id FROM days WHERE date=$1 AND plan_id=1`, [date]);
+        if (dr8.rows[0]) await pool.query(`DELETE FROM activities WHERE day_id=$1`, [dr8.rows[0].id]);
+      }
+
+      // [date, sort, time, cat, title, loc, lat, lng, desc, wt, wr, ws, dur, alt, rest]
+      const V8_ACTS = [
+        // ── D3 2027-04-19 伏見稻荷清晨→貴船 ──
+        ['2027-04-19',  1,'06:00','transport','計程車前往伏見稻荷','MIMARU京都河原町五條（下京区河原町通五条）',34.9960,135.7720,
+         '⚠️ 清晨06:00出發！計程車從飯店至伏見稻荷大社約15分鐘（¥1,500估算）。\n\n此時鳥居隧道幾乎空無一人，是一生難忘的體驗。建議前晚準備好出行裝備、設好鬧鐘。\n\n☔雨天：伏見稻荷24小時開放，雨中鳥居別有韻味，依計劃前往。',
+         10,20,80, 15, null, null],
+        ['2027-04-19',  2,'06:15','sightseeing','伏見稻荷大社★清晨無人鳥居','伏見稻荷大社',34.9671,135.7727,
+         '24小時開放・免費入場。清晨6點鳥居隧道幾乎空無一人，光線從縫隙灑落。\n\n路線：本殿→千本鳥居→奥社奉拝所（稻荷山山腰，來回約60-70分鐘），不需攀頂。\n\n☔雨天備案：帶傘照去，鳥居雨中別有韻味，無需改計劃。',
+         10,20,80, 70, null, null],
+        ['2027-04-19',  3,'07:30','transport','計程車返回市區・便利商店早餐','伏見稻荷大社',34.9671,135.7727,
+         '計程車回出町柳方向（約20分，¥2,000估算）。\n\n☕ 途中在便利商店買早餐，準備搭叡電往貴船。',
+         10,20,80, 30, null, null],
+        ['2027-04-19',  4,'08:05','transport','出發前往貴船','出町柳駅（叡山電鐵）',35.0398,135.7736,
+         '晴：搭京阪電車至出町柳站，轉叡山電車至貴船口站（車程55-75分鐘）。\n☔雨：計程車直奔京都站（約10分鐘），搭JR新快速前往大阪。',
+         10,20,80, 65, null, null],
+        ['2027-04-19',  5,'09:20','sightseeing','貴船神社漫步、水占卜','貴船神社',35.1188,135.7521,
+         '晴：貴船口站轉乘接駁公車（5分）直達神社。水占卜（水みくじ）是必體驗！\n\n☔雨天備案：京都國立博物館（京都車站轉地鐵烏丸線至「四條站」再轉市營公車）。停留約100分鐘。',
+         10,20,80,100, null, null],
+        ['2027-04-19',  6,'11:00','sightseeing','貴船溪流山林散步','貴船溪流',35.1180,135.7530,
+         '晴：皆在貴船神社周邊，沿著溪流慢活放鬆。\n\n☔雨：博物館續逛。停留約60分鐘。',
+         10,20,80, 60, null, null],
+        ['2027-04-19',  7,'12:00','food','貴船茶屋午餐','貴船茶屋',35.1185,135.7520,
+         '🍱晴天午餐：貴船茶屋（無需預約，現場即可）\n\n☔雨天午餐：直接進京都車站伊勢丹百貨或拉麵小路。停留約80分鐘。',
+         22,15,85, 80, null, '貴船茶屋'],
+        ['2027-04-19',  8,'13:20','transport','午餐後回市區移動','貴船口站',35.1108,135.7562,
+         '晴：搭接駁公車回貴船口站，轉叡山電車回出町柳（移動約50-70分鐘）。\n\n☔雨：在伊勢丹百貨內全室內逛街大採購。',
+         22,15,85, 65, null, null],
+        ['2027-04-19',  9,'14:40','sightseeing','下午核心行程（平野神社/河原町）','平野神社・河原町',35.0045,135.7680,
+         '🌸A案（看花況）：出町柳站轉市營公車203路至「北野天滿宮前」→平野神社。\n🛍️B案（花已謝）：直達「四條河原町」，拱廊商店街。\n\n☕下午茶：Kurasu Kyoto Stand（無需預約，現場排隊）。停留約90分鐘。',
+         22,15,85, 90, '河原町商圈逛街', null],
+        ['2027-04-19', 10,'16:10','shopping','傍晚商圈大採購','河原町商圈',35.0045,135.7680,
+         '晴：河原町商圈採買。☔雨：新京極商店街續逛。停留約130分鐘。',
+         22,15,85,130, null, null],
+        ['2027-04-19', 11,'18:40','food','京都最後一晚晚餐・祇園牛禪','祇園牛禪',35.0040,135.7753,
+         '🥩首選：祇園牛禪（💡熱門！建議出發前7天電話或官網預約）\n\n☔備案：十二段家本店。步行前往餐廳（皆在河原町、祇園核心商圈，步行5-10分鐘內）。停留約90分鐘。',
+         14,20,80, 90, null, '祇園 牛禪'],
+        ['2027-04-19', 12,'20:30','hotel','返回飯店休息，收拾行李','MIMARU京都河原町五條（下京区河原町通五条）',34.9960,135.7720,
+         '步行或搭計程車返回河原町五條MIMARU，收拾行李。',
+         14,20,80,  0, null, null],
+        // ── D4 2027-04-20 清水寺東山（無伏見稻荷）→移大阪 ──
+        ['2027-04-20',  1,'06:30','hotel','飯店出發（行李留寄放）','MIMARU京都河原町五條（下京区河原町通五条）',34.9960,135.7720,
+         '今天不需要05:30起床！07:00前出門即可。\n\n大行李留前台寄放（退房前統一辦），直接出門前往清水寺。\n\n☔雨天：帶傘直接出發，清水寺早晨下雨別有意境。',
+         12,30,70,  0, null, null],
+        ['2027-04-20',  2,'06:50','transport','計程車前往清水寺','MIMARU前',34.9960,135.7720,
+         '晴：計程車直達清水坂口（約15分，¥1,200估算）。\n\n☔雨天：計程車照去，帶雨傘即可。',
+         12,30,70, 15, null, null],
+        ['2027-04-20',  3,'07:10','sightseeing','清水寺★空無一人黃金時段','清水寺',34.9948,135.7850,
+         '晴：清晨晨光最佳，無人清水舞台。開門時間06:00，入場¥500。\n\n今天07:10即可進入，無需先跑伏見稻荷，體力充沛！路線：仁王門→西門→清水舞台→音羽の滝，順時針繞行。\n\n☔雨：帶傘進，雨中清水舞台俯瞰朦朧霧都京都也有美感。停留約70分鐘。',
+         12,30,70, 70, null, null],
+        ['2027-04-20',  4,'08:20','sightseeing','漫步二年坂、三年坂、八坂塔','二年坂・三年坂',34.9985,135.7817,
+         '晴：漫步古街。☕晴天咖啡：%Arabica京都東山店（無需預約，現場排隊）。\n\n☔雨：帶傘照走，三年坂石板雨中有另一種美。停留約60分鐘。',
+         14,25,75, 60, null, null],
+        ['2027-04-20',  5,'09:30','food','阿古屋茶屋（提早現場登記！）','阿古屋茶屋',34.9956,135.7838,
+         '🍵09:45前先去登記，10:00開門第一批進去，時間超安全！今天從07:00才出門，完全不會趕，比以前輕鬆太多了。\n\n☔雨天：直攻心齋橋大丸百貨，室內大逛特逛。停留約90分鐘。',
+         14,25,75, 90, null, '阿古屋茶屋'],
+        ['2027-04-20',  6,'11:15','hotel','回飯店（正式退房領行李）','MIMARU京都河原町五條（下京区河原町通五条）',34.9960,135.7720,
+         '搭計程車回京都飯店拿行李，再去京都站。停留約20分鐘。',
+         21,30,70, 20, null, null],
+        ['2027-04-20',  7,'12:20','transport','京都站搭JR新快速前往大阪','京都駅',34.9858,135.7585,
+         'JR新快速（車程28分，¥570）。不需預約，每10分一班。',
+         22,30,70, 30, null, null],
+        ['2027-04-20',  8,'13:20','hotel','抵達大阪→入住MIMARU難波','MIMARU大阪難波站（浪速区難波中）',34.6615,135.4965,
+         '辦理check-in，回房間躺平、徹底關機休息充電。\n\n📍最近車站：JR「難波駅」步行1分・地下鐵御堂筋線「難波駅」步行5分・南海電車「難波駅」步行5分。停留約60分鐘。',
+         22,30,70, 60, null, null],
+        ['2027-04-20',  9,'16:30','shopping','道頓堀、心齋橋逛街購物','道頓堀・心齋橋',34.6687,135.5006,
+         '傍晚步行出發，開啟大阪逛街模式。稍微有海風，出門建議加薄外套。\n\n☔雨：心齋橋商店街★有全封閉頂棚，下雨一樣好逛。停留約180分鐘。',
+         22,30,70,180, null, null],
+        ['2027-04-20', 10,'19:30','food','大阪道頓堀晚餐・北極星','北極星心齋橋本店',34.6710,135.5003,
+         '🍳首選：北極星心齋橋本店（無需預約，現場排隊即可）\n\n☔備案：美津乃（大阪燒）。步行前往心齋橋老字號餐廳。停留約90分鐘。',
+         16,35,65, 90, null, '北極星 心齋橋本店'],
+        ['2027-04-20', 11,'21:15','hotel','返回MIMARU難波飯店','MIMARU大阪難波站（浪速区難波中）',34.6615,135.4965,
+         '步行返回MIMARU大阪難波站。',
+         16,35,65,  0, null, null],
+      ];
+
+      for (const [date, sort, time, cat, title, loc, lat, lng, desc, wt, wr, ws, dur, alt, rest] of V8_ACTS) {
+        const dr8 = await pool.query(`SELECT id FROM days WHERE date=$1 AND plan_id=1`, [date]);
+        if (!dr8.rows[0]) continue;
+        await pool.query(
+          `INSERT INTO activities (day_id,sort_order,time,category,title,location,lat,lng,description,weather_temp,weather_rain,weather_sun,duration,alt_plan,restaurant,map_url,image_url,mapcode)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,'','','')`,
+          [dr8.rows[0].id, sort, time, cat, title, loc, lat, lng, desc, wt, wr, ws, dur, alt, rest]
+        );
+      }
+      await pool.query(`INSERT INTO trip_info (category,key,value,sort_order) VALUES ('system','itinerary_v8','1',9999) ON CONFLICT DO NOTHING`);
+    }
+
+    // ── 費用 v10（配合 v8 路線：D3加伏見稻荷計程車，D4調整計程車）────────
+    const expSeed10 = await pool.query(`SELECT 1 FROM trip_info WHERE category='system' AND key='expenses_v10'`);
+    if (!expSeed10.rows.length) {
+      const d3id = (await pool.query(`SELECT id FROM days WHERE date='2027-04-19' AND plan_id=1`)).rows[0]?.id;
+      const d4id = (await pool.query(`SELECT id FROM days WHERE date='2027-04-20' AND plan_id=1`)).rows[0]?.id;
+      if (d3id) {
+        await pool.query(`INSERT INTO expenses (day_id,title,amount_jpy,amount_twd,notes) VALUES ($1,'計程車 飯店→伏見稻荷（2台）',3600,714,'清晨06:00出發')`, [d3id]);
+        await pool.query(`INSERT INTO expenses (day_id,title,amount_jpy,amount_twd,notes) VALUES ($1,'計程車 伏見稻荷→出町柳（2台）',4000,794,'07:30返市區接叡電')`, [d3id]);
+      }
+      if (d4id) {
+        await pool.query(`DELETE FROM expenses WHERE day_id=$1 AND title LIKE '%飯店→伏見稻荷%'`, [d4id]);
+        await pool.query(`UPDATE expenses SET title='計程車 飯店→清水寺（2台）', notes='07:00直達，¥1,200/台' WHERE day_id=$1 AND title LIKE '%伏見稻荷→清水寺%'`, [d4id]);
+      }
+      await pool.query(`INSERT INTO trip_info (category,key,value,sort_order) VALUES ('system','expenses_v10','1',9999) ON CONFLICT DO NOTHING`);
+    }
+
     // ── 方案一活動圖片（Wikipedia/Wikimedia Commons 核實 URL，幂等）────
     const P1_IMAGES = [
       // ── D1 京都抵達 ────────────────────────────────────────────────
