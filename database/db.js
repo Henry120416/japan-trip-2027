@@ -1113,10 +1113,10 @@ if (USE_PG) {
     }
 
     // ── 費用預估種子（6人行，匯率 1TWD≈4.8JPY）────────────────
-    const expSeed = await pool.query(`SELECT 1 FROM trip_info WHERE category='system' AND key='expenses_v6'`);
+    const expSeed = await pool.query(`SELECT 1 FROM trip_info WHERE category='system' AND key='expenses_v7'`);
     if (!expSeed.rows.length) {
       await pool.query(`DELETE FROM expenses`);
-      await pool.query(`DELETE FROM trip_info WHERE category='system' AND key IN ('expenses_v1','expenses_v2','expenses_v3','expenses_v4','expenses_v5')`);
+      await pool.query(`DELETE FROM trip_info WHERE category='system' AND key IN ('expenses_v1','expenses_v2','expenses_v3','expenses_v4','expenses_v5','expenses_v6')`);
       const dayId = async d => {
         const r = await pool.query(`SELECT id FROM days WHERE date=$1 AND plan_id=1`, [d]);
         return r.rows[0]?.id || null;
@@ -1131,7 +1131,7 @@ if (USE_PG) {
       // ── 機票（無日期）
       await addExp(null, '機票（去回，6人）',          0,      97842, '星宇航空 KIX，6人×NT$16,307');
       // ── D1 2027-04-17
-      await addExp('2027-04-17', '住宿 MIMARU 京都五條（3晚）',      0, 29611, '6人，3晚合計 NT$29,611.42');
+      await addExp('2027-04-17', '住宿 MIMARU 京都五條（3晚）', 198798, 44177, '¥198,798 ÷ 4.5 = NT$44,177');
       await addExp('2027-04-17', 'HARUKA特急（6人×¥2,200）',    13200,  2750,  '外國人優惠票，含指定席');
       await addExp('2027-04-17', 'ICOCA儲值（6人×¥3,000）',     18000,  3750,  '含押金¥500，可退款');
       await addExp('2027-04-17', '計程車 京都站→飯店（2台）',    2400,   500,   '攜帶大件行李建議計程車');
@@ -1154,7 +1154,7 @@ if (USE_PG) {
       await addExp('2027-04-19', '晚餐 祇園牛禪壽喜燒（6人）',       54000, 11250, '祇園高級店，¥9,000/人，建議7天前預約');
       await addExp('2027-04-19', '飲料・零食・便利商店',              6000,  1250, '¥1,000/人');
       // ── D4 2027-04-20
-      await addExp('2027-04-20', '住宿 MIMARU 大阪難波（2晚）',          0, 29025, '6人，2晚合計 NT$29,025.46');
+      await addExp('2027-04-20', '住宿 MIMARU 大阪難波（2晚）', 185398, 41200, '¥185,398 ÷ 4.5 = NT$41,200');
       await addExp('2027-04-20', '計程車 飯店→伏見稻荷（2台）',      3600,   750, '清晨5:50出發');
       await addExp('2027-04-20', '計程車 伏見稻荷→清水寺（2台）',    3000,   625, '清晨光線最美時段移動');
       await addExp('2027-04-20', '入場費 清水寺（6人×¥500）',        3000,   625, '6:00開門，晨光最佳');
@@ -1175,7 +1175,7 @@ if (USE_PG) {
       await addExp('2027-04-22', '午餐 金子半之助天丼（6人）',          9000,  1875, 'Outlet美食街，¥1,500/人，無需預約');
       await addExp('2027-04-22', '飲料・零食・便利商店',                 3000,   625, '¥500/人，半天');
 
-      await pool.query(`INSERT INTO trip_info (category,key,value,sort_order) VALUES ('system','expenses_v6','1',9999) ON CONFLICT DO NOTHING`);
+      await pool.query(`INSERT INTO trip_info (category,key,value,sort_order) VALUES ('system','expenses_v7','1',9999) ON CONFLICT DO NOTHING`);
     }
 
     const cl = await pool.query('SELECT COUNT(*) as c FROM checklist');
